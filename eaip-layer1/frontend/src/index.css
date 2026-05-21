@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Font families */
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  /* shadcn/ui border radius token */
+  --radius: 0.5rem;
+
+  /* ─── Color tokens (dark default) ─────────────────────────────── */
+  --color-background: hsl(228 12% 10%);
+  --color-foreground: hsl(220 10% 90%);
+
+  --color-card: hsl(228 10% 13%);
+  --color-card-foreground: hsl(220 10% 90%);
+
+  --color-muted: hsl(228 9% 18%);
+  --color-muted-foreground: hsl(220 8% 55%);
+
+  --color-popover: hsl(228 10% 13%);
+  --color-popover-foreground: hsl(220 10% 90%);
+
+  --color-border: hsl(228 8% 20%);
+  --color-input: hsl(228 8% 20%);
+
+  --color-primary: hsl(239 84% 67%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary: hsl(228 9% 18%);
+  --color-secondary-foreground: hsl(220 10% 90%);
+
+  --color-accent: hsl(239 84% 67%);
+  --color-accent-foreground: hsl(0 0% 100%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  --color-ring: hsl(239 84% 67%);
+}
+
+/* ─── Light theme overrides ────────────────────────────────────────── */
+.light {
+  --color-background: hsl(0 0% 98%);
+  --color-foreground: hsl(228 12% 12%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(228 12% 12%);
+
+  --color-muted: hsl(220 14% 96%);
+  --color-muted-foreground: hsl(220 8% 46%);
+
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(228 12% 12%);
+
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+
+  --color-primary: hsl(239 84% 67%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary: hsl(220 14% 96%);
+  --color-secondary-foreground: hsl(228 12% 12%);
+
+  --color-accent: hsl(239 84% 67%);
+  --color-accent-foreground: hsl(0 0% 100%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  --color-ring: hsl(239 84% 67%);
+}
+
+/* ─── Base styles ──────────────────────────────────────────────────── */
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

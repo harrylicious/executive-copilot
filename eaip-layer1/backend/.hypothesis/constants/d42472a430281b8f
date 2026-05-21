@@ -1,0 +1,4 @@
+# file: D:\Projects\executive-copilot\eaip-layer1\backend\app\config.py
+# hypothesis_version: 6.152.7
+
+[0.1, 0.3, 0.5, 0.7, 1.0, 10.0, 100, 256, 512, 2048, 4096, 8000, 10000, 16384, './chroma_db', './knowledge_base', 'GraphRAGSettings', 'KB_', 'after', 'all-MiniLM-L6-v2', 'before', 'chunk_overlap', 'chunk_size', 'community_resolution', 'llm-based', 'max_community_size', 'max_context_tokens', 'rule-based', 'top_k']
