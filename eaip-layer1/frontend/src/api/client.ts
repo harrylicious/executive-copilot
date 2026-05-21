@@ -2,8 +2,11 @@ import axios from "axios";
 import type {
   ChatRequest,
   ChatResponse,
+  ChatSessionDetail,
+  ChatSessionSummary,
   CombinedSearchRequest,
   EmbeddingJobResult,
+  EmbeddingLog,
   EmbeddingStatus,
   FileNode,
   GlobalSearchRequest,
@@ -11,6 +14,7 @@ import type {
   IndexStatus,
   LocalSearchRequest,
   Relationship,
+  SaveSessionRequest,
   SearchResponse,
   SSEEvent,
   SyncLog,
@@ -145,6 +149,11 @@ export async function getSyncLogs(): Promise<SyncLog[]> {
   return data;
 }
 
+export async function getEmbeddingLogs(): Promise<EmbeddingLog[]> {
+  const { data } = await api.get<EmbeddingLog[]>("/api/embeddings/logs");
+  return data;
+}
+
 export async function getGraphData(): Promise<GraphData> {
   const { data } = await api.get<GraphData>("/api/graph");
   return data;
@@ -262,4 +271,36 @@ export async function* streamChatMessage(
       }
     }
   }
+}
+
+// ─── Session API ─────────────────────────────────────────────────────────────
+
+export async function getSessions(): Promise<ChatSessionSummary[]> {
+  const { data } = await api.get<ChatSessionSummary[]>("/api/sessions");
+  return data;
+}
+
+export async function getSession(sessionId: string): Promise<ChatSessionDetail> {
+  const { data } = await api.get<ChatSessionDetail>(`/api/sessions/${sessionId}`);
+  return data;
+}
+
+export async function saveSession(body: SaveSessionRequest): Promise<ChatSessionSummary> {
+  const { data } = await api.post<ChatSessionSummary>("/api/sessions", body);
+  return data;
+}
+
+export async function updateSessionTitle(
+  sessionId: string,
+  title: string
+): Promise<ChatSessionSummary> {
+  const { data } = await api.patch<ChatSessionSummary>(
+    `/api/sessions/${sessionId}/title`,
+    { title }
+  );
+  return data;
+}
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  await api.delete(`/api/sessions/${sessionId}`);
 }

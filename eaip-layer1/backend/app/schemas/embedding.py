@@ -27,3 +27,17 @@ class EmbeddingStatusResponse(BaseModel):
     total_files_embedded: int
     files_pending: int
     last_job_timestamp: datetime | None
+
+
+class EmbeddingLogEntry(BaseModel):
+    """Single embedding log record."""
+
+    id: int
+    timestamp: datetime
+    files_processed: int
+    chunks_generated: int
+    errors_count: int
+    status: str
+
+    class Config:
+        from_attributes = True

@@ -8,7 +8,7 @@ from app.config import graphrag_settings, settings
 from app.database import get_db
 from app.models.embedding_log import EmbeddingLog
 from app.models.file import File
-from app.schemas.embedding import EmbeddingJobResponse, EmbeddingStatusResponse
+from app.schemas.embedding import EmbeddingJobResponse, EmbeddingLogEntry, EmbeddingStatusResponse
 from app.services.embedding_engine import EmbeddingEngine
 
 router = APIRouter(prefix="/embeddings", tags=["embeddings"])
@@ -76,6 +76,13 @@ def run_single_file_embedding(file_id: int, db: Session = Depends(get_db)):
         errors=result.errors,
         status=result.status,
     )
+
+
+@router.get("/logs", response_model=list[EmbeddingLogEntry])
+def get_embedding_logs(db: Session = Depends(get_db)):
+    """Get all embedding job logs ordered by most recent first."""
+    logs = db.query(EmbeddingLog).order_by(EmbeddingLog.timestamp.desc()).all()
+    return logs
 
 
 @router.get("/status", response_model=EmbeddingStatusResponse)

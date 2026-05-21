@@ -150,6 +150,15 @@ export interface SyncLog {
   summary: string | null;
 }
 
+export interface EmbeddingLog {
+  id: number;
+  timestamp: string;
+  filesProcessed: number;
+  chunksGenerated: number;
+  errorsCount: number;
+  status: string;
+}
+
 export type SupportedFormat = "pdf" | "xlsx" | "json" | "docx" | "md" | "txt";
 
 // ─── Chat Types ──────────────────────────────────────────────────────────────
@@ -214,4 +223,40 @@ export interface ChatConfig {
   retrievalMode: "local" | "global" | "combined";
   topK?: number;
   maxTokens?: number;
+}
+
+// ─── Session Types ───────────────────────────────────────────────────────────
+
+export interface ChatSessionSummary {
+  id: string;
+  title: string | null;
+  retrievalMode: string | null;
+  topK: number | null;
+  maxTokens: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface ChatSessionDetail extends ChatSessionSummary {
+  messages: ChatMessageRecord[];
+}
+
+export interface ChatMessageRecord {
+  id: string;
+  sessionId: string;
+  role: "user" | "assistant";
+  content: string;
+  sources?: SourceAttribution[] | null;
+  metadataJson?: RetrievalMetadata | null;
+  error?: string | null;
+  timestamp: number;
+}
+
+export interface SaveSessionRequest {
+  id: string;
+  title?: string | null;
+  retrievalMode?: string | null;
+  topK?: number | null;
+  maxTokens?: number | null;
+  messages: ChatMessageRecord[];
 }
