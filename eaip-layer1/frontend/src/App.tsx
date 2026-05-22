@@ -4,6 +4,7 @@ import { ExplorerPage } from "./pages/ExplorerPage";
 import { GraphPage } from "./pages/GraphPage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
 import { SearchPage } from "./pages/SearchPage";
+import { IngestionDashboard } from "./pages/IngestionDashboard";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
       { path: "graph", element: <GraphPage /> },
       { path: "playground", element: <PlaygroundPage /> },
       { path: "search", element: <SearchPage /> },
+      { path: "ingestion", element: <IngestionDashboard /> },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
   },

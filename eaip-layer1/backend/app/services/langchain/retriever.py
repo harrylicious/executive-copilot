@@ -40,7 +40,7 @@ class CustomRetriever(BaseRetriever):
     retrieval_service: Any  # RetrievalService (Any for pydantic compatibility)
     retrieval_mode: str = "combined"
     top_k: int = 5
-    min_score: float = 0.5
+    min_score: float = 0.3
     similarity_weight: float = 0.7
     num_communities: int = 3
     min_relevance: float = 0.1

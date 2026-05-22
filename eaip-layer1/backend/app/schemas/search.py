@@ -8,7 +8,7 @@ class LocalSearchRequest(BaseModel):
 
     query: str = Field(..., min_length=1, max_length=1000)
     top_k: int = Field(default=5, ge=1, le=50)
-    min_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    min_score: float = Field(default=0.3, ge=0.0, le=1.0)
     similarity_weight: float = Field(default=0.7, ge=0.0, le=1.0)
 
 

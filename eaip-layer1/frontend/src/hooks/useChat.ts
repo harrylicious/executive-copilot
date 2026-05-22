@@ -45,7 +45,7 @@ function fromMessageRecord(record: ChatMessageRecord): ChatMessage {
 export function useChat(initialSessionId?: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [config, setConfig] = useState<ChatConfig>({ retrievalMode: "combined" });
+  const [config, setConfig] = useState<ChatConfig>({ retrievalMode: "combined", language: "id" });
   const sessionIdRef = useRef<string>(initialSessionId || generateSessionId());
   const abortRef = useRef<AbortController | null>(null);
   const titleRef = useRef<string | null>(null);
@@ -62,6 +62,7 @@ export function useChat(initialSessionId?: string) {
           retrievalMode: (session.retrievalMode as ChatConfig["retrievalMode"]) || "combined",
           topK: session.topK ?? undefined,
           maxTokens: session.maxTokens ?? undefined,
+          language: "id",
         });
       }
 
@@ -144,6 +145,7 @@ export function useChat(initialSessionId?: string) {
           retrievalMode: config.retrievalMode,
           topK: config.topK,
           maxTokens: config.maxTokens,
+          language: config.language,
         },
         controller.signal
       );
@@ -184,6 +186,8 @@ export function useChat(initialSessionId?: string) {
             return { ...m, sources: event.data.sourceAttributions };
           case "metadata":
             return { ...m, metadata: event.data };
+          case "suggestions":
+            return { ...m, suggestions: event.data.suggestions };
           case "done":
             return { ...m, isStreaming: false, isComplete: true };
           case "error":
@@ -199,7 +203,7 @@ export function useChat(initialSessionId?: string) {
     sessionIdRef.current = generateSessionId();
     titleRef.current = null;
     setMessages([]);
-    setConfig({ retrievalMode: "combined" });
+    setConfig({ retrievalMode: "combined", language: "id" });
   }, []);
 
   useEffect(() => {

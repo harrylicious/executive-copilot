@@ -108,6 +108,7 @@ class ServiceContainer:
         retrieval_mode: str = "combined",
         top_k: int | None = None,
         max_tokens: int | None = None,
+        language: str = "id",
     ) -> "AgentWorkflow":
         """Build a fully-wired AgentWorkflow for a request.
 
@@ -119,6 +120,7 @@ class ServiceContainer:
             retrieval_mode: Retrieval mode (local, global, combined).
             top_k: Optional top_k override for retrieval.
             max_tokens: Optional max context tokens override.
+            language: Response language code (id or en).
 
         Returns:
             An AgentWorkflow instance ready to invoke.
@@ -166,10 +168,11 @@ class ServiceContainer:
             llm=self.llm,
             retriever=retriever,
             max_context_tokens=context_tokens,
+            language=language,
         )
 
         # Build agent workflow with shared session store
-        workflow = AgentWorkflow(llm=self.llm, rag_chain=rag_chain)
+        workflow = AgentWorkflow(llm=self.llm, rag_chain=rag_chain, language=language)
         workflow.session_store = self.session_store
 
         return workflow
@@ -180,6 +183,7 @@ class ServiceContainer:
         retrieval_mode: str = "combined",
         top_k: int | None = None,
         max_tokens: int | None = None,
+        language: str = "id",
     ) -> tuple["RAGChain", "CustomRetriever"]:
         """Build a RAGChain and retriever for streaming (bypasses agent workflow).
 
@@ -188,6 +192,7 @@ class ServiceContainer:
             retrieval_mode: Retrieval mode (local, global, combined).
             top_k: Optional top_k override for retrieval.
             max_tokens: Optional max context tokens override.
+            language: Response language code (id or en).
 
         Returns:
             A tuple of (RAGChain, CustomRetriever) instances.
@@ -231,6 +236,7 @@ class ServiceContainer:
             llm=self.llm,
             retriever=retriever,
             max_context_tokens=context_tokens,
+            language=language,
         )
 
         return rag_chain, retriever

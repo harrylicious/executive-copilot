@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 
-from app.config import graphrag_settings, settings
+from app.config import graphrag_settings, ingestion_settings, settings
 from app.database import Base, engine
 from app.models import (  # noqa: F401 - register models
     File,
@@ -20,6 +20,11 @@ from app.models import (  # noqa: F401 - register models
     EmbeddingLog,
     ChatSession,
     ChatMessageRecord,
+    IngestionJob,
+    IngestionStageLog,
+    BatchLoaderConfig,
+    BatchExecutionLog,
+    PIIRedactionLog,
 )
 from app.utils.department_config import initialize_knowledge_base
 
@@ -53,6 +58,28 @@ async def lifespan(app: FastAPI):
                     conn.execute(text(alter_sql))
                     conn.commit()
                 logger.info(f"Added {col_name} column to files table")
+
+    # Migrate existing tables: add missing columns to chunks table
+    if "chunks" in inspector.get_table_names():
+        chunk_columns = [c["name"] for c in inspector.get_columns("chunks")]
+        chunk_migrations = {
+            "section_path": "ALTER TABLE chunks ADD COLUMN section_path VARCHAR",
+            "chunking_method": "ALTER TABLE chunks ADD COLUMN chunking_method VARCHAR",
+            "job_id": "ALTER TABLE chunks ADD COLUMN job_id VARCHAR REFERENCES ingestion_jobs(id)",
+        }
+        for col_name, alter_sql in chunk_migrations.items():
+            if col_name not in chunk_columns:
+                with engine.connect() as conn:
+                    conn.execute(text(alter_sql))
+                    conn.commit()
+                logger.info(f"Added {col_name} column to chunks table")
+
+    # Create staging directory for ingestion pipeline
+    from pathlib import Path
+
+    staging_path = Path(ingestion_settings.staging_path)
+    staging_path.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Staging directory ensured at: {staging_path.resolve()}")
 
     # Log GraphRAG configuration at startup
     logger.info(
@@ -217,3 +244,10 @@ try:
     app.include_router(sessions_router, prefix="/api")
 except ImportError:
     pass  # sessions router not yet implemented
+
+try:
+    from app.routers.ingestion import router as ingestion_router
+
+    app.include_router(ingestion_router, prefix="/api")
+except ImportError:
+    pass  # ingestion router not yet implemented

@@ -13,9 +13,10 @@ interface PredefinedPromptsProps {
   onSelect: (prompt: string) => void;
   disabled?: boolean;
   compact?: boolean;
+  language?: "id" | "en";
 }
 
-const PROMPTS = [
+const PROMPTS_EN = [
   {
     icon: FileSearch,
     label: "Summarize documents",
@@ -48,11 +49,47 @@ const PROMPTS = [
   },
 ] as const;
 
+const PROMPTS_ID = [
+  {
+    icon: FileSearch,
+    label: "Ringkasan dokumen",
+    prompt: "Ringkas informasi utama dari semua dokumen yang terindeks. Apa topik dan tema utamanya?",
+  },
+  {
+    icon: BarChart3,
+    label: "Ikhtisar keuangan",
+    prompt: "Data keuangan apa yang tersedia? Berikan ikhtisar arus kas, anggaran, dan informasi pembayaran.",
+  },
+  {
+    icon: TrendingUp,
+    label: "Prakiraan permintaan",
+    prompt: "Apa prakiraan permintaan dan rencana pasokan terbaru? Soroti kesenjangan atau risiko yang ada.",
+  },
+  {
+    icon: GitCompare,
+    label: "Hubungan antar departemen",
+    prompt: "Apa hubungan dan ketergantungan antar departemen? Tunjukkan bagaimana dokumen saling merujuk.",
+  },
+  {
+    icon: ListChecks,
+    label: "Pemeriksaan kepatuhan",
+    prompt: "Apakah ada dokumen kebijakan atau SOP? Ringkas persyaratan kepatuhan dan prosedur utamanya.",
+  },
+  {
+    icon: Lightbulb,
+    label: "Insight utama",
+    prompt: "Berdasarkan semua data yang tersedia, apa insight dan langkah tindakan terpenting untuk pengambilan keputusan eksekutif?",
+  },
+] as const;
+
 export const PredefinedPrompts: FC<PredefinedPromptsProps> = ({
   onSelect,
   disabled,
   compact,
+  language = "id",
 }) => {
+  const PROMPTS = language === "en" ? PROMPTS_EN : PROMPTS_ID;
+
   if (compact) {
     return (
       <div className="flex flex-wrap gap-1.5">

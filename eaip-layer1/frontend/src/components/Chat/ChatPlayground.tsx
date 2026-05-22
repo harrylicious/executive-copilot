@@ -87,13 +87,15 @@ export function ChatPlayground() {
                   <Bot className="size-5 text-primary" />
                 </div>
                 <p className="text-sm text-muted-foreground text-center max-w-sm">
-                  Ask questions about your knowledge base. I'll search through your documents and provide answers with sources.
+                  {config.language === "id"
+                    ? "Ajukan pertanyaan tentang basis pengetahuan Anda. Saya akan mencari dokumen dan memberikan jawaban beserta sumbernya."
+                    : "Ask questions about your knowledge base. I'll search through your documents and provide answers with sources."}
                 </p>
               </div>
-              <PredefinedPrompts onSelect={sendMessage} disabled={isStreaming} />
+              <PredefinedPrompts onSelect={sendMessage} disabled={isStreaming} language={config.language} />
             </div>
           ) : (
-            <MessageList messages={messages} />
+            <MessageList messages={messages} onSuggestionClick={sendMessage} />
           )}
         </div>
 
@@ -101,7 +103,7 @@ export function ChatPlayground() {
         <div className="border-t border-border p-3 shrink-0">
           {messages.length > 0 && (
             <div className="mb-2">
-              <PredefinedPrompts onSelect={sendMessage} disabled={isStreaming} compact />
+              <PredefinedPrompts onSelect={sendMessage} disabled={isStreaming} compact language={config.language} />
             </div>
           )}
           <ChatInput onSubmit={sendMessage} disabled={isStreaming} />

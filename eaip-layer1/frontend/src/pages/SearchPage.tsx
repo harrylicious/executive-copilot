@@ -85,14 +85,35 @@ export function SearchPage() {
                 {mode}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="w-72">
               <DropdownMenuRadioGroup
                 value={mode}
                 onValueChange={(v) => setMode(v as SearchMode)}
               >
-                <DropdownMenuRadioItem value="local">Local</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="global">Global</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="combined">Combined</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="local" className="items-start">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium">Local</span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      Searches individual document chunks by semantic similarity. Best for finding specific passages or facts.
+                    </span>
+                  </div>
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="global" className="items-start">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium">Global</span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      Searches across community summaries for high-level themes and cross-document insights.
+                    </span>
+                  </div>
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="combined" className="items-start">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium">Combined</span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      Uses both local chunks and global summaries for comprehensive results. Recommended for most queries.
+                    </span>
+                  </div>
+                </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>

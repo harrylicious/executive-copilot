@@ -124,6 +124,13 @@ export async function getDepartments(): Promise<TreeNode[]> {
   return data;
 }
 
+export async function createFolder(
+  department: string,
+  name: string
+): Promise<void> {
+  await api.post("/api/departments/folders", { department, name });
+}
+
 export async function triggerSync(): Promise<SyncResult> {
   const { data } = await api.post<SyncResult>("/api/sync");
   return data;

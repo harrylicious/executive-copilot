@@ -42,7 +42,7 @@ class GraphRAGSettings(BaseSettings):
     max_context_tokens: int = 2048
     similarity_weight: float = 0.7
     graph_relevance_weight: float = 0.3
-    min_similarity_threshold: float = 0.5
+    min_similarity_threshold: float = 0.3
 
     # Entity extraction
     entity_extraction_method: str = "rule-based"
@@ -194,5 +194,44 @@ class GraphRAGSettings(BaseSettings):
         return self
 
 
+class IngestionSettings(BaseSettings):
+    """Ingestion pipeline settings.
+
+    Controls file upload limits, staging, OCR, PII redaction,
+    deduplication, and chunking parameters.
+    """
+
+    max_file_size_mb: int = 100
+    staging_path: str = "./staging"
+    supported_formats: list[str] = [
+        ".txt",
+        ".md",
+        ".json",
+        ".docx",
+        ".pdf",
+        ".csv",
+        ".xlsx",
+        ".xls",
+        ".png",
+        ".jpg",
+        ".tiff",
+    ]
+    ocr_provider: str = "tesseract"  # "tesseract" or "textract"
+    ocr_confidence_threshold: float = 0.6
+    pii_confidence_threshold: float = 0.7
+    dedup_similarity_threshold: float = 0.9
+    semantic_chunk_min_tokens: int = 256
+    semantic_chunk_max_tokens: int = 1024
+    sliding_window_size: int = 512
+    sliding_window_overlap: int = 64
+    sliding_window_min_chunk: int = 128
+    job_retention_days: int = 30
+    max_concurrent_uploads: int = 10
+
+    class Config:
+        env_prefix = "KB_INGESTION_"
+
+
 settings = Settings()
 graphrag_settings = GraphRAGSettings()
+ingestion_settings = IngestionSettings()

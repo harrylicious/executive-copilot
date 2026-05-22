@@ -14,6 +14,13 @@ class RetrievalMode(str, Enum):
     combined = "combined"
 
 
+class Language(str, Enum):
+    """Supported response languages."""
+
+    id = "id"
+    en = "en"
+
+
 class ChatRequest(BaseModel):
     """Request schema for the chat generation endpoint."""
 
@@ -22,6 +29,7 @@ class ChatRequest(BaseModel):
     retrieval_mode: RetrievalMode = RetrievalMode.combined
     top_k: Optional[int] = Field(None, ge=1, le=50)
     max_tokens: Optional[int] = Field(None, ge=1000, le=16000)
+    language: Language = Language.id
 
 
 class SourceAttribution(BaseModel):

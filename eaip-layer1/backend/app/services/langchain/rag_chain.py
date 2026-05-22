@@ -34,7 +34,13 @@ the provided context documents. Follow these rules strictly:
 4. Do not fabricate, hallucinate, or infer information beyond what is explicitly \
 stated in the context.
 5. Be concise and direct in your answer.
+6. {language_instruction}
 """
+
+_LANGUAGE_INSTRUCTIONS = {
+    "id": "You MUST respond in Bahasa Indonesia. All your answers must be written in Indonesian language.",
+    "en": "You MUST respond in English. All your answers must be written in English language.",
+}
 
 _NO_DOCUMENTS_RESPONSE = (
     "I could not find any relevant information in the knowledge base to answer "
@@ -84,10 +90,12 @@ class RAGChain:
         llm: "BaseChatModel",
         retriever: "CustomRetriever",
         max_context_tokens: int = 4000,
+        language: str = "id",
     ) -> None:
         self.llm = llm
         self.retriever = retriever
         self.max_context_tokens = max_context_tokens
+        self.language = language
         self._encoding = tiktoken.get_encoding("cl100k_base")
 
     def invoke(self, query: str) -> RAGResponse:
@@ -247,6 +255,11 @@ class RAGChain:
         Returns:
             List of LangChain message objects.
         """
+        language_instruction = _LANGUAGE_INSTRUCTIONS.get(
+            self.language, _LANGUAGE_INSTRUCTIONS["id"]
+        )
+        system_prompt = _RAG_SYSTEM_PROMPT.format(language_instruction=language_instruction)
+
         context_text = self._format_context(documents)
         user_message = (
             f"Context documents:\n{context_text}\n\n"
@@ -256,7 +269,7 @@ class RAGChain:
         )
 
         return [
-            SystemMessage(content=_RAG_SYSTEM_PROMPT),
+            SystemMessage(content=system_prompt),
             HumanMessage(content=user_message),
         ]
 

@@ -132,10 +132,13 @@ class TextExtractor:
                 ws = wb[sheet_name]
                 sheet_rows = []
                 for row in ws.iter_rows(values_only=True):
-                    cleaned = [str(cell) if cell is not None else "" for cell in row]
-                    sheet_rows.append(" | ".join(cleaned))
-                rows.append(f"--- Sheet: {sheet_name} ---")
-                rows.extend(sheet_rows)
+                    # Filter out None/empty cells to reduce noise
+                    cleaned = [str(cell).strip() for cell in row if cell is not None and str(cell).strip()]
+                    if cleaned:
+                        sheet_rows.append(" | ".join(cleaned))
+                if sheet_rows:
+                    rows.append(f"--- Sheet: {sheet_name} ---")
+                    rows.extend(sheet_rows)
             wb.close()
             return "\n".join(rows)
         except Exception:

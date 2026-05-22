@@ -9,6 +9,11 @@ from app.models.entity_relationship import EntityRelationship
 from app.models.community import Community
 from app.models.embedding_log import EmbeddingLog
 from app.models.chat_session import ChatSession, ChatMessageRecord
+from app.models.ingestion_job import IngestionJob
+from app.models.ingestion_stage_log import IngestionStageLog
+from app.models.batch_loader_config import BatchLoaderConfig
+from app.models.batch_execution_log import BatchExecutionLog
+from app.models.pii_redaction_log import PIIRedactionLog
 
 __all__ = [
     "File",
@@ -21,4 +26,9 @@ __all__ = [
     "EmbeddingLog",
     "ChatSession",
     "ChatMessageRecord",
+    "IngestionJob",
+    "IngestionStageLog",
+    "BatchLoaderConfig",
+    "BatchExecutionLog",
+    "PIIRedactionLog",
 ]

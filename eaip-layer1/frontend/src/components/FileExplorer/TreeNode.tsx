@@ -9,7 +9,46 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ChevronRight, Folder, FolderOpen, FileText, MoreHorizontal, Eye, FolderOpenDot } from "lucide-react";
+import { ChevronRight, Folder, FolderOpen, MoreHorizontal, Eye, FolderOpenDot } from "lucide-react";
+import type { IconType } from "react-icons";
+import { FaFilePdf, FaFileWord, FaFileExcel, FaFileCsv, FaFileCode, FaFileAlt } from "react-icons/fa";
+import { detectFormat } from "../../utils/fileFormat";
+
+function getFileIcon(name: string): IconType {
+  const format = detectFormat(name);
+  switch (format) {
+    case "pdf":
+      return FaFilePdf;
+    case "docx":
+      return FaFileWord;
+    case "xlsx":
+      return FaFileExcel;
+    case "csv":
+      return FaFileCsv;
+    case "json":
+      return FaFileCode;
+    default:
+      return FaFileAlt;
+  }
+}
+
+function getFileColor(name: string): string {
+  const format = detectFormat(name);
+  switch (format) {
+    case "pdf":
+      return "text-red-500";
+    case "docx":
+      return "text-blue-500";
+    case "xlsx":
+      return "text-emerald-500";
+    case "csv":
+      return "text-green-500";
+    case "json":
+      return "text-amber-500";
+    default:
+      return "text-foreground";
+  }
+}
 
 const STORAGE_KEY = "eaip-tree-expanded";
 
@@ -152,9 +191,11 @@ export const TreeNode: FC<TreeNodeProps> = ({ node, depth, onFileSelect, onOpenI
           ) : (
             <Folder className="size-3.5 text-primary/70 shrink-0" />
           )
-        ) : (
-          <FileText className="size-3.5 text-muted-foreground shrink-0" />
-        )}
+        ) : (() => {
+          const Icon = getFileIcon(node.name);
+          const color = getFileColor(node.name);
+          return <Icon className={`size-3.5 shrink-0 ${color}`} />;
+        })()}
 
         {/* Label */}
         <span className="truncate flex-1">{node.name}</span>

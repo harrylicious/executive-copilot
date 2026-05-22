@@ -159,7 +159,7 @@ export interface EmbeddingLog {
   status: string;
 }
 
-export type SupportedFormat = "pdf" | "xlsx" | "json" | "docx" | "md" | "txt";
+export type SupportedFormat = "pdf" | "xlsx" | "json" | "docx" | "md" | "txt" | "csv";
 
 // ─── Chat Types ──────────────────────────────────────────────────────────────
 
@@ -171,6 +171,7 @@ export interface ChatMessage {
   isComplete: boolean;
   sources?: SourceAttribution[];
   metadata?: RetrievalMetadata;
+  suggestions?: string[];
   error?: string;
   timestamp: number;
 }
@@ -201,6 +202,7 @@ export interface ChatRequest {
   retrievalMode?: "local" | "global" | "combined";
   topK?: number;
   maxTokens?: number;
+  language?: "id" | "en";
 }
 
 export interface ChatResponse {
@@ -216,6 +218,7 @@ export type SSEEvent =
   | { type: "token"; data: { content: string } }
   | { type: "sources"; data: { sourceAttributions: SourceAttribution[] } }
   | { type: "metadata"; data: RetrievalMetadata & { tokenUsage: TokenUsage } }
+  | { type: "suggestions"; data: { suggestions: string[] } }
   | { type: "done"; data: Record<string, never> }
   | { type: "error"; data: { message: string } };
 
@@ -223,6 +226,7 @@ export interface ChatConfig {
   retrievalMode: "local" | "global" | "combined";
   topK?: number;
   maxTokens?: number;
+  language: "id" | "en";
 }
 
 // ─── Session Types ───────────────────────────────────────────────────────────

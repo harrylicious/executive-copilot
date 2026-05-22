@@ -90,6 +90,7 @@ Rules:
 - Maintain source attributions where applicable
 - Be concise and direct
 - Only use information from the provided intermediate answers
+- {language_instruction}
 
 Original query: {query}
 
@@ -102,6 +103,7 @@ Provide a synthesized answer:
 _CLARIFICATION_PROMPT = """\
 You are a helpful assistant. The user's query is too vague or ambiguous to \
 answer directly. Generate a clarifying question to help understand what they need.
+{language_instruction}
 
 Conversation history (if any):
 {history}
@@ -110,6 +112,11 @@ User query: {query}
 
 Generate a brief, helpful clarifying question:
 """
+
+_LANGUAGE_INSTRUCTIONS = {
+    "id": "You MUST respond in Bahasa Indonesia.",
+    "en": "You MUST respond in English.",
+}
 
 
 class AgentWorkflow:
@@ -127,9 +134,10 @@ class AgentWorkflow:
     MAX_STEPS: int = 5
     MAX_HISTORY_TURNS: int = 20
 
-    def __init__(self, llm: "BaseChatModel", rag_chain: "RAGChain") -> None:
+    def __init__(self, llm: "BaseChatModel", rag_chain: "RAGChain", language: str = "id") -> None:
         self.llm = llm
         self.rag_chain = rag_chain
+        self.language = language
         self._session_store: "SessionStore | None" = None
         self._graph = self.compile()
 
@@ -482,9 +490,14 @@ class AgentWorkflow:
             f"Sub-answer {i + 1}: {step}" for i, step in enumerate(intermediate_steps)
         )
 
+        language_instruction = _LANGUAGE_INSTRUCTIONS.get(
+            self.language, _LANGUAGE_INSTRUCTIONS["id"]
+        )
+
         prompt = _SYNTHESIS_PROMPT.format(
             query=state["query"],
             intermediate_answers=intermediate_text,
+            language_instruction=language_instruction,
         )
 
         try:
@@ -522,9 +535,14 @@ class AgentWorkflow:
         """Generate a clarifying question for the user."""
         history_text = self._format_history(state["conversation_history"])
 
+        language_instruction = _LANGUAGE_INSTRUCTIONS.get(
+            self.language, _LANGUAGE_INSTRUCTIONS["id"]
+        )
+
         prompt = _CLARIFICATION_PROMPT.format(
             history=history_text or "(no prior conversation)",
             query=state["query"],
+            language_instruction=language_instruction,
         )
 
         try:

@@ -1,11 +1,51 @@
 import { useState, useEffect, type FC, useRef, useCallback } from "react";
 import { useFiles } from "../../hooks/useFiles";
-import { uploadFile, revealFileInExplorer } from "../../api/client";
+import { uploadFile, revealFileInExplorer, createFolder } from "../../api/client";
 import TreeNode from "./TreeNode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FolderPlus } from "lucide-react";
 import type { TreeNode as TreeNodeType } from "../../types";
+import type { IconType } from "react-icons";
+import { FaFilePdf, FaFileWord, FaFileExcel, FaFileCsv, FaFileCode, FaFileAlt } from "react-icons/fa";
+import { detectFormat } from "../../utils/fileFormat";
+
+function getFileIcon(name: string): IconType {
+  const format = detectFormat(name);
+  switch (format) {
+    case "pdf":
+      return FaFilePdf;
+    case "docx":
+      return FaFileWord;
+    case "xlsx":
+      return FaFileExcel;
+    case "csv":
+      return FaFileCsv;
+    case "json":
+      return FaFileCode;
+    default:
+      return FaFileAlt;
+  }
+}
+
+function getFileColor(name: string): string {
+  const format = detectFormat(name);
+  switch (format) {
+    case "pdf":
+      return "text-red-500";
+    case "docx":
+      return "text-blue-500";
+    case "xlsx":
+      return "text-emerald-500";
+    case "csv":
+      return "text-green-500";
+    case "json":
+      return "text-amber-500";
+    default:
+      return "text-foreground";
+  }
+}
 
 const DEPARTMENTS: Record<string, string[]> = {
   demand_supply: ["demand_plans", "supply_plans", "deal_orders", "forecasts", "reference"],
@@ -30,6 +70,12 @@ interface FileExplorerProps {
 export const FileExplorer: FC<FileExplorerProps> = ({ onFileSelect }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("department");
   const { tree, treeLoading, treeError, files, filesLoading, filesError, refresh } = useFiles();
+
+  const [showNewFolder, setShowNewFolder] = useState(false);
+  const [newFolderDept, setNewFolderDept] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const [newFolderError, setNewFolderError] = useState<string | null>(null);
 
   const [showUpload, setShowUpload] = useState(false);
   const [uploadDept, setUploadDept] = useState("");
@@ -63,6 +109,26 @@ export const FileExplorer: FC<FileExplorerProps> = ({ onFileSelect }) => {
       });
     }
   }, []);
+
+  const handleCreateFolder = async () => {
+    if (!newFolderDept || !newFolderName.trim()) return;
+    setCreatingFolder(true);
+    setNewFolderError(null);
+    try {
+      const name = newFolderName.trim().replace(/\s+/g, "_").toLowerCase();
+      await createFolder(newFolderDept, name);
+      DEPARTMENTS[newFolderDept].push(name);
+      DEPARTMENTS[newFolderDept].sort();
+      setShowNewFolder(false);
+      setNewFolderDept("");
+      setNewFolderName("");
+      refresh();
+    } catch (err) {
+      setNewFolderError(err instanceof Error ? err.message : "Failed to create folder");
+    } finally {
+      setCreatingFolder(false);
+    }
+  };
 
   const handleUpload = async () => {
     if (!uploadFileState || !uploadDept || !uploadSub) return;
@@ -166,9 +232,11 @@ export const FileExplorer: FC<FileExplorerProps> = ({ onFileSelect }) => {
             }}
             className="flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded hover:bg-muted text-sm text-foreground transition-colors"
           >
-            <svg className="w-4 h-4 text-muted-foreground shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
+            {(() => {
+              const Icon = getFileIcon(file.name);
+              const color = getFileColor(file.name);
+              return <Icon className={`w-4 h-4 shrink-0 ${color}`} />;
+            })()}
             <div className="flex flex-col min-w-0">
               <span className="truncate">{file.name}</span>
               <span className="text-[11px] text-muted-foreground truncate">{file.department}</span>
@@ -188,17 +256,110 @@ export const FileExplorer: FC<FileExplorerProps> = ({ onFileSelect }) => {
         </ScrollArea>
       </div>
 
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-3 flex gap-2">
+        <Button
+          onClick={() => { setNewFolderDept(""); setNewFolderName(""); setNewFolderError(null); setShowNewFolder(true); }}
+          variant="secondary"
+          className="flex-1"
+          size="sm"
+        >
+          <FolderPlus className="size-4" />
+          New Folder
+        </Button>
         <Button
           onClick={() => setShowUpload(true)}
-          className="w-full"
+          className="flex-1"
+          size="sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Upload File
+          Upload
         </Button>
       </div>
+
+      {showNewFolder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => { if (!creatingFolder) setShowNewFolder(false); }}>
+          <div
+            className="bg-card border border-border rounded-xl shadow-2xl w-[400px] max-w-full mx-4 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">New Folder</h3>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => setShowNewFolder(false)}
+                disabled={creatingFolder}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </Button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1.5">Department</label>
+                <select
+                  value={newFolderDept}
+                  onChange={(e) => setNewFolderDept(e.target.value)}
+                  className="w-full bg-secondary border border-input rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-ring"
+                >
+                  <option value="">Select department...</option>
+                  {Object.keys(DEPARTMENTS).map((d) => (
+                    <option key={d} value={d}>{DEPARTMENT_LABELS[d] || d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1.5">Folder Name</label>
+                <Input
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleCreateFolder(); }}
+                  placeholder="e.g. monthly_reports"
+                  disabled={creatingFolder}
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">Spaces will be replaced with underscores</p>
+              </div>
+
+              {newFolderError && (
+                <div className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+                  {newFolderError}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 px-5 py-4 border-t border-border">
+              <Button
+                variant="secondary"
+                onClick={() => setShowNewFolder(false)}
+                disabled={creatingFolder}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateFolder}
+                disabled={!newFolderDept || !newFolderName.trim() || creatingFolder}
+              >
+                {creatingFolder ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Creating...
+                  </>
+                ) : (
+                  "Create"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => { if (!uploading) setShowUpload(false); }}>

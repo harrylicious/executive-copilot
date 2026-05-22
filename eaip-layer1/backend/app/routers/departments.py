@@ -1,9 +1,11 @@
 """Department router endpoint for listing departments with folder hierarchy."""
 
-from fastapi import APIRouter, Depends
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 from app.models.file import File
 from app.utils.department_config import DEPARTMENTS, DEPARTMENT_META, SENSITIVITY_MATRIX
@@ -21,6 +23,34 @@ class TreeNode(BaseModel):
     description: str | None = None
     outputs: list[str] | None = None
     sensitivity: str | None = None
+
+
+class CreateFolderRequest(BaseModel):
+    department: str
+    name: str
+
+
+@router.post("/folders", status_code=201)
+def create_folder(body: CreateFolderRequest):
+    if body.department not in DEPARTMENTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid department '{body.department}'. Valid: {', '.join(DEPARTMENTS.keys())}",
+        )
+
+    if body.name in DEPARTMENTS[body.department]:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Folder '{body.name}' already exists in department '{body.department}'",
+        )
+
+    folder_path = Path(settings.knowledge_base_path) / body.department / body.name
+    folder_path.mkdir(parents=True, exist_ok=True)
+
+    DEPARTMENTS[body.department].append(body.name)
+    DEPARTMENTS[body.department].sort()
+
+    return {"department": body.department, "name": body.name, "path": str(folder_path)}
 
 
 @router.get("", response_model=list[TreeNode])

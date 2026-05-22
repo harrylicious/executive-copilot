@@ -8,6 +8,7 @@ import JsonViewer from "./JsonViewer";
 import DocxViewer from "./DocxViewer";
 import MarkdownViewer from "./MarkdownViewer";
 import PlainTextViewer from "./PlainTextViewer";
+import CsvViewer from "./CsvViewer";
 import { FileText } from "lucide-react";
 
 interface FileViewerProps {
@@ -21,6 +22,7 @@ const VIEWER_MAP: Record<SupportedFormat, FC<{ fileId: number }>> = {
   docx: DocxViewer,
   md: MarkdownViewer,
   txt: PlainTextViewer,
+  csv: CsvViewer,
 };
 
 export const FileViewer: FC<FileViewerProps> = ({ file }) => {

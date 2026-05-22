@@ -27,6 +27,10 @@ describe("detectFormat", () => {
     expect(detectFormat("notes.txt")).toBe("txt");
   });
 
+  it("detects CSV format", () => {
+    expect(detectFormat("data.csv")).toBe("csv");
+  });
+
   it("returns null for unsupported formats", () => {
     expect(detectFormat("image.png")).toBeNull();
     expect(detectFormat("video.mp4")).toBeNull();
@@ -54,11 +58,11 @@ describe("isSupported", () => {
     expect(isSupported("file.docx")).toBe(true);
     expect(isSupported("file.md")).toBe(true);
     expect(isSupported("file.txt")).toBe(true);
+    expect(isSupported("file.csv")).toBe(true);
   });
 
   it("returns false for unsupported formats", () => {
     expect(isSupported("file.png")).toBe(false);
     expect(isSupported("file.exe")).toBe(false);
-    expect(isSupported("file.csv")).toBe(false);
   });
 });

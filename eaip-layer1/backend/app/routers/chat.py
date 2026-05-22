@@ -15,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 from typing import AsyncGenerator
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -28,6 +29,82 @@ from app.services.langchain.dependencies import get_service_container
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+_SUGGESTIONS_PROMPT_TEMPLATE = """\
+Based on the user's question and the assistant's answer below, generate exactly 3 \
+follow-up questions that the user might want to ask next. The questions should be:
+- Relevant to the topic and context of the conversation
+- Progressively deeper or exploring related aspects
+- Actionable and specific (not generic)
+
+{language_instruction}
+
+User question: {query}
+
+Assistant answer (summary): {answer_summary}
+
+Respond with ONLY a JSON array of 3 strings. Example: ["question 1", "question 2", "question 3"]
+"""
+
+_SUGGESTION_LANGUAGE_INSTRUCTIONS = {
+    "id": "Generate the follow-up questions in Bahasa Indonesia.",
+    "en": "Generate the follow-up questions in English.",
+}
+
+
+async def _generate_follow_up_suggestions(
+    container,
+    query: str,
+    answer: str,
+    language: str,
+) -> list[str]:
+    """Generate contextual follow-up question suggestions.
+
+    Uses the LLM to produce 3 relevant follow-up questions based on
+    the user's query and the assistant's answer.
+
+    Args:
+        container: The ServiceContainer with the LLM instance.
+        query: The original user query.
+        answer: The generated answer text.
+        language: Language code for the suggestions (id or en).
+
+    Returns:
+        List of 3 suggestion strings, or empty list on failure.
+    """
+    if not container.llm or not answer.strip():
+        return []
+
+    from langchain_core.messages import HumanMessage
+
+    language_instruction = _SUGGESTION_LANGUAGE_INSTRUCTIONS.get(
+        language, _SUGGESTION_LANGUAGE_INSTRUCTIONS["id"]
+    )
+
+    # Truncate answer to avoid token overflow
+    answer_summary = answer[:500] if len(answer) > 500 else answer
+
+    prompt = _SUGGESTIONS_PROMPT_TEMPLATE.format(
+        query=query,
+        answer_summary=answer_summary,
+        language_instruction=language_instruction,
+    )
+
+    try:
+        response = await container.llm.ainvoke([HumanMessage(content=prompt)])
+        content = response.content.strip()
+
+        # Parse JSON array from response (handle markdown code blocks)
+        json_match = re.search(r'\[.*\]', content, re.DOTALL)
+        if json_match:
+            suggestions = json.loads(json_match.group())
+            if isinstance(suggestions, list):
+                return [str(s) for s in suggestions[:3] if s]
+    except Exception:
+        logger.debug("Failed to parse follow-up suggestions", exc_info=True)
+
+    return []
 
 
 def _check_llm_available() -> None:
@@ -78,6 +155,7 @@ async def chat(body: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse
             retrieval_mode=body.retrieval_mode.value,
             top_k=body.top_k,
             max_tokens=body.max_tokens,
+            language=body.language.value,
         )
     except RuntimeError:
         raise HTTPException(
@@ -172,6 +250,7 @@ async def chat_stream(
             retrieval_mode=body.retrieval_mode.value,
             top_k=body.top_k,
             max_tokens=body.max_tokens,
+            language=body.language.value,
         )
     except RuntimeError:
         raise HTTPException(
@@ -211,6 +290,7 @@ async def chat_stream(
 
             # Stream tokens from the RAG chain
             token_count = 0
+            collected_answer = ""
             try:
                 async for token in rag_chain.astream(body.query):
                     # Check for client disconnection
@@ -219,6 +299,7 @@ async def chat_stream(
                         return
 
                     token_count += 1
+                    collected_answer += token
                     yield {
                         "event": "token",
                         "data": json.dumps({"content": token}),
@@ -252,6 +333,19 @@ async def chat_stream(
                 "event": "done",
                 "data": json.dumps({}),
             }
+
+            # Generate follow-up suggestions based on the answer
+            try:
+                suggestions = await _generate_follow_up_suggestions(
+                    container, body.query, collected_answer, body.language.value
+                )
+                if suggestions:
+                    yield {
+                        "event": "suggestions",
+                        "data": json.dumps({"suggestions": suggestions}),
+                    }
+            except Exception:
+                logger.debug("Failed to generate follow-up suggestions", exc_info=True)
 
         except asyncio.CancelledError:
             logger.info("Stream generation cancelled")

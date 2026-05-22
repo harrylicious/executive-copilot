@@ -61,7 +61,7 @@ class RetrievalService:
         self,
         query: str,
         top_k: int = 5,
-        min_score: float = 0.5,
+        min_score: float = 0.3,
         similarity_weight: float = 0.7,
     ) -> SearchResult:
         """Vector similarity search enriched with graph neighborhood.
@@ -556,7 +556,7 @@ class RetrievalService:
         max_tokens: int = 4000,
         top_k: int = 5,
         num_communities: int = 3,
-        min_score: float = 0.5,
+        min_score: float = 0.3,
         min_relevance: float = 0.1,
         similarity_weight: float = 0.7,
     ) -> SearchResult:
@@ -718,11 +718,6 @@ class RetrievalService:
                 total += count_tokens(chunk.get("text", ""))
             for summary in result.community_summaries:
                 total += count_tokens(summary.get("summary", ""))
-            for entity in result.entities:
-                total += count_tokens(entity.get("description", "") or "")
-                total += count_tokens(entity.get("name", "") or "")
-            for rel in result.relationships:
-                total += count_tokens(rel.get("description", "") or "")
             return total
 
         current_tokens = compute_result_tokens(results)

@@ -13,6 +13,7 @@ import {
   XCircle,
   Clock,
   Loader2,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
   { label: "Graph", path: "/graph", icon: Network },
   { label: "Playground", path: "/playground", icon: MessageSquare },
   { label: "Search", path: "/search", icon: Search },
+  { label: "Ingestion", path: "/ingestion", icon: Upload },
 ] as const;
 
 interface SidebarProps {

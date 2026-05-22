@@ -3,7 +3,7 @@ import { marked } from "marked";
 import { cn } from "@/lib/utils";
 import { SourceAttribution } from "./SourceAttribution";
 import { StreamingIndicator } from "./StreamingIndicator";
-import { User, Bot, AlertCircle } from "lucide-react";
+import { User, Bot, AlertCircle, Sparkles } from "lucide-react";
 import type { ChatMessage } from "@/types";
 
 // Configure marked for safe rendering
@@ -14,9 +14,10 @@ marked.setOptions({
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onSuggestionClick }: MessageBubbleProps) {
   const isUser = message.role === "user";
 
   const renderedContent = useMemo(() => {
@@ -85,6 +86,31 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                 {message.metadata.retrievalMode && (
                   <span className="capitalize">{message.metadata.retrievalMode}</span>
                 )}
+              </div>
+            )}
+
+            {/* Follow-up suggestions */}
+            {message.suggestions && message.suggestions.length > 0 && message.isComplete && (
+              <div className="pt-2 space-y-1.5">
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <Sparkles className="size-3" />
+                  <span>Follow-up questions</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {message.suggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => onSuggestionClick?.(suggestion)}
+                      className={cn(
+                        "text-left text-xs px-2.5 py-1.5 rounded-md border border-border",
+                        "text-muted-foreground hover:text-foreground hover:bg-muted hover:border-primary/30",
+                        "transition-colors"
+                      )}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>

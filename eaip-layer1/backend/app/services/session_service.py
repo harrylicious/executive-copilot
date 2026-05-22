@@ -93,7 +93,7 @@ def save_session(
                     error=msg.get("error"),
                     timestamp=msg["timestamp"],
                 )
-                db.add(record)
+                db.merge(record)
 
     db.commit()
     db.refresh(session)

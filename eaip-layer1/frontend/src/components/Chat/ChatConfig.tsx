@@ -34,6 +34,16 @@ export function ChatConfig({ config, onChange }: ChatConfigProps) {
     [config, onChange]
   );
 
+  const handleLanguageChange = useCallback(
+    (value: string) => {
+      onChange({
+        ...config,
+        language: value as ChatConfigType["language"],
+      });
+    },
+    [config, onChange]
+  );
+
   const handleTopKChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
@@ -66,15 +76,51 @@ export function ChatConfig({ config, onChange }: ChatConfigProps) {
 
   return (
     <div className="flex items-center gap-2">
+      {/* Language selector */}
+      <Select value={config.language} onValueChange={handleLanguageChange}>
+        <SelectTrigger className="w-[90px] h-7 text-xs">
+          <SelectValue placeholder="Lang" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="id">
+            <div className="flex flex-col">
+              <span>ID</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Indonesia</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="en">
+            <div className="flex flex-col">
+              <span>EN</span>
+              <span className="text-[10px] text-muted-foreground font-normal">English</span>
+            </div>
+          </SelectItem>
+        </SelectContent>
+      </Select>
+
       {/* Retrieval mode - always visible */}
       <Select value={config.retrievalMode} onValueChange={handleRetrievalModeChange}>
         <SelectTrigger className="w-[100px] h-7 text-xs">
           <SelectValue placeholder="Mode" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="local">Local</SelectItem>
-          <SelectItem value="global">Global</SelectItem>
-          <SelectItem value="combined">Combined</SelectItem>
+          <SelectItem value="local">
+            <div className="flex flex-col">
+              <span>Local</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Chunk similarity</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="global">
+            <div className="flex flex-col">
+              <span>Global</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Community summaries</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="combined">
+            <div className="flex flex-col">
+              <span>Combined</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Both local + global</span>
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
 

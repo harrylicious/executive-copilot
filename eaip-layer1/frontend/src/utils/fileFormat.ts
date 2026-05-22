@@ -8,6 +8,7 @@ const FORMAT_MAP: Record<string, SupportedFormat> = {
   ".docx": "docx",
   ".md": "md",
   ".txt": "txt",
+  ".csv": "csv",
 };
 
 export function detectFormat(filename: string): SupportedFormat | null {

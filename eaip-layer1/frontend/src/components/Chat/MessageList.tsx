@@ -5,9 +5,10 @@ import type { ChatMessage } from "@/types";
 
 interface MessageListProps {
   messages: ChatMessage[];
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, onSuggestionClick }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export function MessageList({ messages }: MessageListProps) {
     <ScrollArea className="h-full">
       <div className="max-w-3xl mx-auto flex flex-col gap-1 py-4 px-4">
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+          <MessageBubble key={message.id} message={message} onSuggestionClick={onSuggestionClick} />
         ))}
         <div ref={bottomRef} />
       </div>
