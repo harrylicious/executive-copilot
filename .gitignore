@@ -49,7 +49,7 @@ Desktop.ini
 # ========================
 # Database & Local Data
 # ========================
-# *.db
+*.db
 # *.sqlite3
 # chroma_db/
 # index_cache/
