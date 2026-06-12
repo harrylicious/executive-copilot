@@ -50,9 +50,9 @@ Desktop.ini
 # Database & Local Data
 # ========================
 *.db
-# *.sqlite3
-# chroma_db/
-# index_cache/
+*.sqlite3
+chroma_db/
+index_cache/
 
 # ========================
 # Build Artifacts & Caches
