@@ -62,7 +62,7 @@ export function FileViewer({ doc, onClose }: { doc: FileViewerDoc | null; onClos
   const iconColor = doc?.type === "pdf" ? "#f85149" : "#10b981";
 
   let viewer: React.ReactNode = null;
-  if (doc && fileId && format) {
+  if (doc && !isNaN(fileId) && fileId > 0 && format) {
     switch (format) {
       case "pdf": viewer = <PdfViewer fileId={fileId} />; break;
       case "xlsx": viewer = <ExcelViewer fileId={fileId} />; break;
@@ -73,6 +73,9 @@ export function FileViewer({ doc, onClose }: { doc: FileViewerDoc | null; onClos
       case "csv": viewer = <CsvViewer fileId={fileId} />; break;
       default: viewer = <ViewerFallback fileId={fileId} format={format} />;
     }
+  } else if (doc && !isNaN(fileId) && fileId > 0 && !format) {
+    // File name has no recognized extension — try generic fallback preview
+    viewer = <ViewerFallback fileId={fileId} format={ext || "unknown"} />;
   }
 
   if (!doc) return null;

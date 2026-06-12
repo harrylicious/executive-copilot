@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
-  Send, Paperclip, BarChart2, Table, AlignLeft, Copy, ThumbsUp,
+  Send, BarChart2, Table, AlignLeft, Copy, ThumbsUp,
   ThumbsDown, RefreshCw, Bot, ChevronDown, Sparkles, LayoutList, PanelLeft, Plus,
-  Loader2, FileText, AlertCircle, Eye, Type
+  Loader2, FileText, AlertCircle, Eye, Type, TrendingUp, CircleDot, X
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { marked } from "marked";
@@ -11,10 +11,18 @@ import type { UserProfile } from "./Sidebar";
 import type { ChatbotSettings } from "../App";
 import { FileViewer } from "./FileViewer";
 import { streamChat, type ChatStreamEvent } from "../../api/chat";
+import { transformContent, type TransformFormat } from "../../api/transform";
+import { submitFeedback, getSessionFeedback } from "../../api/feedback";
 import { getSession, saveSession } from "../../api/kb";
 import { SessionList } from "./SessionList";
 import { VisualizationTransform } from "./chatplayground/VisualizationTransform";
+import { TestedQuestionsBrowser } from "./TestedQuestionsBrowser";
 import { detectMarkdownTable, detectNumericData, detectList } from "../../utils/visualizationDetector";
+import {
+  ALL_TESTED_QUESTIONS,
+  GENERAL_SUGGESTIONS,
+  CROSS_DEPT_SUGGESTIONS as CROSS_DEPT_DATA,
+} from "../data/testedQuestions";
 
 // Configure marked
 marked.setOptions({ breaks: true, gfm: true });
@@ -25,6 +33,8 @@ interface Source {
   title: string;
   dept: string;
   page?: number;
+  fileId?: number;
+  chunkIndex?: number;
 }
 
 interface RetrievalMeta {
@@ -53,19 +63,6 @@ interface Message {
 }
 
 /* ---------- mock data ---------- */
-
-const SUGGESTIONS = [
-  "Apa performa penjualan bulan Juni 2024?",
-  "Bandingkan pendapatan Q1 vs Q2 2024",
-  "Siapa top 5 sales performer kuartal ini?",
-  "Berapa total anggaran operasional yang tersisa?",
-];
-
-const CROSS_DEPT_SUGGESTIONS = [
-  "Bagaimana status inventaris gudang?",
-  "Berapa total pengeluaran pajak tahun ini?",
-  "Tunjukkan data logistik pengiriman terbaru",
-];
 
 const MOCK_TABLE = [
   { region: "DKI Jakarta", jan: 1240, feb: 1380, mar: 1520, total: 4140 },
@@ -366,6 +363,13 @@ export function ChatPage({ user, chatbotSettings }: Props) {
   const [refreshKey, setRefreshKey] = useState(0);
   // Per-message view mode: "text" | "visual". Default to "visual" when structured data is detected.
   const [visualViewModes, setVisualViewModes] = useState<Record<string, "text" | "visual">>({});
+  // Feedback state: track which messages have been rated
+  const [feedbackMap, setFeedbackMap] = useState<Record<string, "like" | "dislike">>({});
+  // Tested questions browser modal
+  const [browserOpen, setBrowserOpen] = useState(false);
+  // Dislike modal state
+  const [dislikeModal, setDislikeModal] = useState<{ messageId: string } | null>(null);
+  const [dislikeReason, setDislikeReason] = useState("");
   // Local queue of message IDs pending persistence confirmation (Requirement 4.4)
   const pendingQueueRef = useRef<Set<string>>(new Set());
   // Track whether session has been created (first message persisted)
@@ -381,9 +385,9 @@ export function ChatPage({ user, chatbotSettings }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  /** Open the FileViewer for a source doc from the backend. We only know title + dept. */
+  /** Open the FileViewer for a source doc from the backend. */
   const handleSourceClick = (source: Source) => {
-    const sourceId = Date.now().toString();
+    const sourceId = source.fileId ? String(source.fileId) : Date.now().toString();
     setViewingSource({
       id: sourceId,
       name: source.title,
@@ -393,12 +397,189 @@ export function ChatPage({ user, chatbotSettings }: Props) {
       uploadedBy: "—",
       uploadedAt: "—",
       pages: source.page,
+      chunks: source.chunkIndex,
     });
   };
 
   /** Click a follow-up suggestion  */
   const handleSuggestionClick = (text: string) => {
     sendMessage(text);
+  };
+
+  /** Transform an assistant response into a different format (table, chart, etc.) */
+  const handleTransform = async (sourceMsg: Message, format: TransformFormat) => {
+    if (loading) return;
+
+    const transformLabel = format === "table" ? "📊 Tampilkan sebagai Tabel"
+      : format === "bar" ? "📊 Tampilkan sebagai Bar Chart"
+      : format === "line" ? "📈 Tampilkan sebagai Line Chart"
+      : format === "pie" ? "🥧 Tampilkan sebagai Pie Chart"
+      : "🍩 Tampilkan sebagai Donut Chart";
+
+    // Show a user message indicating the transform request
+    const userMsg: Message = { id: Date.now().toString(), role: "user", content: transformLabel, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
+    setLoading(true);
+
+    const assistantId = (Date.now() + 1).toString();
+
+    try {
+      const result = await transformContent({
+        content: sourceMsg.content,
+        format,
+        language: chatbotSettings.language,
+      });
+
+      const assistantMsg: Message = {
+        id: assistantId, role: "assistant", content: result.transformed,
+        timestamp: new Date(), isComplete: true, isStreaming: false,
+      };
+      setMessages(prev => [...prev, assistantMsg]);
+    } catch {
+      const errorMsg: Message = {
+        id: assistantId, role: "assistant",
+        content: "Gagal mengubah format. Silakan coba lagi.",
+        timestamp: new Date(), isComplete: true, isStreaming: false,
+        error: "Transform failed",
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    }
+
+    setMessages(prev => {
+      persistCurrentSession(prev);
+      return prev;
+    });
+    setLoading(false);
+  };
+
+  /** Handle like button click */
+  const handleLike = async (msgId: string) => {
+    setFeedbackMap(prev => ({ ...prev, [msgId]: "like" }));
+    try {
+      await submitFeedback({ message_id: msgId, session_id: sessionIdRef.current, rating: "like" });
+      toast.success("Terima kasih atas feedback Anda!");
+    } catch {
+      toast.error("Gagal menyimpan feedback");
+    }
+  };
+
+  /** Handle dislike button click — open modal for reason */
+  const handleDislike = (msgId: string) => {
+    setDislikeModal({ messageId: msgId });
+    setDislikeReason("");
+  };
+
+  /** Submit dislike with reason from modal */
+  const handleDislikeSubmit = async () => {
+    if (!dislikeModal) return;
+    const { messageId } = dislikeModal;
+    setFeedbackMap(prev => ({ ...prev, [messageId]: "dislike" }));
+    setDislikeModal(null);
+    try {
+      await submitFeedback({
+        message_id: messageId,
+        session_id: sessionIdRef.current,
+        rating: "dislike",
+        reason: dislikeReason.trim() || undefined,
+      });
+      toast.success("Feedback disimpan. Terima kasih!");
+    } catch {
+      toast.error("Gagal menyimpan feedback");
+    }
+    setDislikeReason("");
+  };
+
+  /** Regenerate an assistant response by re-sending the preceding user query */
+  const handleRegenerate = async (assistantMsgId: string) => {
+    if (loading) return;
+
+    // Find the index of this assistant message
+    const msgIndex = messages.findIndex(m => m.id === assistantMsgId);
+    if (msgIndex < 0) return;
+
+    // Find the preceding user message
+    let userQuery = "";
+    for (let i = msgIndex - 1; i >= 0; i--) {
+      if (messages[i].role === "user") {
+        userQuery = messages[i].content;
+        break;
+      }
+    }
+    if (!userQuery) return;
+
+    // Remove the old assistant message
+    setMessages(prev => prev.filter(m => m.id !== assistantMsgId));
+    setLoading(true);
+
+    // Create a new empty assistant message for streaming
+    const newAssistantId = Date.now().toString();
+    const emptyMsg: Message = {
+      id: newAssistantId, role: "assistant", content: "", timestamp: new Date(),
+      sources: [], suggestions: [], isStreaming: true, isComplete: false,
+    };
+    setMessages(prev => [...prev, emptyMsg]);
+
+    try {
+      await streamChat(
+        { query: userQuery, language: chatbotSettings.language },
+        (evt: ChatStreamEvent) => {
+          switch (evt.event) {
+            case "token":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? { ...m, content: m.content + (evt.data as { content: string }).content } : m
+              ));
+              break;
+            case "sources":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? {
+                  ...m,
+                  sources: (evt.data as { source_attributions: Array<{ file_id: number; file_name: string; department: string; chunk_index: number }> }).source_attributions.map(s => ({
+                    title: s.file_name, dept: s.department, fileId: s.file_id, chunkIndex: s.chunk_index,
+                  })),
+                } : m
+              ));
+              break;
+            case "metadata":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? {
+                  ...m,
+                  metadata: {
+                    queryTimeMs: (evt.data as Record<string, number>).query_time_ms ?? 0,
+                    documentsRetrieved: (evt.data as Record<string, number>).documents_retrieved ?? 0,
+                    retrievalMode: (evt.data as Record<string, string>).retrieval_mode ?? "",
+                  },
+                } : m
+              ));
+              break;
+            case "suggestions":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? { ...m, suggestions: (evt.data as { suggestions: string[] }).suggestions } : m
+              ));
+              break;
+            case "done":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? { ...m, isStreaming: false, isComplete: true } : m
+              ));
+              break;
+            case "error":
+              setMessages(prev => prev.map(m =>
+                m.id === newAssistantId ? { ...m, error: (evt.data as { message: string }).message, isStreaming: false } : m
+              ));
+              break;
+          }
+        }
+      );
+    } catch {
+      setMessages(prev => prev.map(m =>
+        m.id === newAssistantId ? { ...m, content: "Gagal membuat ulang jawaban. Silakan coba lagi.", error: "Regenerate failed", isStreaming: false, isComplete: true } : m
+      ));
+    }
+
+    setMessages(prev => {
+      persistCurrentSession(prev);
+      return prev;
+    });
+    setLoading(false);
   };
 
   const sendMessage = async (text: string) => {
@@ -487,8 +668,8 @@ export function ChatPage({ user, chatbotSettings }: Props) {
               setMessages(prev => prev.map(m =>
                 m.id === assistantId ? {
                   ...m,
-                  sources: (evt.data as { source_attributions: Array<{ file_name: string; department: string }> }).source_attributions.map(s => ({
-                    title: s.file_name, dept: s.department,
+                  sources: (evt.data as { source_attributions: Array<{ file_id: number; file_name: string; department: string; chunk_index: number }> }).source_attributions.map(s => ({
+                    title: s.file_name, dept: s.department, fileId: s.file_id, chunkIndex: s.chunk_index,
                   })),
                 } : m
               ));
@@ -641,6 +822,7 @@ export function ChatPage({ user, chatbotSettings }: Props) {
     sessionCreatedRef.current = false;
     pendingQueueRef.current.clear();
     setMessages([]);
+    setFeedbackMap({});
     setRefreshKey((k) => k + 1);
   };
 
@@ -657,7 +839,7 @@ export function ChatPage({ user, chatbotSettings }: Props) {
         content: record.content,
         timestamp: new Date(record.timestamp),
         sources: record.sources
-          ? record.sources.map((s) => ({ title: s.fileName, dept: s.department, page: s.chunkIndex }))
+          ? record.sources.map((s) => ({ title: s.fileName, dept: s.department, page: s.chunkIndex, fileId: s.fileId, chunkIndex: s.chunkIndex }))
           : undefined,
         metadata: record.metadataJson ?? undefined,
         error: record.error ?? undefined,
@@ -665,10 +847,28 @@ export function ChatPage({ user, chatbotSettings }: Props) {
         isStreaming: false,
       }));
       setMessages(loaded);
+
+      // Load feedback history for this session
+      try {
+        const feedbacks = await getSessionFeedback(session.id);
+        const map: Record<string, "like" | "dislike"> = {};
+        for (const fb of feedbacks) {
+          map[fb.message_id] = fb.rating;
+        }
+        setFeedbackMap(map);
+      } catch {
+        // Non-critical: feedback display is optional
+        setFeedbackMap({});
+      }
     } catch (err) {
       console.error("Failed to load session:", err);
     }
   };
+
+  // Computed: which tested questions to show in the welcome screen based on role
+  const displayQuestions = user.role === "executive" || user.role === "admin"
+    ? ALL_TESTED_QUESTIONS
+    : [...GENERAL_SUGGESTIONS.slice(0, 6), ...CROSS_DEPT_DATA.slice(0, 4)];
 
   return (
     <div className="flex h-screen">
@@ -703,6 +903,15 @@ export function ChatPage({ user, chatbotSettings }: Props) {
           <h2 className="text-foreground text-sm font-medium">JB Copilot</h2>
           <p className="text-muted-foreground text-xs">Tanyakan apa saja tentang data perusahaan</p>
         </div>
+        <div className="flex items-center gap-1.5 ml-2">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted border border-border text-[11px] text-muted-foreground">
+            <Type size={10} />
+            {chatbotSettings.nuance.charAt(0).toUpperCase() + chatbotSettings.nuance.slice(1)}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted border border-border text-[11px] text-muted-foreground">
+            {chatbotSettings.language === "id" ? "🇮🇩 Indonesia" : "🇬🇧 English"}
+          </span>
+        </div>
         {(user.role === "executive" || user.role === "admin") && (
           <div className="ml-auto flex items-center gap-2">
             <span className="text-muted-foreground text-xs">Cakupan:</span>
@@ -730,11 +939,11 @@ export function ChatPage({ user, chatbotSettings }: Props) {
               {user.role === "executive" || user.role === "admin" ? "seluruh departemen" : `${user.department}`}{" "}
               dan memberikan jawaban dengan referensi sumber.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
-              {(user.role === "executive" || user.role === "admin" ? SUGGESTIONS : [...SUGGESTIONS.slice(0, 2), ...CROSS_DEPT_SUGGESTIONS.slice(0, 2)]).map(s => (
-                <button key={s} onClick={() => sendMessage(s)}
-                  className="text-left px-4 py-3 bg-card border border-border hover:border-border rounded-xl text-secondary-foreground text-sm transition-all">
-                  {s}
+            <div className="w-full max-w-xl max-h-[320px] overflow-y-auto space-y-1.5 custom-scrollbar">
+              {displayQuestions.map(q => (
+                <button key={q.id} onClick={() => sendMessage(q.question)}
+                  className="w-full text-left px-4 py-2.5 bg-card border border-border hover:border-primary/40 rounded-xl text-secondary-foreground text-sm transition-all">
+                  {q.question}
                 </button>
               ))}
             </div>
@@ -856,9 +1065,34 @@ export function ChatPage({ user, chatbotSettings }: Props) {
                   )}
                   <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border">
                     <button className="text-muted-foreground hover:text-secondary-foreground p-1 rounded"><Copy size={12} /></button>
-                    <button className="text-muted-foreground hover:text-[#10b981] p-1 rounded"><ThumbsUp size={12} /></button>
-                    <button className="text-muted-foreground hover:text-[#f85149] p-1 rounded"><ThumbsDown size={12} /></button>
-                    <button className="text-muted-foreground hover:text-secondary-foreground p-1 rounded ml-auto"><RefreshCw size={12} /></button>
+                    <button
+                      onClick={() => handleLike(msg.id)}
+                      className={`p-1 rounded transition-colors ${feedbackMap[msg.id] === "like" ? "text-[#10b981]" : "text-muted-foreground hover:text-[#10b981]"}`}
+                      title="Suka"
+                    >
+                      <ThumbsUp size={12} />
+                    </button>
+                    <button
+                      onClick={() => handleDislike(msg.id)}
+                      className={`p-1 rounded transition-colors ${feedbackMap[msg.id] === "dislike" ? "text-[#f85149]" : "text-muted-foreground hover:text-[#f85149]"}`}
+                      title="Tidak suka"
+                    >
+                      <ThumbsDown size={12} />
+                    </button>
+                    {msg.isComplete && !msg.blocked && !msg.error && (
+                      <div className="flex items-center gap-0.5 mx-1 pl-2 border-l border-border">
+                        <button onClick={() => handleTransform(msg, "table")} disabled={loading} title="Ubah ke Tabel"
+                          className="text-muted-foreground hover:text-[#10b981] disabled:opacity-40 p-1 rounded transition-colors"><Table size={12} /></button>
+                        <button onClick={() => handleTransform(msg, "bar")} disabled={loading} title="Ubah ke Bar Chart"
+                          className="text-muted-foreground hover:text-[#10b981] disabled:opacity-40 p-1 rounded transition-colors"><BarChart2 size={12} /></button>
+                        <button onClick={() => handleTransform(msg, "line")} disabled={loading} title="Ubah ke Line Chart"
+                          className="text-muted-foreground hover:text-[#10b981] disabled:opacity-40 p-1 rounded transition-colors"><TrendingUp size={12} /></button>
+                        <button onClick={() => handleTransform(msg, "pie")} disabled={loading} title="Ubah ke Pie Chart"
+                          className="text-muted-foreground hover:text-[#10b981] disabled:opacity-40 p-1 rounded transition-colors"><CircleDot size={12} /></button>
+                      </div>
+                    )}
+                    <button onClick={() => handleRegenerate(msg.id)} disabled={loading} title="Buat ulang jawaban"
+                      className="text-muted-foreground hover:text-secondary-foreground disabled:opacity-40 p-1 rounded ml-auto transition-colors"><RefreshCw size={12} /></button>
                     <span className="text-muted-foreground text-[10px]">
                       {msg.timestamp.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
                     </span>
@@ -891,7 +1125,13 @@ export function ChatPage({ user, chatbotSettings }: Props) {
       {/* Input */}
       <div className="px-6 py-4 border-t border-border shrink-0">
         <div className="flex items-end gap-2 bg-card border border-border rounded-2xl px-4 py-3 focus-within:border-[rgba(5,150,105,0.4)] transition-colors">
-          <button className="text-muted-foreground hover:text-secondary-foreground shrink-0 mb-0.5"><Paperclip size={16} /></button>
+          <button
+            onClick={() => setBrowserOpen(true)}
+            className="text-muted-foreground hover:text-[#10b981] shrink-0 mb-0.5 transition-colors"
+            title="Lihat tested questions"
+          >
+            <Sparkles size={16} />
+          </button>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -912,6 +1152,58 @@ export function ChatPage({ user, chatbotSettings }: Props) {
       </div>
       </div>
       <FileViewer doc={viewingSource} onClose={() => setViewingSource(null)} />
+
+      {/* Tested Questions Browser */}
+      <TestedQuestionsBrowser
+        open={browserOpen}
+        onClose={() => setBrowserOpen(false)}
+        onSelectQuestion={sendMessage}
+      />
+
+      {/* Dislike Reason Modal */}
+      {dislikeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setDislikeModal(null)}>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center gap-2">
+                <ThumbsDown size={16} className="text-[#f85149]" />
+                <h3 className="text-foreground text-sm font-medium">Berikan Alasan</h3>
+              </div>
+              <button onClick={() => setDislikeModal(null)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-secondary transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <p className="text-muted-foreground text-xs">Mengapa jawaban ini kurang memuaskan? (opsional)</p>
+              <div className="flex flex-wrap gap-2">
+                {["Jawaban tidak akurat", "Tidak relevan", "Terlalu panjang", "Terlalu pendek", "Data salah"].map(preset => (
+                  <button key={preset} onClick={() => setDislikeReason(preset)}
+                    className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${dislikeReason === preset ? "border-[#f85149] bg-[rgba(248,81,73,0.1)] text-[#f85149]" : "border-border text-muted-foreground hover:border-[#f85149]/40"}`}>
+                    {preset}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={dislikeReason}
+                onChange={e => setDislikeReason(e.target.value)}
+                placeholder="Tulis alasan lainnya..."
+                rows={3}
+                className="w-full bg-input border border-border rounded-xl px-3 py-2 text-sm text-secondary-foreground placeholder-muted-foreground resize-none focus:outline-none focus:border-[#f85149]/50"
+              />
+            </div>
+            <div className="flex justify-end gap-2 px-4 py-3 border-t border-border">
+              <button onClick={() => setDislikeModal(null)}
+                className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors">
+                Batal
+              </button>
+              <button onClick={handleDislikeSubmit}
+                className="px-3 py-1.5 text-xs bg-[#f85149] hover:bg-[#da3633] text-white rounded-lg transition-colors">
+                Kirim Feedback
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

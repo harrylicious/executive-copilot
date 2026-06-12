@@ -266,7 +266,8 @@ class RetrievalService:
             r for r in results if r.get("score", 0.0) >= effective_min_score
         ]
 
-        # Limit to top_k
+        # Limit to top_k (router already optimizes retrieval amounts based
+        # on query type; top_k here acts as final output cap)
         filtered_results = filtered_results[:top_k]
 
         # Map results to the expected chunk format

@@ -24,6 +24,7 @@ from app.models import (  # noqa: F401 - register models
     FileRelationship,
     User,
     UserSettings,
+    ChatFeedback,
 )
 from app.utils.department_config import initialize_knowledge_base
 
@@ -347,6 +348,20 @@ except ImportError:
     pass  # chat router not yet implemented
 
 try:
+    from app.routers.transform import router as transform_router
+
+    app.include_router(transform_router, prefix="/api")
+except ImportError:
+    pass  # transform router not yet implemented
+
+try:
+    from app.routers.feedback import router as feedback_router
+
+    app.include_router(feedback_router, prefix="/api")
+except ImportError:
+    pass  # feedback router not yet implemented
+
+try:
     from app.routers.sessions import router as sessions_router
 
     app.include_router(sessions_router, prefix="/api")
@@ -387,3 +402,10 @@ try:
     app.include_router(settings_router, prefix="/api")
 except ImportError:
     pass  # settings router not yet implemented
+
+try:
+    from app.routers.auth import router as auth_router
+
+    app.include_router(auth_router, prefix="/api")
+except ImportError:
+    pass  # auth router not yet implemented

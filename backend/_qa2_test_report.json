@@ -1,0 +1,336 @@
+{
+  "summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "errors": 0,
+    "pass_rate": "100.0%"
+  },
+  "results": [
+    {
+      "id": 18,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "760",
+        "outlet"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 5.06,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah total outlet yang ada di master data adalah 760 outlet."
+    },
+    {
+      "id": 19,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "45",
+        "produk"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.0,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Total jumlah produk yang ada di master data barang adalah 45 produk."
+    },
+    {
+      "id": 20,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "Groceries Store",
+        "349"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.0,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Tipe outlet yang paling banyak dalam master data adalah Groceries Store, dengan total sebanyak 349 outlet."
+    },
+    {
+      "id": 21,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "Mataram",
+        "79"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 20.37,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Area yang memiliki jumlah outlet terbanyak adalah Mataram, dengan total 79 outlet. Berikut adalah jumlah outlet di beberapa area lainnya:\n\n- Cakranegara: 69 outlet\n- Praya: 66 outlet\n- Selaparang: 54 outlet\n- Ampenan: 46 outlet\n- Sandubaya: 40 outlet\n- Gunung Sari: 36 outlet\n- Kediri: 29 outlet\n- Ge"
+    },
+    {
+      "id": 22,
+      "status": "PASS",
+      "match_ratio": 0.5,
+      "matched_keywords": [
+        "Wholesale",
+        "90"
+      ],
+      "missed_keywords": [
+        "65",
+        "24"
+      ],
+      "elapsed_s": 6.19,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah outlet bertipe Wholesale (semua varian) dalam master data adalah 90 outlet."
+    },
+    {
+      "id": 23,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "11",
+        "PD-0109"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.2,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah produk yang disupply oleh vendor PD-0109 (SARI AGROTAMA PERSADA D) adalah 11 produk."
+    },
+    {
+      "id": 24,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "34",
+        "PD-0110"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.64,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah produk yang disupply oleh vendor PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT) adalah 34 produk."
+    },
+    {
+      "id": 25,
+      "status": "PASS",
+      "match_ratio": 0.6666666666666666,
+      "matched_keywords": [
+        "Sania Botol 1l",
+        "Blue Band C&C Sachet"
+      ],
+      "missed_keywords": [
+        "Minyak Samin Cap Onta 200g"
+      ],
+      "elapsed_s": 8.95,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Produk yang harga jualnya berada di antara Rp 10.000 dan Rp 50.000 adalah sebagai berikut:\n\n1. Sania Botol 1l - Rp 24.009,33\n2. Sania Pouch 1l - Rp 22.566,33\n3. Sania Botol 2l - Rp 46.842\n4. Sania Pouch 2l - Rp 44.400\n5. Sania Botol 500c - Rp 13.120,21\n6. Mahkota 900c - Rp 19.369,50\n7. Sania Pouch 8"
+    },
+    {
+      "id": 26,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "BOX",
+        "PACK",
+        "Blue Band Rice Mix",
+        "Blue Band Kuliner"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 5.98,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Produk dengan satuan tengah (SatT) yang bukan CS adalah sebagai berikut:\n\n1. **Blue Band Rice Mix Barbeque 45g** - Satuan: BOX\n2. **Blue Band Rice Mix Ayam 45g** - Satuan: BOX\n3. **Blue Band Kuliner Ayam Bawang 40g** - Satuan: PACK\n4. **Blue Band Kuliner Sapi BBQ 40g** - Satuan: PACK\n\nData ini menun"
+    },
+    {
+      "id": 27,
+      "status": "PASS",
+      "match_ratio": 0.5,
+      "matched_keywords": [
+        "Sandubaya"
+      ],
+      "missed_keywords": [
+        "40"
+      ],
+      "elapsed_s": 4.13,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah outlet di area Sandubaya adalah 113 outlet."
+    },
+    {
+      "id": 28,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "15.52",
+        "Fortune Margarine",
+        "Blue Band Pastry Fat"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 9.59,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Produk yang memiliki berat di atas 10 kg adalah sebagai berikut:\n\n1. Fortune Margarine 15k - Berat: 15.2 kg\n2. Blue Band Pastry Fat 15k - Berat: 15.52 kg\n3. Frytol Minyak Goreng Padat 15k - Berat: 15.52 kg\n4. Blue Band Gold Margarine 15k - Berat: 15.52 kg\n5. Blue Band Mst Cake Marg Box 15k - Berat: "
+    },
+    {
+      "id": 29,
+      "status": "PASS",
+      "match_ratio": 0.75,
+      "matched_keywords": [
+        "Minimarket Local",
+        "Mataram",
+        "DEWA PUTU"
+      ],
+      "missed_keywords": [
+        "EDELWEIS"
+      ],
+      "elapsed_s": 6.93,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Outlet yang bertipe Minimarket Local di area Mataram adalah sebagai berikut:\n\n1. INDOMARCO PRISMATAMA PT\n   - Alamat: JL LINGKAR SELATAN\n   - Custcode: JBD10825\n\n2. NI WAYAN DESI ARISANTI\n   - Alamat: JL GAJAH MADA NO II PAGESANGAN\n   - Custcode: JBD0459\n\n3. DEWA PUTU MEKI SURYANA\n   - Alamat: JL.SR"
+    },
+    {
+      "id": 30,
+      "status": "PASS",
+      "match_ratio": 0.5,
+      "matched_keywords": [
+        "Fortune Margarine",
+        "Blue Band Pastry Fat"
+      ],
+      "missed_keywords": [
+        "182680",
+        "683871"
+      ],
+      "elapsed_s": 22.57,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Dari semua produk berukuran 15k, produk yang paling murah adalah **Fortune Margarine 15k** dengan harga Rp 182.680,77. Sementara itu, produk yang paling mahal adalah **Blue Band Pastry Fat 15k** dengan harga Rp 683.871. Produk-produk lainnya dalam kategori ini termasuk Frytol Minyak Goreng Padat, Bl"
+    },
+    {
+      "id": 31,
+      "status": "PASS",
+      "match_ratio": 0.75,
+      "matched_keywords": [
+        "Sania Pouch 1l",
+        "Sania Botol 1l",
+        "1.01"
+      ],
+      "missed_keywords": [
+        "1.00"
+      ],
+      "elapsed_s": 33.16,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Sania Pouch 1l memiliki berat 1 kg, sedangkan Sania Botol 1l memiliki berat 1.01 kg. Dengan demikian, Sania Pouch 1l lebih ringan dibandingkan Sania Botol 1l. Perbedaan antara keduanya terletak pada bentuk kemasan, di mana Sania Pouch memiliki kemasan yang lebih fleksibel, sedangkan Sania Botol memi"
+    },
+    {
+      "id": 32,
+      "status": "PASS",
+      "match_ratio": 0.5,
+      "matched_keywords": [
+        "Sania Botol 500c"
+      ],
+      "missed_keywords": [
+        "13120"
+      ],
+      "elapsed_s": 4.38,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Produk Sania yang paling murah harga jualnya adalah Sania Botol 500c dengan harga Rp 13.120,21."
+    },
+    {
+      "id": 33,
+      "status": "PASS",
+      "match_ratio": 0.6,
+      "matched_keywords": [
+        "6s",
+        "12s",
+        "lebih murah"
+      ],
+      "missed_keywords": [
+        "2424",
+        "4238"
+      ],
+      "elapsed_s": 13.89,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Untuk membandingkan harga per unit antara Blue Band Rice Mix Chicken 6s 45g dan Blue Band Rice Mix Chicken Box 12s 45g, kita dapat menggunakan informasi berikut:\n\n1. Harga Blue Band Rice Mix Chicken 6s 45g adalah Rp 24.240.\n2. Harga Blue Band Rice Mix Chicken Box 12s 45g adalah Rp 33.905,71.\n\nNamun,"
+    },
+    {
+      "id": 34,
+      "status": "PASS",
+      "match_ratio": 0.6666666666666666,
+      "matched_keywords": [
+        "501.970",
+        "CS"
+      ],
+      "missed_keywords": [
+        "501970"
+      ],
+      "elapsed_s": 13.57,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Harga per EA untuk Blue Band Mst Cake Marg Box 15k adalah Rp 501.970, dan jumlah satuan dalam satu CS untuk produk tersebut adalah 1. Dengan demikian, harga per EA sama dengan harga per CS."
+    },
+    {
+      "id": 35,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "556.211",
+        "1.112.423"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 18.77,
+      "docs_retrieved": 47,
+      "response_type": "answer",
+      "answer_preview": "Total harga untuk membeli 2 CS Blue Band Gold Margarine adalah Rp 1.112.423,84. Harga satu CS adalah Rp 556.211,92, sehingga untuk 2 CS menjadi 2 x Rp 556.211,92 = Rp 1.112.423,84."
+    },
+    {
+      "id": 36,
+      "status": "PASS",
+      "match_ratio": 0.75,
+      "matched_keywords": [
+        "False",
+        "PD-0109",
+        "SARI AGROTAMA"
+      ],
+      "missed_keywords": [
+        "tidak blocked"
+      ],
+      "elapsed_s": 4.64,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Vendor yang menyuplai Fortune Margarine 15k adalah SARI AGROTAMA PERSADA D (kode PD-0109) dan statusnya tidak diblokir (blocked: False)."
+    },
+    {
+      "id": 37,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "2",
+        "PD-0109",
+        "PD-0110"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.86,
+      "docs_retrieved": 50,
+      "response_type": "answer",
+      "answer_preview": "Jumlah vendor yang terdaftar di master data supplier adalah 2, yaitu:\n1. PD-0109: SARI AGROTAMA PERSADA D\n2. PD-0110: UPFIELD DISTRIBUTION INDONESIA PT"
+    },
+    {
+      "id": 38,
+      "status": "PASS",
+      "match_ratio": 1.0,
+      "matched_keywords": [
+        "tidak tersedia",
+        "tidak ada",
+        "harga beli",
+        "HPP"
+      ],
+      "missed_keywords": [],
+      "elapsed_s": 4.47,
+      "docs_retrieved": 22,
+      "response_type": "answer",
+      "answer_preview": "Data harga beli (HPP) untuk produk Blue Band Serbaguna 1k tidak tersedia dalam dokumen yang ada. Field yang diminta tidak ada."
+    }
+  ]
+}

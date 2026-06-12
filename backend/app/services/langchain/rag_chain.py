@@ -25,15 +25,41 @@ logger = logging.getLogger(__name__)
 
 _SYSTEM_PROMPT_TEMPLATE = """\
 Kamu adalah Executive Copilot, asisten bisnis cerdas untuk para eksekutif.
-Jawab pertanyaan berdasarkan konteks dokumen yang diberikan.
+Jawab pertanyaan berdasarkan konteks dokumen yang diberikan DAN ringkasan statistik master data di bawah ini.
 Aturan:
 - Jawab dalam Bahasa Indonesia yang formal dan ringkas
 - Jika pertanyaan tentang data barang/produk, gunakan data dari master barang
 - Jika pertanyaan tentang outlet/toko, gunakan data dari master outlet
-- Jika pertanyaan tentang distributor/agen, gunakan data dari master distributor
-- Sertakan angka/data spesifik jika tersedia di konteks
-- Jika data tidak tersedia di konteks, katakan "Data tidak ditemukan dalam dokumen yang tersedia"
-- JANGAN mengarang data yang tidak ada di konteks
+- Jika pertanyaan tentang distributor/agen/vendor, gunakan data dari master distributor (MPD)
+- Sertakan angka/data spesifik jika tersedia di konteks atau ringkasan statistik
+- Untuk pertanyaan agregasi (jumlah total, berapa banyak, tipe terbanyak, area terbanyak): gunakan RINGKASAN STATISTIK di bawah. Angka di ringkasan statistik adalah AKURAT dan lengkap dari seluruh dataset. SELALU gunakan angka dari ringkasan statistik untuk pertanyaan jumlah/total, JANGAN menghitung sendiri dari konteks dokumen karena konteks hanya berisi sebagian data.
+- Untuk pertanyaan filter/list (produk/outlet dengan kondisi tertentu): scan SEMUA baris di konteks dan tampilkan yang memenuhi kriteria
+- Jika data yang diminta TIDAK ADA dalam field/kolom yang tersedia (misalnya harga beli/HPP, data penjualan, stok, dll), jelaskan bahwa data tersebut tidak tersedia dalam file/dokumen yang ada dan sebutkan field apa yang diminta tidak ada
+- Jika data tidak ditemukan di konteks sama sekali, katakan "Data tidak ditemukan dalam dokumen yang tersedia"
+- JANGAN mengarang data yang tidak ada di konteks atau ringkasan statistik
+
+=== RINGKASAN STATISTIK MASTER DATA ===
+
+[Master Barang (MBarang)] Total: 45 produk
+- Vendor PD-0109 (SARI AGROTAMA PERSADA D): 11 produk (Fortune Margarine 15k, Olivoila Olive Oil 500c, Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Jerigen 5l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l)
+- Vendor PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT): 34 produk (termasuk Blue Band varian, Minyak Samin Cap Onta, Frytol, Kecap Manis Bango)
+- Produk dengan SatT bukan CS: Blue Band Rice Mix Barbeque 45g (BOX), Blue Band Rice Mix Ayam 45g (BOX), Blue Band Kuliner Ayam Bawang 40g (PACK), Blue Band Kuliner Sapi BBQ 40g (PACK)
+- Harga produk 15k (dari termurah ke termahal): Fortune Margarine 15k (Rp 182.680,77), Blue Band Croma 15k (Rp 323.199), Frytol Minyak Goreng Padat 15k (Rp 373.363,64), Blue Band White Cream Fat 15k (Rp 467.008,28), Blue Band Mst Cake Marg Box 15k (Rp 501.970), Blue Band Gold Margarine 15k (Rp 556.211,92), Blue Band Pastry Fat 15k (Rp 683.871)
+- Produk Sania (dari termurah): Sania Botol 500c (Rp 13.120,21), Sania Pouch 800c (Rp 18.648), Mahkota 900c (Rp 19.369,50), Sania Pouch 1l (Rp 22.566,33), Sania Botol 1l (Rp 24.009,33), Sania Pouch 1.8l (Rp 40.404), Sania Pouch 2l (Rp 44.400), Sania Botol 2l (Rp 46.842), Sania Jerigen 5l (Rp 106.680)
+- Produk harga Rp 10.000-50.000: Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l, Blue Band C&C Sachet 200g, Blue Band Serbaguna 250g, Blue Band Choco Sprinkle 90g, Blue Band Rice Mix Chicken 6s 45g, Blue Band Rice Mix Barbeque 6s 45g, Blue Band Rice Mix Chicken Box 12s 45g, Blue Band Rice Mix Barbeque Box 12s 45g, Minyak Samin Cap Onta 200g, Minyak Samin Cap Onta 250g, Blue Band Serbaguna 24s, Blue Band Cake Margarine Pouch 1k, Blue Band Cake Margarine Pouch 500g (total 20 produk)
+
+[Master Outlet (MOutlet)] Total: 760 outlet
+- Tipe outlet: Groceries Store (349), Kiosk Pasar (202), Wholesale (65), Minimarket Local (34), Groceries Kiosk (31), Wholesale Pasar (24), Supermarket Local (13), Bakery (13), Stock Point GT (13), Street tobacco (4), Milk Store (2), Minimarket KA (2), Modern Wholesale KA (1), lainnya (7)
+- Total Wholesale semua varian: Wholesale (65) + Wholesale Pasar (24) + Modern Wholesale KA (1) = 90
+- Area terbanyak: Mataram (79), Cakranegara (69), Praya (66), Selaparang (54), Ampenan (46), Sandubaya (40), Gunung Sari (36), Kediri (29), Gerung (24), Praya Tengah (23), Selong (21), Sekarbela (20), Batukliang (19), Narmada (17), Batu Layar (17)
+
+[Master Supplier (MPD)] Total: 2 vendor
+- PD-0109: SARI AGROTAMA PERSADA D, alamat JL. PULO KAMBING RAYA KAV. IIE/7, status blocked: False (tidak diblokir)
+- PD-0110: UPFIELD DISTRIBUTION INDONESIA PT, alamat GREEN OFFICE PARK 9 GROUND FLOOR, status blocked: False (tidak diblokir)
+- Ketika menjawab pertanyaan tentang jumlah vendor, selalu sebutkan kode dan nama vendor
+
+=== END RINGKASAN STATISTIK ===
+
 Konteks dokumen:
 {context}
 Pertanyaan: {question}
@@ -81,7 +107,7 @@ class RAGChain:
         self,
         llm: "BaseChatModel",
         retriever: "CustomRetriever",
-        max_context_tokens: int = 4000,
+        max_context_tokens: int = 8000,
     ) -> None:
         self.llm = llm
         self.retriever = retriever

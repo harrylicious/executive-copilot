@@ -48,19 +48,28 @@ Classify the user's query into exactly one of these categories:
 
 1. "simple_retrieval" - The query can be answered with a single retrieval from \
 the knowledge base. Examples: factual questions, lookups, comparisons, filtering, \
-min/max questions, price questions, product attribute lookups, vendor queries.
+min/max questions, price questions, product attribute lookups, vendor queries, \
+listing products meeting a criteria (e.g., price range, weight, unit type), \
+counting items in a category.
 
 2. "multi_step" - The query requires breaking down into multiple sub-questions \
-or reasoning steps. Examples: calculations requiring multiple data points, questions \
-that combine information from different data sheets (e.g., vendor name + product list).
+or reasoning steps that COMBINE different types of data. Examples: calculations \
+requiring multiple data points from different sheets, questions that need vendor \
+info AND product list together, comparing unit prices across products.
 
 3. "clarification" - ONLY use this if the query is truly unrelated to the knowledge \
 base content (not about products, outlets, or vendors) AND is too vague to interpret. \
 NEVER classify product/business data questions as clarification - always try \
 simple_retrieval or multi_step first.
 
-IMPORTANT: Questions about "produk termahal", "produk termurah", "harga jual paling mahal/murah", \
-"list produk vendor X", "satuan produk Y" are ALWAYS simple_retrieval or multi_step, NEVER clarification.
+IMPORTANT RULES:
+- Questions asking "apa saja produk yang..." (what products...), "list/daftar produk...", \
+"produk mana yang..." (which products...) → ALWAYS simple_retrieval
+- Questions about "produk termahal", "produk termurah", "harga jual paling mahal/murah" → simple_retrieval
+- Questions about "berapa jumlah", "berapa banyak", "total" → simple_retrieval
+- Questions about filtering (harga di antara X dan Y, berat di atas X) → simple_retrieval
+- Questions asking "satuan produk Y" or product attributes → simple_retrieval
+- Only use multi_step when the query genuinely requires COMBINING data from different sheets
 
 Conversation history (if any):
 {history}

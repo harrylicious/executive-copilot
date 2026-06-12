@@ -93,7 +93,7 @@ class TestDetectIntent:
         assert filter_ == "distributor"
 
     def test_detects_dist_keyword(self, router):
-        mode, filter_ = router._detect_intent("data dist area jawa")
+        mode, filter_ = router._detect_intent("data dist baru")
         assert mode == "master_first"
         assert filter_ == "distributor"
 
@@ -102,9 +102,9 @@ class TestDetectIntent:
         assert mode == "master_first"
         assert filter_ == "distributor"
 
-    def test_no_match_returns_dept_only(self, router):
-        mode, filter_ = router._detect_intent("laporan penjualan bulan ini")
-        assert mode == "dept_only"
+    def test_no_match_returns_master_first_none(self, router):
+        mode, filter_ = router._detect_intent("laporan bulan ini")
+        assert mode == "master_first"
         assert filter_ is None
 
     def test_case_insensitive(self, router):
@@ -136,41 +136,39 @@ class TestRoute:
         decision = router.route("harga barang ABC")
         assert decision.mode == "master_first"
         assert decision.filename_filter == "barang"
-        assert decision.master_top_k == 8
+        assert decision.master_top_k == 20
         assert decision.dept_top_k == 2
 
     def test_routes_outlet_query(self, router):
         decision = router.route("daftar outlet jakarta")
         assert decision.mode == "master_first"
         assert decision.filename_filter == "outlet"
-        assert decision.master_top_k == 8
+        assert decision.master_top_k == 20
         assert decision.dept_top_k == 2
 
     def test_routes_distributor_query(self, router):
         decision = router.route("nama distributor utama")
         assert decision.mode == "master_first"
         assert decision.filename_filter == "distributor"
-        assert decision.master_top_k == 8
+        assert decision.master_top_k == 20
         assert decision.dept_top_k == 2
 
-    def test_routes_no_match_to_dept_only(self, router):
-        decision = router.route("laporan penjualan")
-        assert decision.mode == "dept_only"
+    def test_routes_no_match_to_master_first_none(self, router):
+        decision = router.route("laporan bulan lalu")
+        assert decision.mode == "master_first"
         assert decision.filename_filter is None
-        assert decision.master_top_k == 0
-        assert decision.dept_top_k == 5
+        assert decision.master_top_k == 20
+        assert decision.dept_top_k == 2
 
-    def test_empty_query_routes_dept_only(self, router):
+    def test_empty_query_routes_master_first(self, router):
         decision = router.route("")
-        assert decision.mode == "dept_only"
+        assert decision.mode == "master_first"
         assert decision.filename_filter is None
-        assert decision.dept_top_k == 5
 
-    def test_whitespace_query_routes_dept_only(self, router):
+    def test_whitespace_query_routes_master_first(self, router):
         decision = router.route("   ")
-        assert decision.mode == "dept_only"
+        assert decision.mode == "master_first"
         assert decision.filename_filter is None
-        assert decision.dept_top_k == 5
 
     def test_uses_settings_top_k_values(self):
         custom_settings = TurboVecSettings(
@@ -247,29 +245,34 @@ class TestRetrieve:
         assert call_count["n"] == 3
         assert results[0]["text"] == "fallback"
 
-    def test_dept_only_retrieves_from_dept(self, router):
+    def test_no_match_retrieves_from_both(self, router):
         store = self.FakeStore(
+            master_results=[
+                {"text": "m1", "score": 0.9},
+            ],
             dept_results=[
                 {"text": "d1", "score": 0.9},
                 {"text": "d2", "score": 0.8},
             ],
         )
-        results = router.retrieve("laporan penjualan", [0.1], store)
-        assert len(results) == 2
-        assert results[0]["score"] == 0.9
-        assert results[1]["score"] == 0.8
-        # Should only call dept
-        assert all(c["index"] == "dept" for c in store.calls)
+        # Queries with no keyword match now route to master_first with no filter
+        results = router.retrieve("laporan bulan lalu", [0.1], store)
+        # Should call both master and dept
+        master_calls = [c for c in store.calls if c["index"] == "master"]
+        dept_calls = [c for c in store.calls if c["index"] == "dept"]
+        assert len(master_calls) >= 1
+        assert len(dept_calls) >= 1
 
-    def test_dept_only_results_sorted_descending(self, router):
+    def test_results_sorted_descending_within_groups(self, router):
         store = self.FakeStore(
-            dept_results=[
-                {"text": "d1", "score": 0.5},
-                {"text": "d2", "score": 0.9},
-                {"text": "d3", "score": 0.7},
+            master_results=[
+                {"text": "m1", "score": 0.5},
+                {"text": "m2", "score": 0.9},
+                {"text": "m3", "score": 0.7},
             ],
+            dept_results=[],
         )
-        results = router.retrieve("laporan", [0.1], store)
+        results = router.retrieve("harga barang", [0.1], store)
         scores = [r["score"] for r in results]
         assert scores == sorted(scores, reverse=True)
 
@@ -289,10 +292,12 @@ class TestRetrieve:
         assert results[1]["text"] == "m1"  # 0.6
         assert results[2]["text"] == "d1"  # 0.95 but comes after master
 
-    def test_empty_query_routes_to_dept(self, router):
+    def test_empty_query_routes_to_master_first(self, router):
         store = self.FakeStore(
+            master_results=[{"text": "m1", "score": 0.5}],
             dept_results=[{"text": "d1", "score": 0.5}],
         )
         results = router.retrieve("", [0.1], store)
-        assert len(results) == 1
-        assert store.calls[0]["index"] == "dept"
+        # Empty query routes to master_first with no filter
+        master_calls = [c for c in store.calls if c["index"] == "master"]
+        assert len(master_calls) >= 1

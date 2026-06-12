@@ -13,6 +13,7 @@ from app.models.pii_redaction_log import PIIRedactionLog
 from app.models.file_relationship import FileRelationship
 from app.models.user import User
 from app.models.user_settings import UserSettings
+from app.models.chat_feedback import ChatFeedback
 
 __all__ = [
     "File",
@@ -29,4 +30,5 @@ __all__ = [
     "FileRelationship",
     "User",
     "UserSettings",
+    "ChatFeedback",
 ]

@@ -26,9 +26,9 @@ import type {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CHART_COLORS = ["#10b981", "#059669", "#047857", "#065f46", "#064e3b", "#6ee7b7"];
+const CHART_COLORS = ["#10b981", "#059669", "#047857", "#065f46", "#064e3b", "#6ee7b7", "#34d399", "#a7f3d0"];
 
-type ChartType = "bar" | "line" | "pie";
+type ChartType = "bar" | "line" | "pie" | "donut";
 type SortDirection = "asc" | "desc" | null;
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
@@ -117,10 +117,45 @@ function TableView({ data }: TableViewProps) {
 
 interface ChartViewProps {
   data: NumericData;
+  tableData?: TableData;
 }
 
-function ChartView({ data }: ChartViewProps) {
+function ChartView({ data, tableData }: ChartViewProps) {
   const [chartType, setChartType] = useState<ChartType>("bar");
+
+  // Detect multi-series data from table (multiple numeric columns)
+  const multiSeriesData = useMemo(() => {
+    if (!tableData || tableData.headers.length < 3 || tableData.rows.length < 2) return null;
+
+    // Find label column and all numeric columns
+    let labelColIdx = -1;
+    const valueColIndices: number[] = [];
+
+    for (let col = 0; col < tableData.headers.length; col++) {
+      const allNumeric = tableData.rows.every((row) => {
+        const cleaned = (row[col] || "").replace(/[,Rp.\s%]/g, "");
+        return cleaned !== "" && !isNaN(Number(cleaned));
+      });
+      if (allNumeric) {
+        valueColIndices.push(col);
+      } else if (labelColIdx === -1) {
+        labelColIdx = col;
+      }
+    }
+
+    if (labelColIdx === -1 || valueColIndices.length < 2) return null;
+
+    const series = tableData.rows.map((row) => {
+      const entry: Record<string, string | number> = { name: row[labelColIdx] };
+      valueColIndices.forEach((colIdx) => {
+        const val = parseFloat((row[colIdx] || "0").replace(/[,Rp.\s]/g, ""));
+        entry[tableData.headers[colIdx]] = isNaN(val) ? 0 : val;
+      });
+      return entry;
+    });
+
+    return { series, keys: valueColIndices.map((i) => tableData.headers[i]) };
+  }, [tableData]);
 
   const chartData = useMemo(
     () => data.labels.map((label, i) => ({ name: label, value: data.values[i] })),
@@ -131,7 +166,7 @@ function ChartView({ data }: ChartViewProps) {
     <div className="space-y-3">
       {/* Chart type toggle */}
       <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit">
-        {(["bar", "line", "pie"] as ChartType[]).map((type) => (
+        {(["bar", "line", "pie", "donut"] as ChartType[]).map((type) => (
           <button
             key={type}
             onClick={() => setChartType(type)}
@@ -150,28 +185,74 @@ function ChartView({ data }: ChartViewProps) {
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === "bar" ? (
-            <BarChart data={chartData}>
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Bar dataKey="value" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
-            </BarChart>
+            multiSeriesData ? (
+              <BarChart data={multiSeriesData.series}>
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
+                {multiSeriesData.keys.map((key, i) => (
+                  <Bar key={key} dataKey={key} fill={CHART_COLORS[i % CHART_COLORS.length]} radius={[4, 4, 0, 0]} />
+                ))}
+              </BarChart>
+            ) : (
+              <BarChart data={chartData}>
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
+                <Bar dataKey="value" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            )
           ) : chartType === "line" ? (
-            <LineChart data={chartData}>
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Line
-                type="monotone"
+            multiSeriesData ? (
+              <LineChart data={multiSeriesData.series}>
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
+                {multiSeriesData.keys.map((key, i) => (
+                  <Line key={key} type="monotone" dataKey={key} stroke={CHART_COLORS[i % CHART_COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
+                ))}
+              </LineChart>
+            ) : (
+              <LineChart data={chartData}>
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke={CHART_COLORS[0]}
+                  strokeWidth={2}
+                  dot={{ fill: CHART_COLORS[1], r: 4 }}
+                />
+              </LineChart>
+            )
+          ) : chartType === "donut" ? (
+            <PieChart>
+              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
+              <Pie
+                data={chartData}
                 dataKey="value"
-                stroke={CHART_COLORS[0]}
-                strokeWidth={2}
-                dot={{ fill: CHART_COLORS[1], r: 4 }}
-              />
-            </LineChart>
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={45}
+                outerRadius={80}
+                label={({ name, percent }) =>
+                  `${name} (${(percent * 100).toFixed(0)}%)`
+                }
+                labelLine={false}
+              >
+                {chartData.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={CHART_COLORS[index % CHART_COLORS.length]}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
           ) : (
             <PieChart>
-              <Tooltip />
+              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: 11 }} />
               <Pie
                 data={chartData}
                 dataKey="value"
@@ -269,21 +350,61 @@ interface VisualizationTransformProps {
  * Priority: table > numeric > list. Returns null if no structure detected.
  */
 export function VisualizationTransform({ text }: VisualizationTransformProps) {
+  const [viewAs, setViewAs] = useState<"auto" | "table" | "chart">("auto");
+
   const detected = useMemo(() => {
     // Priority order: table > numeric > list
     const table = detectMarkdownTable(text);
-    if (table) return { type: "table" as const, data: table };
+    if (table) {
+      const numeric = detectNumericData(text);
+      return { type: "table" as const, data: table, numeric };
+    }
 
     const numeric = detectNumericData(text);
-    if (numeric) return { type: "numeric" as const, data: numeric };
+    if (numeric) return { type: "numeric" as const, data: numeric, numeric };
 
     const list = detectList(text);
-    if (list) return { type: "list" as const, data: list };
+    if (list) return { type: "list" as const, data: list, numeric: null };
 
     return null;
   }, [text]);
 
   if (!detected) return null;
+
+  // For tables with numeric data, allow toggling between table and chart
+  if (detected.type === "table" && detected.numeric) {
+    return (
+      <div className="space-y-3">
+        <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit">
+          <button
+            onClick={() => setViewAs("table")}
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              viewAs === "auto" || viewAs === "table"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Tabel
+          </button>
+          <button
+            onClick={() => setViewAs("chart")}
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              viewAs === "chart"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Grafik
+          </button>
+        </div>
+        {viewAs === "chart" ? (
+          <ChartView data={detected.numeric} tableData={detected.data as TableData} />
+        ) : (
+          <TableView data={detected.data as TableData} />
+        )}
+      </div>
+    );
+  }
 
   switch (detected.type) {
     case "table":

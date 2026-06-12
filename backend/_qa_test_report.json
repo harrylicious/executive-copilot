@@ -1,10 +1,10 @@
 {
   "summary": {
     "total": 17,
-    "passed": 14,
-    "failed": 3,
+    "passed": 15,
+    "failed": 2,
     "errors": 0,
-    "pass_rate": "82.4%"
+    "pass_rate": "88.2%"
   },
   "results": [
     {
@@ -12,17 +12,17 @@
       "status": "PASS",
       "match_ratio": 0.5,
       "matched_keywords": [
-        "111,000",
+        "111.000",
         "Olivoila"
       ],
       "missed_keywords": [
         "111000",
-        "111.000"
+        "111,000"
       ],
-      "elapsed_s": 4.59,
-      "docs_retrieved": 9,
+      "elapsed_s": 4.96,
+      "docs_retrieved": 22,
       "response_type": "answer",
-      "answer_preview": "Harga jual Olivoila Olive Oil 500c adalah Rp 111,000."
+      "answer_preview": "Harga jual Olivoila Olive Oil 500c adalah Rp 111.000."
     },
     {
       "id": 2,
@@ -33,8 +33,8 @@
         "Sania Botol 1l"
       ],
       "missed_keywords": [],
-      "elapsed_s": 4.08,
-      "docs_retrieved": 9,
+      "elapsed_s": 4.61,
+      "docs_retrieved": 22,
       "response_type": "answer",
       "answer_preview": "Isi per CS untuk produk Sania Botol 1l adalah 12."
     },
@@ -47,8 +47,8 @@
         "Sania Jerigen 5l"
       ],
       "missed_keywords": [],
-      "elapsed_s": 4.58,
-      "docs_retrieved": 10,
+      "elapsed_s": 4.49,
+      "docs_retrieved": 47,
       "response_type": "answer",
       "answer_preview": "Satuan terkecil (SatK) untuk produk Sania Jerigen 5l adalah JRG."
     },
@@ -57,16 +57,16 @@
       "status": "PASS",
       "match_ratio": 0.6666666666666666,
       "matched_keywords": [
-        "15.52",
+        "15,52",
         "Blue Band Pastry Fat"
       ],
       "missed_keywords": [
-        "15,52"
+        "15.52"
       ],
-      "elapsed_s": 3.98,
-      "docs_retrieved": 9,
+      "elapsed_s": 4.25,
+      "docs_retrieved": 22,
       "response_type": "answer",
-      "answer_preview": "Berat produk Blue Band Pastry Fat 15k adalah 15.52 kg."
+      "answer_preview": "Berat produk Blue Band Pastry Fat 15k adalah 15,52 kg."
     },
     {
       "id": 5,
@@ -76,42 +76,43 @@
         "PD-0109"
       ],
       "missed_keywords": [],
-      "elapsed_s": 3.67,
-      "docs_retrieved": 10,
+      "elapsed_s": 4.27,
+      "docs_retrieved": 22,
       "response_type": "answer",
-      "answer_preview": "Vendor untuk produk Fortune Margarine 15k adalah PD-0109."
+      "answer_preview": "Vendor untuk produk Fortune Margarine 15k adalah SARI AGROTAMA PERSADA D dengan kode PD-0109."
     },
     {
       "id": 6,
       "status": "PASS",
-      "match_ratio": 0.5,
+      "match_ratio": 0.75,
       "matched_keywords": [
         "PD-0110",
-        "Blue Band"
+        "Blue Band",
+        "Minyak Samin"
       ],
       "missed_keywords": [
-        "Minyak Samin",
         "Kecap Bango"
       ],
-      "elapsed_s": 6.22,
-      "docs_retrieved": 10,
+      "elapsed_s": 7.37,
+      "docs_retrieved": 50,
       "response_type": "answer",
-      "answer_preview": "Produk yang disupply oleh vendor PD-0110 adalah sebagai berikut:\n\n1. Blue Band Kuliner Ayam Bawang 40g\n   - Harga Jual: Rp 3,345.10\n   - Berat: 0.04 kg\n\n2. Frytol Minyak Goreng Padat 15k\n   - Harga Jual: Rp 373,363.64\n   - Berat: 15.52 kg\n\n3. Kecap Manis Bango 18c\n   - Harga Jual: Rp 800.10\n   - Ber"
+      "answer_preview": "Vendor PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT) menyuplai produk-produk berikut:\n\n1. Blue Band Coklat Compound Butir 10k\n2. Kecap Manis Bango 18c\n3. Frytol Minyak Goreng Padat 15k\n4. Blue Band Kuliner Ayam Bawang 40g\n5. Minyak Samin Cap Onta 200g\n6. Minyak Samin Cap Onta 250g\n7. Blue Band Rice Mi"
     },
     {
       "id": 7,
-      "status": "FAIL",
-      "match_ratio": 0.0,
-      "matched_keywords": [],
-      "missed_keywords": [
-        "683871",
+      "status": "PASS",
+      "match_ratio": 0.6666666666666666,
+      "matched_keywords": [
         "683.871",
         "Blue Band Pastry Fat"
       ],
-      "elapsed_s": 4.17,
-      "docs_retrieved": 10,
+      "missed_keywords": [
+        "683871"
+      ],
+      "elapsed_s": 5.43,
+      "docs_retrieved": 47,
       "response_type": "answer",
-      "answer_preview": "Produk yang memiliki harga jual paling mahal adalah Frytol Minyak Goreng Padat 15k dengan harga jual Rp 373.363,636."
+      "answer_preview": "Produk yang memiliki harga jual paling mahal adalah **Blue Band Pastry Fat 15k** dengan harga jual sebesar **Rp 683.871**."
     },
     {
       "id": 8,
@@ -122,27 +123,26 @@
         "800",
         "Kecap Manis Bango"
       ],
-      "elapsed_s": 4.08,
-      "docs_retrieved": 10,
+      "elapsed_s": 4.99,
+      "docs_retrieved": 47,
       "response_type": "answer",
-      "answer_preview": "Produk yang memiliki harga jual paling murah adalah Blue Band Rice Mix Barbeque 45g dengan harga jual Rp 4,040."
+      "answer_preview": "Produk yang memiliki harga jual paling murah adalah **Blue Band Rice Mix Ayam 45g** dengan harga jual Rp 4.040."
     },
     {
       "id": 9,
       "status": "PASS",
-      "match_ratio": 0.75,
+      "match_ratio": 1.0,
       "matched_keywords": [
         "BTL",
+        "Olivoila",
         "Sania Botol 1l",
         "Sania Botol 2l"
       ],
-      "missed_keywords": [
-        "Olivoila"
-      ],
-      "elapsed_s": 5.86,
-      "docs_retrieved": 10,
+      "missed_keywords": [],
+      "elapsed_s": 5.51,
+      "docs_retrieved": 47,
       "response_type": "answer",
-      "answer_preview": "Produk yang satuan terkecilnya (SatK) adalah BTL adalah sebagai berikut:\n\n1. Sania Botol 1l\n   - ID: 8993496104012\n   - Harga Jual: Rp 24,009.33\n   - Berat: 1.01 kg\n   - Dimensi: 7 cm x 18 cm x 7 cm\n\n2. Sania Botol 2l\n   - ID: 8993496103015\n   - Harga Jual: Rp 46,842.00\n   - Berat: 2.3 kg\n   - Dimen"
+      "answer_preview": "Produk yang satuan terkecilnya (SatK) adalah BTL adalah sebagai berikut:\n\n1. Sania Botol 2l\n2. Sania Botol 1l\n3. Olivoila Olive Oil 500c\n4. Mahkota 900c\n5. Sania Pouch 800c\n\nData ini mencakup produk yang terdaftar dengan satuan terkecil dalam bentuk botol (BTL)."
     },
     {
       "id": 10,
@@ -153,10 +153,10 @@
         "Mataram"
       ],
       "missed_keywords": [],
-      "elapsed_s": 4.05,
-      "docs_retrieved": 8,
+      "elapsed_s": 5.18,
+      "docs_retrieved": 50,
       "response_type": "answer",
-      "answer_preview": "Jumlah outlet dengan tipe 'Wholesale' yang berada di area Mataram adalah 3."
+      "answer_preview": "Jumlah outlet dengan tipe 'Wholesale' yang berada di area Mataram adalah 9 outlet."
     },
     {
       "id": 11,
@@ -167,27 +167,26 @@
         "JL. PULO KAMBING RAYA"
       ],
       "missed_keywords": [],
-      "elapsed_s": 4.11,
-      "docs_retrieved": 9,
+      "elapsed_s": 4.35,
+      "docs_retrieved": 16,
       "response_type": "answer",
       "answer_preview": "Nama lengkap vendor PD-0109 adalah SARI AGROTAMA PERSADA D, dengan alamat JL. PULO KAMBING RAYA KAV. IIE/7."
     },
     {
       "id": 12,
       "status": "FAIL",
-      "match_ratio": 0.25,
-      "matched_keywords": [
-        "UPFIELD"
-      ],
+      "match_ratio": 0.0,
+      "matched_keywords": [],
       "missed_keywords": [
+        "UPFIELD",
         "PD-0110",
         "Blue Band Rice Mix",
         "Blue Band Kuliner"
       ],
-      "elapsed_s": 10.34,
-      "docs_retrieved": 9,
+      "elapsed_s": 4.15,
+      "docs_retrieved": 50,
       "response_type": "answer",
-      "answer_preview": "Tidak ada data yang ditemukan mengenai produk dari vendor UPFIELD DISTRIBUTION INDONESIA PT yang harganya di bawah Rp 10.000."
+      "answer_preview": "Data tidak ditemukan dalam dokumen yang tersedia."
     },
     {
       "id": 13,
@@ -201,8 +200,8 @@
       "missed_keywords": [
         "ADI TOPAN"
       ],
-      "elapsed_s": 7.67,
-      "docs_retrieved": 9,
+      "elapsed_s": 8.52,
+      "docs_retrieved": 23,
       "response_type": "answer",
       "answer_preview": "Customer dengan kode JBD0628 berlokasi di JLN. ADI SUCIPTO KEBON ROEK-AMPENAN, KODYA MATARAM, area Ampenan, dan tipe outletnya adalah Wholesale Pasar."
     },
@@ -215,10 +214,10 @@
         "7.807"
       ],
       "missed_keywords": [],
-      "elapsed_s": 15.78,
-      "docs_retrieved": 9,
+      "elapsed_s": 24.01,
+      "docs_retrieved": 47,
       "response_type": "answer",
-      "answer_preview": "Untuk menghitung harga per botol dari 1 CS Sania Botol 2l yang berisi 6 botol, pertama-tama kita perlu mengetahui total harga dan jumlah botol. Dalam hal ini, total harga untuk 1 CS Sania Botol 2l adalah Rp 46.842,00 dan jumlah botol dalam 1 CS adalah 6. \n\nDengan menggunakan rumus harga per botol:\n\n"
+      "answer_preview": "Harga per botol Sania Botol 2l dapat dihitung dengan membagi harga jual 1 CS yang berisi 6 botol. Harga jual 1 CS Sania Botol 2l adalah Rp 46.842. Maka, harga per botol adalah:\n\nRp 46.842 / 6 = Rp 7.807.\n\nJadi, harga per botol Sania Botol 2l adalah Rp 7.807."
     },
     {
       "id": 15,
@@ -229,10 +228,10 @@
         "volume"
       ],
       "missed_keywords": [],
-      "elapsed_s": 27.66,
-      "docs_retrieved": 9,
+      "elapsed_s": 30.82,
+      "docs_retrieved": 47,
       "response_type": "answer",
-      "answer_preview": "Produk Blue Band yang memiliki volume terbesar berdasarkan dimensi panjang × lebar × tinggi adalah **Blue Band Coklat Compound Butir 10k**. Dengan dimensi panjang 28 cm, lebar 26 cm, dan tinggi 22 cm, volume produk ini dihitung sebagai berikut:\n\n\\[ \n\\text{Volume} = 28 \\, \\text{cm} \\times 26 \\, \\text"
+      "answer_preview": "Produk Blue Band yang memiliki volume terbesar berdasarkan dimensi panjang, lebar, dan tinggi adalah **Blue Band Coklat Compound Butir 10k**. Dimensinya adalah panjang 28 cm, lebar 26 cm, dan tinggi 22 cm, yang menghasilkan volume yang signifikan. Produk ini memiliki berat 9.85 kg dan merupakan bagi"
     },
     {
       "id": 16,
@@ -242,10 +241,10 @@
         "tidak ditemukan"
       ],
       "missed_keywords": [],
-      "elapsed_s": 3.86,
-      "docs_retrieved": 10,
+      "elapsed_s": 4.38,
+      "docs_retrieved": 22,
       "response_type": "answer",
-      "answer_preview": "Data tidak ditemukan dalam dokumen yang tersedia."
+      "answer_preview": "Data tidak ditemukan dalam dokumen yang tersedia. Stok saat ini untuk Sania Botol 1l tidak tersedia dalam field yang ada."
     },
     {
       "id": 17,
@@ -255,8 +254,8 @@
         "tidak ditemukan"
       ],
       "missed_keywords": [],
-      "elapsed_s": 3.97,
-      "docs_retrieved": 10,
+      "elapsed_s": 3.84,
+      "docs_retrieved": 22,
       "response_type": "answer",
       "answer_preview": "Data tidak ditemukan dalam dokumen yang tersedia."
     }

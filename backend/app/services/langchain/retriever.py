@@ -47,7 +47,7 @@ class CustomRetriever(BaseRetriever):
     similarity_weight: float = 0.7
     num_communities: int = 3
     min_relevance: float = 0.1
-    max_tokens: int = 8000
+    max_tokens: int = 12000
     language: str = "id"
 
     # Lower threshold for Indonesian queries where product/item embeddings

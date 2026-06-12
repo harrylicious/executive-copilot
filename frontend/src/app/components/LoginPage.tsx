@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { Eye, EyeOff, Building2, Shield } from "lucide-react";
+import { login } from "../../api/auth";
+import { ApiError } from "../../api/client";
 
 interface LoginPageProps {
   onLogin: (user: { name: string; role: "staff" | "executive" | "admin"; department: string; avatar: string }) => void;
 }
-
-const DEMO_USERS = [
-  { email: "admin@jembatanbaru.co.id", password: "admin123", name: "Ahmad Rizki", role: "admin" as const, department: "Accounting Tax", avatar: "AR" },
-  { email: "director@jembatanbaru.co.id", password: "exec123", name: "Siti Rahayu", role: "executive" as const, department: "Board", avatar: "SR" },
-  { email: "demand@jembatanbaru.co.id", password: "demand123", name: "Budi Santoso", role: "staff" as const, department: "Demand Supply", avatar: "BS" },
-  { email: "finance@jembatanbaru.co.id", password: "finance123", name: "Dewi Kusuma", role: "staff" as const, department: "Finance", avatar: "DK" },
-];
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const [email, setEmail] = useState("");
@@ -23,20 +18,28 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    await new Promise(r => setTimeout(r, 800));
-    const user = DEMO_USERS.find(u => u.email === email && u.password === password);
-    if (user) {
-      onLogin(user);
-    } else {
-      setError("Email atau password salah. Coba akun demo di bawah.");
-    }
-    setLoading(false);
-  };
 
-  const fillDemo = (u: typeof DEMO_USERS[0]) => {
-    setEmail(u.email);
-    setPassword(u.password);
-    setError("");
+    try {
+      const user = await login({ email, password });
+      onLogin({
+        name: user.name,
+        role: user.role,
+        department: user.department,
+        avatar: user.avatar || user.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase(),
+      });
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+          setError("Email atau password salah.");
+        } else {
+          setError("Terjadi kesalahan server. Silakan coba lagi.");
+        }
+      } else {
+        setError("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,10 +67,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             berbasis data.
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
-            Platform AI perusahaan yang menghubungkan seluruh departemen. Unggah data, tanya langsung, dapatkan insight yang dikutip dari sumber terpercaya.
+            Knowledge base AI untuk departemen Demand-Supply, Accounting Tax, Finance, dan Logistic. Unggah dokumen, tanya langsung, dapatkan jawaban yang dikutip dari sumber terpercaya.
           </p>
           <div className="mt-8 grid grid-cols-3 gap-4">
-            {[{ label: "Departemen", val: "12" }, { label: "Dokumen", val: "3.4K" }, { label: "Query/hari", val: "840" }].map(s => (
+            {[{ label: "Departemen", val: "4" }, { label: "Dokumen", val: "22" }, { label: "AI Model", val: "GPT-4o" }].map(s => (
               <div key={s.label} className="border border-border rounded-lg p-3">
                 <div className="text-[#10b981] text-xl font-light">{s.val}</div>
                 <div className="text-muted-foreground text-xs mt-0.5">{s.label}</div>
@@ -135,26 +138,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {loading ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Memproses...</> : "Masuk"}
             </button>
           </form>
-
-          {/* Demo accounts */}
-          <div className="mt-8 border-t border-border pt-6">
-            <p className="text-muted-foreground text-xs mb-3 text-center">Akun Demo</p>
-            <div className="space-y-2">
-              {DEMO_USERS.map(u => (
-                <button key={u.email} onClick={() => fillDemo(u)}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-card hover:bg-secondary border border-border transition-colors text-left">
-                  <div className="w-7 h-7 rounded-full bg-[#059669] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                    {u.avatar}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-secondary-foreground text-xs font-medium">{u.name}</div>
-                    <div className="text-muted-foreground text-xs">{u.department} · {u.role === "admin" ? "Admin" : u.role === "executive" ? "Eksekutif" : "Staff"}</div>
-                  </div>
-                  <span className="ml-auto text-[#10b981] text-xs shrink-0">Gunakan →</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

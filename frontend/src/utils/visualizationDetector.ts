@@ -146,7 +146,10 @@ function extractNumericFromTable(table: TableData): NumericData | null {
   let valueColIdx = -1;
 
   for (let col = 0; col < table.headers.length; col++) {
-    const allNumeric = table.rows.every((row) => isNumericString(row[col]));
+    const allNumeric = table.rows.every((row) => {
+      const cell = (row[col] || "").replace(/^Rp\.?\s*/, "");
+      return isNumericString(cell);
+    });
     if (allNumeric && valueColIdx === -1) {
       valueColIdx = col;
     } else if (!allNumeric && labelColIdx === -1) {
@@ -162,7 +165,8 @@ function extractNumericFromTable(table: TableData): NumericData | null {
 
   for (const row of table.rows.slice(0, MAX_DATA_POINTS)) {
     const label = row[labelColIdx];
-    const value = parseNumericValue(row[valueColIdx]);
+    const rawValue = (row[valueColIdx] || "").replace(/^Rp\.?\s*/, "");
+    const value = parseNumericValue(rawValue);
     if (label && value !== null) {
       labels.push(label);
       values.push(value);
@@ -174,8 +178,8 @@ function extractNumericFromTable(table: TableData): NumericData | null {
 }
 
 function extractKeyValuePairs(text: string): NumericData | null {
-  // Match patterns like "Label: 123" or "Label: 1,234.56" or "Label: 45%"
-  const pattern = /^(.+?):\s*([\d,]+\.?\d*%?)\s*$/gm;
+  // Match patterns like "Label: 123" or "Label: 1,234.56" or "Label: 45%" or "Label: Rp 111,000"
+  const pattern = /^(.+?):\s*(?:Rp\.?\s*)?([\d,.]+)\s*%?\s*$/gm;
   const labels: string[] = [];
   const values: number[] = [];
 
@@ -183,7 +187,7 @@ function extractKeyValuePairs(text: string): NumericData | null {
   while ((match = pattern.exec(text)) !== null && labels.length < MAX_DATA_POINTS) {
     const label = match[1].trim();
     const value = parseNumericValue(match[2]);
-    if (label && value !== null) {
+    if (label && value !== null && value > 0) {
       labels.push(label);
       values.push(value);
     }
@@ -194,8 +198,8 @@ function extractKeyValuePairs(text: string): NumericData | null {
 }
 
 function extractListKeyValues(text: string): NumericData | null {
-  // Match patterns like "- Label: 123" or "* Label: 42"
-  const pattern = /^[\s]*[-*]\s+(.+?):\s*([\d,]+\.?\d*%?)\s*$/gm;
+  // Match patterns like "- Label: 123" or "* Label: 42" or "- Label: Rp 3,345.10"
+  const pattern = /^[\s]*[-*]\s+(.+?):\s*(?:Rp\.?\s*)?([\d,.]+)\s*%?\s*$/gm;
   const labels: string[] = [];
   const values: number[] = [];
 
@@ -203,25 +207,79 @@ function extractListKeyValues(text: string): NumericData | null {
   while ((match = pattern.exec(text)) !== null && labels.length < MAX_DATA_POINTS) {
     const label = match[1].trim();
     const value = parseNumericValue(match[2]);
-    if (label && value !== null) {
+    if (label && value !== null && value > 0) {
       labels.push(label);
       values.push(value);
     }
   }
 
-  if (labels.length < 2) return null;
-  return { labels, values };
+  if (labels.length >= 2) return { labels, values };
+
+  // Strategy 3b: Try numbered list "1. Label ... number" patterns
+  const numberedPattern = /^\s*\d+\.\s+(.+?)\s*[-–:]\s*(?:Rp\.?\s*)?([\d,.]+)\s*$/gm;
+  const labels2: string[] = [];
+  const values2: number[] = [];
+
+  let match2: RegExpExecArray | null;
+  while ((match2 = numberedPattern.exec(text)) !== null && labels2.length < MAX_DATA_POINTS) {
+    const label = match2[1].trim();
+    const value = parseNumericValue(match2[2]);
+    if (label && value !== null && value > 0) {
+      labels2.push(label);
+      values2.push(value);
+    }
+  }
+
+  if (labels2.length < 2) return null;
+  return { labels: labels2, values: values2 };
 }
 
 function isNumericString(str: string): boolean {
-  if (!str) return false;
-  return parseNumericValue(str) !== null;
+  if (!str || str.trim() === "") return false;
+  // Also treat Rp-prefixed values as numeric
+  const cleaned = str.trim().replace(/^Rp\.?\s*/, "");
+  return parseNumericValue(cleaned) !== null;
 }
 
 function parseNumericValue(str: string): number | null {
   if (!str || str.trim() === "") return null;
-  // Remove commas and percentage signs
-  const cleaned = str.trim().replace(/,/g, "").replace(/%$/, "");
+  // Remove percentage signs and trim
+  let cleaned = str.trim().replace(/%$/, "");
+  
+  // Handle Indonesian number format: 111.000 (dot as thousands separator)
+  // If string has dots but no comma, and dots are at 3-digit intervals, treat as thousand separator
+  if (cleaned.includes(".") && !cleaned.includes(",")) {
+    const parts = cleaned.split(".");
+    const allThreeDigits = parts.slice(1).every(p => p.length === 3);
+    if (parts.length > 1 && allThreeDigits) {
+      // It's a thousands-separated number (e.g., 111.000 → 111000)
+      cleaned = cleaned.replace(/\./g, "");
+    }
+  }
+  // Handle format like 3,345.10 (comma as thousands, dot as decimal)
+  else if (cleaned.includes(",") && cleaned.includes(".")) {
+    const lastDot = cleaned.lastIndexOf(".");
+    const lastComma = cleaned.lastIndexOf(",");
+    if (lastDot > lastComma) {
+      // Standard format: 3,345.10 → remove commas
+      cleaned = cleaned.replace(/,/g, "");
+    } else {
+      // European format: 3.345,10 → swap separators
+      cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+    }
+  }
+  // Handle comma-only (could be thousands: 111,000 or decimal: 3,5)
+  else if (cleaned.includes(",")) {
+    const parts = cleaned.split(",");
+    if (parts.length === 2 && parts[1].length === 3) {
+      // Likely thousands separator: 111,000 → 111000
+      cleaned = cleaned.replace(/,/g, "");
+    } else {
+      // Likely decimal: 3,5 → 3.5
+      cleaned = cleaned.replace(",", ".");
+    }
+  }
+
   const num = Number(cleaned);
   return isNaN(num) ? null : num;
 }

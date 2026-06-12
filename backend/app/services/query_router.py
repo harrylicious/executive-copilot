@@ -41,9 +41,9 @@ class QueryRouter:
             [
                 "barang", "produk", "item", "sku", "kode barang", "satuan", "inventory",
                 "master barang", "harga", "price", "berat", "weight", "dimensi",
-                "panjang", "lebar", "tinggi", "volume", "vendor", "pd-0",
+                "panjang", "lebar", "tinggi", "volume",
                 "blue band", "sania", "olivoila", "fortune", "frytol", "kecap",
-                "minyak samin", "margarine", "pastry", "btl", "jrg", "cs",
+                "minyak samin", "margarine", "pastry", "btl", "jrg",
                 "satk", "satb", "satt", "berisi", "harga jual", "harga_jual",
                 "mahal", "murah", "termahal", "termurah",
             ],
@@ -53,14 +53,16 @@ class QueryRouter:
             [
                 "outlet", "toko", "gerai", "cabang", "customer", "pelanggan",
                 "wholesale", "retail", "area", "mataram", "ampenan", "jbd",
-                "tipe outlet", "outlettype",
+                "tipe outlet", "outlettype", "minimarket", "groceries", "kiosk",
+                "sandubaya", "cakranegara", "praya", "lingsar", "lembar",
+                "jonggat", "selaparang", "sekarbela",
             ],
             "outlet",
         ),
         (
             [
-                "distributor", "dist", "agen", "supplier", "vendor", "pd-0109",
-                "pd-0110", "upfield", "sari agrotama", "supply", "disupply",
+                "distributor", "dist", "agen", "supplier", "pd-0109",
+                "pd-0110", "upfield", "sari agrotama", "blocked", "status vendor",
             ],
             "distributor",
         ),
@@ -84,14 +86,23 @@ class QueryRouter:
 
         import re
 
+        # Priority 0: Cross-sheet queries needing both product and vendor data
+        # e.g., "vendor yang menyupply Fortune Margarine statusnya blocked?"
+        if ("blocked" in lowered or "status" in lowered) and ("vendor" in lowered or "supply" in lowered or re.search(r'pd-\d+', lowered)):
+            return ("master_first", None)
+
+        # Priority 0b: Queries about vendor count/list (master data supplier)
+        if ("vendor" in lowered or "supplier" in lowered) and ("jumlah" in lowered or "berapa" in lowered or "terdaftar" in lowered or "master data" in lowered):
+            return ("master_first", None)
+
         # Priority 1: Specific vendor/distributor codes or names → distributor
         if re.search(r'pd-\d+', lowered) and ("vendor" in lowered or "nama" in lowered or "alamat" in lowered or "lengkap" in lowered) and not ("produk" in lowered or "supply" in lowered):
             return ("master_first", "distributor")
 
-        # Priority 1b: Queries asking about products FROM a vendor → search barang
-        # (the keyword boost will also find vendor data)
-        if re.search(r'pd-\d+', lowered) and ("produk" in lowered or "supply" in lowered or "disupply" in lowered or "apa saja" in lowered):
-            return ("master_first", "barang")
+        # Priority 1b: Queries asking about products FROM a vendor → no filter
+        # (needs both barang and distributor data for accurate counts)
+        if re.search(r'pd-\d+', lowered) and ("produk" in lowered or "supply" in lowered or "disupply" in lowered or "apa saja" in lowered or "jumlah" in lowered):
+            return ("master_first", None)
 
         # Priority 1c: Queries mentioning vendor name + products → no filter (needs both sheets)
         if ("upfield" in lowered or "sari agrotama" in lowered) and ("produk" in lowered or "harga" in lowered):
@@ -137,7 +148,10 @@ class QueryRouter:
             "paling mahal", "paling murah", "termahal", "termurah",
             "paling besar", "paling kecil", "terbesar", "terkecil",
             "semua produk", "seluruh produk", "apa saja",
-            "berapa jumlah", "total",
+            "berapa jumlah", "total", "berapa banyak", "berapa total",
+            "paling banyak", "terbanyak",
+            "di antara", "antara rp",
+            "di atas", "di bawah",
         ])
 
         if mode == "master_first":
@@ -146,8 +160,11 @@ class QueryRouter:
             if is_aggregate and filename_filter == "barang":
                 # For aggregate product queries, retrieve ALL barang rows (45 products)
                 master_k = 100
+            elif is_aggregate and filename_filter == "outlet":
+                # For aggregate outlet queries, retrieve as many outlet rows as possible
+                master_k = 800
             elif is_aggregate:
-                master_k = self._settings.master_top_k * 3
+                master_k = self._settings.master_top_k * 5
             else:
                 master_k = self._settings.master_top_k
 

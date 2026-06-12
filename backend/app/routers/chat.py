@@ -23,6 +23,7 @@ from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.database import get_db
+from app.models.file import File
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.langchain.dependencies import get_service_container
 
@@ -31,12 +32,142 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
+# ─── Source Attribution Resolution ────────────────────────────────────────────
+
+
+def _resolve_source_attributions(
+    db: Session,
+    raw_attributions: list[dict],
+) -> list[dict]:
+    """Resolve vector-store source attributions to real DB file records.
+
+    The vector store stores a hash-based file_id and a category/stem as
+    filename (without extension). This helper looks up the actual File record
+    by matching the stem of the filename against File.name in the given
+    department so that the frontend receives the real DB id and full filename
+    (with extension) needed for preview.
+
+    Args:
+        db: SQLAlchemy session.
+        raw_attributions: List of dicts with file_id, file_name, department, etc.
+
+    Returns:
+        List of resolved attribution dicts with correct file_id and file_name.
+    """
+    resolved: list[dict] = []
+    seen_ids: set[int] = set()
+
+    for attr in raw_attributions:
+        vec_filename = attr.get("file_name", "")
+        department = attr.get("department", "")
+
+        # Try to find the real file by matching the stem (name without extension)
+        # against the DB File.name within the same department.
+        file_record = None
+        if vec_filename:
+            # First try: match by name containing the vec_filename stem
+            query = db.query(File).filter(
+                File.is_deleted == False,  # noqa: E712
+                File.name.ilike(f"{vec_filename}%"),
+            )
+            if department:
+                query = query.filter(File.department == department)
+            file_record = query.first()
+
+        if file_record and file_record.id not in seen_ids:
+            seen_ids.add(file_record.id)
+            resolved.append({
+                "file_id": file_record.id,
+                "file_name": file_record.name,
+                "department": file_record.department,
+                "chunk_index": attr.get("chunk_index", 0),
+            })
+        elif not file_record:
+            # Fallback: pass through original (preview won't work but sources still show)
+            resolved.append({
+                "file_id": attr.get("file_id", 0),
+                "file_name": vec_filename,
+                "department": department,
+                "chunk_index": attr.get("chunk_index", 0),
+            })
+
+    return resolved
+
+
+# ─── Greeting / Chitchat Detection ───────────────────────────────────────────
+
+_GREETING_PATTERNS = [
+    r"^(hi|hello|hey|halo|hai|hola|yo)\b",
+    r"^(selamat\s+(pagi|siang|sore|malam))",
+    r"^(good\s+(morning|afternoon|evening|night))",
+    r"^(apa\s+kabar|how\s+are\s+you)",
+    r"^(thanks?|thank\s+you|terima\s*kasih|makasih|thx)",
+    r"^(bye|goodbye|sampai\s+jumpa|dadah?)",
+    r"^(ok|oke|okay|siap|baik)\s*[.!]?$",
+    r"^(test|testing)\s*[.!]?$",
+]
+
+_GREETING_RESPONSES = {
+    "id": "Halo! Saya JB Copilot, asisten bisnis Anda. Silakan tanyakan apa saja tentang data perusahaan — produk, outlet, vendor, harga, dan lainnya. Ada yang bisa saya bantu?",
+    "en": "Hello! I'm JB Copilot, your business assistant. Feel free to ask me anything about company data — products, outlets, vendors, pricing, and more. How can I help you?",
+}
+
+_THANKS_RESPONSES = {
+    "id": "Sama-sama! Jika ada pertanyaan lain, silakan tanyakan kapan saja.",
+    "en": "You're welcome! If you have any other questions, feel free to ask anytime.",
+}
+
+_BYE_RESPONSES = {
+    "id": "Sampai jumpa! Jangan ragu untuk kembali jika butuh bantuan.",
+    "en": "Goodbye! Don't hesitate to come back if you need help.",
+}
+
+
+def _detect_greeting(query: str, language: str) -> str | None:
+    """Detect if the query is a greeting/chitchat and return an appropriate response.
+
+    Returns None if the query is not a greeting (should proceed to RAG).
+    """
+    cleaned = query.strip().lower()
+    # Skip if the query is too long to be a greeting (likely a real question)
+    if len(cleaned) > 60:
+        return None
+
+    for pattern in _GREETING_PATTERNS:
+        if re.match(pattern, cleaned, re.IGNORECASE):
+            # Determine which type of greeting
+            if re.match(r"^(thanks?|thank\s+you|terima\s*kasih|makasih|thx)", cleaned):
+                return _THANKS_RESPONSES.get(language, _THANKS_RESPONSES["id"])
+            if re.match(r"^(bye|goodbye|sampai\s+jumpa|dadah?)", cleaned):
+                return _BYE_RESPONSES.get(language, _BYE_RESPONSES["id"])
+            return _GREETING_RESPONSES.get(language, _GREETING_RESPONSES["id"])
+
+    return None
+
+
 _SUGGESTIONS_PROMPT_TEMPLATE = """\
 Based on the user's question and the assistant's answer below, generate exactly 3 \
 follow-up questions that the user might want to ask next. The questions should be:
 - Relevant to the topic and context of the conversation
-- Progressively deeper or exploring related aspects
+- Based ONLY on data that actually exists in the knowledge base (see available data below)
+- Progressively deeper or exploring related aspects of the SAME data
 - Actionable and specific (not generic)
+
+AVAILABLE DATA IN KNOWLEDGE BASE:
+- Master Barang (products): 45 products with fields: ID, Nama, SatB, SatT, SatK, Berisi (qty per unit), Harga_Jual, Vendor, Berat_kg, Panjang/Lebar/Tinggi (cm). Vendors: PD-0109 (Sari Agrotama) and PD-0110 (Upfield). Brands: Sania, Blue Band, Fortune, Olivoila, Frytol, Minyak Samin Cap Onta, Kecap Manis Bango, Mahkota.
+- Master Outlet (stores): 760 outlets with fields: custcode, name, outlettype, address, city, area, contactperson, idcard. Types include Groceries Store, Kiosk Pasar, Wholesale, Minimarket Local, etc. Areas include Mataram, Cakranegara, Praya, Selaparang, Ampenan, Sandubaya, etc.
+- Master Supplier (vendors): 2 vendors (PD-0109, PD-0110) with fields: suplcode, name, address, blocked status.
+
+DO NOT generate questions about:
+- Sales/revenue/omset data (not available)
+- Stock/inventory levels (not available)
+- Historical trends or time-series data (not available)
+- Customer purchase history (not available)
+- Profit margins or HPP/cost data (not available)
+- Employee or HR data (not available)
+- Which outlets sell which products (no product-outlet mapping exists)
+- Product availability at specific outlets (not available)
+- Delivery or logistics data (not available)
 
 {language_instruction}
 
@@ -147,6 +278,26 @@ async def chat(body: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse
     """
     _check_llm_available()
 
+    # Short-circuit for greetings/chitchat — no need for RAG
+    greeting_response = _detect_greeting(body.query, body.language.value)
+    if greeting_response:
+        return ChatResponse(
+            answer=greeting_response,
+            source_attributions=[],
+            retrieval_metadata={
+                "retrieval_mode": body.retrieval_mode.value,
+                "documents_retrieved": 0,
+                "query_time_ms": 0,
+            },
+            token_usage={
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+            },
+            response_type="greeting",
+            step_limit_reached=False,
+        )
+
     container = get_service_container()
 
     try:
@@ -200,6 +351,9 @@ async def chat(body: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse
             "chunk_index": attr.get("chunk_index", 0),
         })
 
+    # Resolve vector-store IDs to real DB file records for preview support
+    source_attributions = _resolve_source_attributions(db, source_attributions)
+
     token_usage = result.get("token_usage", {})
     retrieval_metadata = result.get("retrieval_metadata", {})
 
@@ -241,6 +395,21 @@ async def chat_stream(
         HTTPException 503: LLM not configured or packages missing.
     """
     _check_llm_available()
+
+    # Short-circuit for greetings/chitchat — no need for RAG
+    greeting_response = _detect_greeting(body.query, body.language.value)
+    if greeting_response:
+        async def greeting_generator() -> AsyncGenerator[dict, None]:
+            yield {"event": "token", "data": json.dumps({"content": greeting_response})}
+            yield {"event": "sources", "data": json.dumps({"source_attributions": []})}
+            yield {"event": "metadata", "data": json.dumps({
+                "retrieval_mode": body.retrieval_mode.value,
+                "documents_retrieved": 0,
+                "token_usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            })}
+            yield {"event": "done", "data": json.dumps({})}
+
+        return EventSourceResponse(greeting_generator(), media_type="text/event-stream")
 
     container = get_service_container()
 
@@ -287,6 +456,9 @@ async def chat_stream(
                     "department": metadata.get("department", ""),
                     "chunk_index": metadata.get("chunk_index", 0),
                 })
+
+            # Resolve vector-store IDs to real DB file records for preview support
+            source_attributions = _resolve_source_attributions(db, source_attributions)
 
             # Stream tokens from the RAG chain
             token_count = 0
