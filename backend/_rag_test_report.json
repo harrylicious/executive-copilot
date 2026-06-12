@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-06-04T20:35:18.672624",
+  "tests": [
+    {
+      "name": "Vector store state",
+      "collection": "kb_chunks",
+      "chunk_count": 1197,
+      "embedding_dim": 1536,
+      "status": "pass"
+    },
+    {
+      "name": "Search: AGUS SUEB BIANTARA",
+      "query": "AGUS SUEB BIANTARA",
+      "query_embedding_dim": 1536,
+      "total_results": 5,
+      "results": [
+        {
+          "score": 0.4652,
+          "file_id": 25,
+          "department": "master",
+          "chunk_index": 8,
+          "text_preview": "02012912980002\nJBD17060 | AGUS HAMDI | Kiosk Pasar | PASAR PAGUTAN | NULL | MATARAM | Mataram | AGUS HAMDI | 5203531127502702\nJBD14921 | AGUS SALIM | Kiosk Pasar | JL. ANEKA  PASAR DASAN AGUNG. BLOK C | NULL | MATARAM | Selaparang | AGUS SALIM | 5202044107840000\nJBD17904 | AGUS SUEB BIANTARA | Groce"
+        },
+        {
+          "score": 0.4576,
+          "file_id": 25,
+          "department": "master",
+          "chunk_index": 14,
+          "text_preview": "AYU PUTU SUARTAMI | Kiosk Pasar | ANGSOKA BTN SWETA SAYO BARU KEL TURIDA KEC SANDUBAYA | NULL | MATARAM | Sandubaya | AYU PUTU SUARTAMI | 5271064407750005\nJBD5121 | AYU SUKMA LINDURIYATI | Groceries Store | LINGSAR | NULL | LOMBOK BARAT | Lingsar | AYU SUKMA LINDURIYATI | 5201126706730001\nJBD13091 |"
+        },
+        {
+          "score": 0.4497,
+          "file_id": 25,
+          "department": "master",
+          "chunk_index": 71,
+          "text_preview": "7112790116\nJBD11015 | NI NENGAH ASTINAWATI | Kiosk Pasar | GUBUK BALI JEMBATAN KEMBAR LEMBAR | NULL | LOMBOK BARAT | Lembar | NI NENGAH ASTINAWATI | 680329267069\nJBD3761 | NI NENGAH SUKERTI | Kiosk Pasar | JL. Dalam Pasar Renteng Dekat Yen | NULL | LOMBOK TENGAH | Praya | NI NENGAH SUKERTI | 5202016"
+        },
+        {
+          "score": 0.4474,
+          "file_id": 25,
+          "department": "master",
+          "chunk_index": 97,
+          "text_preview": "| SUBANDRI | Groceries Store | BONJERUK DEPAN PASAR BONJERUK | NULL | LOMBOK TENGAH | Jonggat | SUBANDRI | 5202120607830002\nJBD0372 | SUBHAN HADI | Kiosk Pasar | PASAR SAYANG - SAYANG | NULL | KODYA MATARAM | Cakranegara | SUBHAN HADI | 5201081003910004\nJBD15217 | SUBIANTO | Groceries Kiosk | DUSUN "
+        },
+        {
+          "score": 0.4314,
+          "file_id": 25,
+          "department": "master",
+          "chunk_index": 58,
+          "text_preview": "n Wholesale KA | JL.A.A.GEDE NGURAH SEBELAH UTARA PASAR ABIAN TUBUH | NULL | MATARAM | Sandubaya | 01.562.024.8-092.000 | 01.562.024.8-092.000 | PT.LOTTE SHOPPING INDONESIA | JL.LINGKAR LUAR SELATAN 5 &6 CIRACAS JAKARTA TIMUR\nJBD12823 | LUKI HERDIAN JUNIZAH S | Kiosk Pasar | PASAR BERTAIS SAMPING TO"
+        }
+      ],
+      "status": "pass",
+      "min_score_threshold": 0.3
+    },
+    {
+      "name": "Search: JBD17904",
+      "query": "JBD17904",
+      "total_results": 3,
+      "top_score": 0.6504,
+      "top_text_preview": " JBD17825-001 | JBHO | JBD | D-GE-A | SMW-GE-A-1/JBD17825/08.04.26/JBD | PD-0109\nSJBD-2604-0607 | Jual | JBD2126 | SMW-GE-A-1 | 2026-04-08 00:00:00 | 8993496109956 | 10 | 104003 | JBD2126-001 | JBHO |",
+      "status": "pass"
+    },
+    {
+      "name": "Search: master outlet",
+      "query": "master outlet",
+      "total_results": 3,
+      "top_score": 0.3812,
+      "top_text_preview": "dress1 | address2 | city | email | blocked\nPD-0109 | SARI AGROTAMA PERSADA D | JL. PULO KAMBING RAYA KAV. IIE/7 | False\nPD-0110 | UPFIELD DISTRIBUTION INDONESIA PT | GREEN OFFICE PARK 9  GROUND FLOOR ",
+      "status": "pass"
+    },
+    {
+      "name": "Search: MOutlet",
+      "query": "MOutlet",
+      "total_results": 3,
+      "top_score": 0.3687,
+      "top_text_preview": "dress1 | address2 | city | email | blocked\nPD-0109 | SARI AGROTAMA PERSADA D | JL. PULO KAMBING RAYA KAV. IIE/7 | False\nPD-0110 | UPFIELD DISTRIBUTION INDONESIA PT | GREEN OFFICE PARK 9  GROUND FLOOR ",
+      "status": "pass"
+    },
+    {
+      "name": "MOutlet schema registration",
+      "schema_found": true,
+      "status": "pass"
+    }
+  ]
+}

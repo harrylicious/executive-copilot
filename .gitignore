@@ -1,0 +1,71 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+
+# ========================
+# Node / Frontend
+# ========================
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# ========================
+# Environment & Secrets
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# IDE & Editor
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# OS
+# ========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ========================
+# Database & Local Data
+# ========================
+*.db
+*.sqlite3
+chroma_db/
+index_cache/
+
+# ========================
+# Build Artifacts & Caches
+# ========================
+*.egg-info/
+*.log
+coverage/
+htmlcov/
+.coverage
+
+# ========================
+# Misc
+# ========================
+.omo/
+.opencode/
+staging/

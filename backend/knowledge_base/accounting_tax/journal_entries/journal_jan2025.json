@@ -1,0 +1,6 @@
+[
+  {"date":"2025-01-02","account":"Cash","debit":25000000,"credit":0},
+  {"date":"2025-01-02","account":"Revenue","debit":0,"credit":25000000},
+  {"date":"2025-01-05","account":"Inventory","debit":12000000,"credit":0},
+  {"date":"2025-01-05","account":"Cash","debit":0,"credit":12000000}
+]
