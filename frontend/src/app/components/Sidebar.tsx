@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Building2, MessageSquare, Database, Users, Settings,
+  Building2, Users, Settings,
   LayoutDashboard, ChevronRight, LogOut, Bell, Shield,
   Menu, X, Layers, Sun, Moon, Search, GitBranch, Upload
 } from "lucide-react";
@@ -38,14 +38,12 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Utama",
     items: [
       { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["staff", "executive", "admin"] },
-      { id: "chat", label: "Copilot Chat", icon: MessageSquare, roles: ["staff", "executive", "admin"] },
       { id: "search", label: "Search", icon: Search, roles: ["staff", "executive", "admin"] },
     ],
   },
   {
     label: "Knowledge",
     items: [
-      { id: "knowledge", label: "Knowledge Base", icon: Database, roles: ["staff", "executive", "admin"] },
       { id: "explorer", label: "File Explorer", icon: Search, roles: ["staff", "executive", "admin"] },
       { id: "graph", label: "Knowledge Graph", icon: GitBranch, roles: ["admin", "executive"] },
     ],

@@ -69,7 +69,13 @@ IMPORTANT RULES:
 - Questions about "berapa jumlah", "berapa banyak", "total" → simple_retrieval
 - Questions about filtering (harga di antara X dan Y, berat di atas X) → simple_retrieval
 - Questions asking "satuan produk Y" or product attributes → simple_retrieval
+- Meta-questions about the documents/data (e.g., "apakah ada data transaksi", "apa saja \
+isi dokumen ini", "apakah ada produk X") → ALWAYS simple_retrieval (answer from statistics)
+- Questions asking if certain data exists (stok, transaksi, penjualan) → simple_retrieval \
+(system will answer that it's not available)
 - Only use multi_step when the query genuinely requires COMBINING data from different sheets
+- NEVER classify a question as clarification if it asks about products, outlets, vendors, \
+data availability, or document contents
 
 Conversation history (if any):
 {history}

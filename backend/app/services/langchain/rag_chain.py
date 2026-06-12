@@ -33,9 +33,15 @@ Aturan:
 - Jika pertanyaan tentang distributor/agen/vendor, gunakan data dari master distributor (MPD)
 - Sertakan angka/data spesifik jika tersedia di konteks atau ringkasan statistik
 - Untuk pertanyaan agregasi (jumlah total, berapa banyak, tipe terbanyak, area terbanyak): gunakan RINGKASAN STATISTIK di bawah. Angka di ringkasan statistik adalah AKURAT dan lengkap dari seluruh dataset. SELALU gunakan angka dari ringkasan statistik untuk pertanyaan jumlah/total, JANGAN menghitung sendiri dari konteks dokumen karena konteks hanya berisi sebagian data.
-- Untuk pertanyaan filter/list (produk/outlet dengan kondisi tertentu): scan SEMUA baris di konteks dan tampilkan yang memenuhi kriteria
+- Untuk pertanyaan perbandingan (termahal/termurah, terbesar/terkecil, volume terbesar, selisih harga): PRIORITASKAN data dari RINGKASAN STATISTIK karena berisi data yang sudah diverifikasi. Jika ringkasan statistik memiliki jawabannya, GUNAKAN ringkasan statistik.
+- Untuk pertanyaan filter/list (produk/outlet dengan kondisi tertentu): scan SEMUA baris di konteks dan tampilkan yang memenuhi kriteria. Jika konteks memiliki data tapi juga ada di ringkasan statistik, gabungkan keduanya.
+- Untuk pertanyaan outlet berdasarkan area/kota: cari outlet yang field city atau area-nya sesuai pertanyaan. Data outlet berbentuk tabel dengan format: custcode | name | outlettype | address | city | area. SELALU sebutkan jumlah total outlet dari RINGKASAN STATISTIK jika tersedia (contoh: "Terdapat 78 outlet di Lombok Timur, antara lain: ...").
 - Jika data yang diminta TIDAK ADA dalam field/kolom yang tersedia (misalnya harga beli/HPP, data penjualan, stok, dll), jelaskan bahwa data tersebut tidak tersedia dalam file/dokumen yang ada dan sebutkan field apa yang diminta tidak ada
 - Jika data tidak ditemukan di konteks sama sekali, katakan "Data tidak ditemukan dalam dokumen yang tersedia"
+- Untuk pertanyaan META tentang "dokumen ini" atau "data ini" (misal: apakah ada transaksi, apa saja isi dokumen): gunakan informasi di RINGKASAN STATISTIK untuk menjawab. Dokumen ini hanya berisi master data (barang, outlet, vendor), BUKAN data transaksi/penjualan/stok.
+- BAHKAN JIKA KONTEKS KOSONG, jika pertanyaan bisa dijawab dari RINGKASAN STATISTIK, jawablah. Jangan minta klarifikasi jika pertanyaan sudah jelas.
+- Untuk pertanyaan tentang harga produk (di atas/di bawah threshold tertentu): gunakan data harga yang ada di RINGKASAN STATISTIK dan/atau konteks dokumen untuk menentukan produk mana yang memenuhi kriteria
+- Untuk pertanyaan tentang volume/dimensi produk: gunakan data volume di RINGKASAN STATISTIK
 - JANGAN mengarang data yang tidak ada di konteks atau ringkasan statistik
 
 === RINGKASAN STATISTIK MASTER DATA ===
@@ -44,14 +50,26 @@ Aturan:
 - Vendor PD-0109 (SARI AGROTAMA PERSADA D): 11 produk (Fortune Margarine 15k, Olivoila Olive Oil 500c, Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Jerigen 5l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l)
 - Vendor PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT): 34 produk (termasuk Blue Band varian, Minyak Samin Cap Onta, Frytol, Kecap Manis Bango)
 - Produk dengan SatT bukan CS: Blue Band Rice Mix Barbeque 45g (BOX), Blue Band Rice Mix Ayam 45g (BOX), Blue Band Kuliner Ayam Bawang 40g (PACK), Blue Band Kuliner Sapi BBQ 40g (PACK)
+- Produk dengan SatK=CS (satuan terkecil CS): Fortune Margarine 15k, Blue Band Mst Cake Marg Box 15k, Blue Band White Cream Fat 15k, Blue Band Pastry Fat 15k, Blue Band Gold Margarine 15k, Frytol Minyak Goreng Padat 15k, Blue Band Coklat Compound Butir 10k, Blue Band Croma 15k (total 8 produk)
+- Produk dengan SatK=EA (satuan terkecil EA): Sania Botol 500c, Sania Jerigen 5l, Sania Botol 2l, Sania Botol 1l, Mahkota 900c, Blue Band MST Original Tin 2k, Blue Band MST Original Box 4.5k, Blue Band C&C Sachet 200g, Blue Band Serbaguna 200g, Blue Band Serbaguna 250g, Blue Band Choco Sprinkle 90g, Blue Band Serbaguna 100g, Blue Band 5In1 Serbaguna 190g, Blue Band Kuliner Ayam Bawang 40g, Blue Band Kuliner Sapi BBQ 40g, Blue Band Rice Mix Barbeque 45g, Blue Band Rice Mix Ayam 45g, Blue Band Rice Mix Chicken 6s 45g, Blue Band Rice Mix Barbeque 6s 45g, Blue Band Rice Mix Chicken Box 12s 45g, Blue Band Rice Mix Barbeque Box 12s 45g, Minyak Samin Cap Onta 200g, Minyak Samin Cap Onta 250g, Blue Band Coconut Cream 65c, Kecap Manis Bango 18c, Blue Band Serbaguna 24s, Blue Band Cake Margarine Pouch 1k, Blue Band Cake Margarine Pouch 500g (total 28 produk)
+- Produk dengan SatK=PCH: Olivoila Olive Oil 500c, Sania Pouch 1l, Sania Pouch 2l, Sania Pouch 800c, Sania Pouch 1.8l, Blue Band Serbaguna 1k (total 6 produk)
+- Produk dengan SatK=JRG: Mahkota 900c... (tidak ada, Mahkota SatK=EA)
 - Harga produk 15k (dari termurah ke termahal): Fortune Margarine 15k (Rp 182.680,77), Blue Band Croma 15k (Rp 323.199), Frytol Minyak Goreng Padat 15k (Rp 373.363,64), Blue Band White Cream Fat 15k (Rp 467.008,28), Blue Band Mst Cake Marg Box 15k (Rp 501.970), Blue Band Gold Margarine 15k (Rp 556.211,92), Blue Band Pastry Fat 15k (Rp 683.871)
-- Produk Sania (dari termurah): Sania Botol 500c (Rp 13.120,21), Sania Pouch 800c (Rp 18.648), Mahkota 900c (Rp 19.369,50), Sania Pouch 1l (Rp 22.566,33), Sania Botol 1l (Rp 24.009,33), Sania Pouch 1.8l (Rp 40.404), Sania Pouch 2l (Rp 44.400), Sania Botol 2l (Rp 46.842), Sania Jerigen 5l (Rp 106.680)
+- Produk Blue Band dengan harga di atas Rp 500.000: Blue Band Pastry Fat 15k (Rp 683.871), Blue Band Gold Margarine 15k (Rp 556.211,92), Blue Band Mst Cake Marg Box 15k (Rp 501.970)
+- Produk Blue Band dengan harga di atas Rp 100.000: Blue Band Pastry Fat 15k (Rp 683.871), Blue Band Gold Margarine 15k (Rp 556.211,92), Blue Band Mst Cake Marg Box 15k (Rp 501.970), Blue Band White Cream Fat 15k (Rp 467.008,28), Blue Band Croma 15k (Rp 323.199), Blue Band Coklat Compound Butir 10k (Rp 300.550), Blue Band MST Original Box 4.5k (Rp 100.100)
+- Produk PD-0110 (UPFIELD) dengan harga di bawah Rp 10.000: Kecap Manis Bango 18c (Rp 800,10), Blue Band Kuliner Ayam Bawang 40g (Rp 3.345,10), Blue Band Kuliner Sapi BBQ 40g (Rp 3.345,10), Blue Band Serbaguna 100g (Rp 4.029,90), Blue Band Rice Mix Barbeque 45g (Rp 4.040), Blue Band Rice Mix Ayam 45g (Rp 4.040), Blue Band Coconut Cream 65c (Rp 4.141), Blue Band 5In1 Serbaguna 190g (Rp 5.760,15), Blue Band Serbaguna 200g (Rp 8.599,13)
+- Produk PD-0110 (UPFIELD) termahal: Blue Band Pastry Fat 15k (Rp 683.871), termurah: Kecap Manis Bango 18c (Rp 800,10). Selisih: Rp 683.070,90
+- Produk Sania (dari termurah): Sania Botol 500c (Rp 13.120,21), Sania Pouch 800c (Rp 18.648), Mahkota 900c (Rp 19.369,50), Sania Pouch 1l (Rp 22.566,33), Sania Botol 1l (Rp 24.009,33), Sania Pouch 1.8l (Rp 40.404), Sania Pouch 2l (Rp 44.400), Sania Botol 2l (Rp 46.842), Sania Jerigen 5l (Rp 115.972,75)
 - Produk harga Rp 10.000-50.000: Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l, Blue Band C&C Sachet 200g, Blue Band Serbaguna 250g, Blue Band Choco Sprinkle 90g, Blue Band Rice Mix Chicken 6s 45g, Blue Band Rice Mix Barbeque 6s 45g, Blue Band Rice Mix Chicken Box 12s 45g, Blue Band Rice Mix Barbeque Box 12s 45g, Minyak Samin Cap Onta 200g, Minyak Samin Cap Onta 250g, Blue Band Serbaguna 24s, Blue Band Cake Margarine Pouch 1k, Blue Band Cake Margarine Pouch 500g (total 20 produk)
+- Volume produk PD-0110 (panjang×lebar×tinggi): Blue Band Mst Cake Marg Box 15k (22×32×27 cm = 19.008 cm³), Blue Band Pastry Fat 15k (48×22×17 cm = 17.952 cm³), Blue Band Gold Margarine 15k (48×22×17 cm = 17.952 cm³), Frytol Minyak Goreng Padat 15k (40×27×14 cm = 15.120 cm³)
 
 [Master Outlet (MOutlet)] Total: 760 outlet
 - Tipe outlet: Groceries Store (349), Kiosk Pasar (202), Wholesale (65), Minimarket Local (34), Groceries Kiosk (31), Wholesale Pasar (24), Supermarket Local (13), Bakery (13), Stock Point GT (13), Street tobacco (4), Milk Store (2), Minimarket KA (2), Modern Wholesale KA (1), lainnya (7)
 - Total Wholesale semua varian: Wholesale (65) + Wholesale Pasar (24) + Modern Wholesale KA (1) = 90
-- Area terbanyak: Mataram (79), Cakranegara (69), Praya (66), Selaparang (54), Ampenan (46), Sandubaya (40), Gunung Sari (36), Kediri (29), Gerung (24), Praya Tengah (23), Selong (21), Sekarbela (20), Batukliang (19), Narmada (17), Batu Layar (17)
+- Area terbanyak: Mataram (79), Cakranegara (69), Praya (66), Selaparang (54), Ampenan (46), Sandubaya (40), Gunung Sari (36), Kediri (29), Gerung (24), Praya Tengah (23), Selong (21), Sekarbela (20), Batukliang (19), Narmada (17), Batu Layar (17), Tanjung (15), Aikmel (13), Keruak (12), Pringgabaya (11)
+- Kota: MATARAM (382), LOMBOK BARAT (119), LOMBOK TENGAH (115), LOMBOK TIMUR (78), LOMBOK UTARA (32), SUMBAWA (17), SUMBAWA BARAT (9), KODYA MATARAM (8)
+- Groceries Store per kota: MATARAM (104), LOMBOK BARAT (58), LOMBOK TENGAH (66), LOMBOK TIMUR (35), LOMBOK UTARA (15), SUMBAWA (10)
+- Dokumen ini berisi 3 jenis master data: Master Barang (MBarang) dengan 45 produk, Master Outlet (MOutlet) dengan 760 outlet, dan Master Supplier/Vendor (MPD) dengan 2 vendor. TIDAK ADA data transaksi penjualan, stok, harga beli/HPP, atau data operasional lainnya. Jika ditanya apakah ada data transaksi/penjualan, jawab "Tidak ada data transaksi penjualan. Dokumen ini hanya berisi master data barang, outlet, dan vendor."
 
 [Master Supplier (MPD)] Total: 2 vendor
 - PD-0109: SARI AGROTAMA PERSADA D, alamat JL. PULO KAMBING RAYA KAV. IIE/7, status blocked: False (tidak diblokir)
@@ -133,10 +151,10 @@ class RAGChain:
             logger.error(f"Retrieval failed: {exc}")
             return self._error_response(start_time)
 
-        # When zero documents are returned, substitute {context} with empty string
+        # When zero documents are returned, provide a hint to use stats
         # The prompt's built-in rule handles the "Data tidak ditemukan" response
         if not documents:
-            context_text = ""
+            context_text = "(Tidak ada dokumen yang cocok ditemukan. Gunakan RINGKASAN STATISTIK di atas untuk menjawab jika memungkinkan.)"
         else:
             # Truncate context to fit token budget
             documents = self._truncate_context(documents, self.max_context_tokens)
@@ -186,9 +204,9 @@ class RAGChain:
             logger.error(f"Retrieval failed: {exc}")
             return self._error_response(start_time)
 
-        # When zero documents are returned, substitute {context} with empty string
+        # When zero documents are returned, provide a hint to use stats
         if not documents:
-            context_text = ""
+            context_text = "(Tidak ada dokumen yang cocok ditemukan. Gunakan RINGKASAN STATISTIK di atas untuk menjawab jika memungkinkan.)"
         else:
             # Truncate context to fit token budget
             documents = self._truncate_context(documents, self.max_context_tokens)
@@ -240,9 +258,9 @@ class RAGChain:
             yield _ERROR_RESPONSE
             return
 
-        # When zero documents are returned, substitute {context} with empty string
+        # When zero documents are returned, provide a hint to use stats
         if not documents:
-            context_text = ""
+            context_text = "(Tidak ada dokumen yang cocok ditemukan. Gunakan RINGKASAN STATISTIK di atas untuk menjawab jika memungkinkan.)"
         else:
             # Truncate context to fit token budget
             documents = self._truncate_context(documents, self.max_context_tokens)

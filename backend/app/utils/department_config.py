@@ -11,6 +11,7 @@ from pathlib import Path
 
 
 DEPARTMENTS: dict[str, list[str]] = {
+    "master": ["barang", "outlet", "distributor"],
     "demand_supply": [
         "demand_plans",
         "supply_plans",
@@ -43,6 +44,12 @@ DEPARTMENTS: dict[str, list[str]] = {
 
 
 DEPARTMENT_META: dict[str, dict] = {
+    "master": {
+        "name": "Master Data",
+        "color": "blue",
+        "description": "Data master: barang, outlet, distributor",
+        "outputs": ["barang", "outlet", "distributor"],
+    },
     "demand_supply": {
         "name": "Demand-Supply Planning",
         "color": "purple",

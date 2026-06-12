@@ -46,6 +46,7 @@ class QueryRouter:
                 "minyak samin", "margarine", "pastry", "btl", "jrg",
                 "satk", "satb", "satt", "berisi", "harga jual", "harga_jual",
                 "mahal", "murah", "termahal", "termurah",
+                "transaksi", "penjualan", "dokumen", "master data",
             ],
             "barang",
         ),
@@ -56,6 +57,10 @@ class QueryRouter:
                 "tipe outlet", "outlettype", "minimarket", "groceries", "kiosk",
                 "sandubaya", "cakranegara", "praya", "lingsar", "lembar",
                 "jonggat", "selaparang", "sekarbela",
+                "lombok", "tanjung", "selong", "gerung", "kediri",
+                "narmada", "gunung sari", "batu layar", "batukliang",
+                "keruak", "aikmel", "pringgabaya", "kopang",
+                "pujut", "sumbawa", "bima",
             ],
             "outlet",
         ),
@@ -224,8 +229,9 @@ class QueryRouter:
         """Boost results containing exact keyword matches from the query.
 
         Extracts identifiable codes (JBD*, PD-*, product codes like 8-digit numbers)
-        from the query and checks if any results contain them. If not found in
-        current results, performs a broader text-scan on the index to find matching rows.
+        and location/area names from the query and checks if any results contain them.
+        If not found in current results, performs a broader text-scan on the index
+        to find matching rows.
 
         Args:
             query: The original user query.
@@ -249,26 +255,56 @@ class QueryRouter:
         # Product barcodes: 8+ digit numbers
         codes.extend(re.findall(r'\b\d{8,}\b', lowered))
 
-        if not codes:
+        # Extract location/area names for outlet queries
+        location_terms = []
+        location_area_patterns = []  # More precise patterns for area field matching
+        if decision.filename_filter == "outlet":
+            # Known areas/cities that might appear in outlet queries
+            known_locations = [
+                "lombok timur", "lombok barat", "lombok tengah", "lombok utara",
+                "mataram", "sumbawa", "sumbawa barat", "kodya mataram",
+                "tanjung", "aikmel", "keruak", "pringgabaya", "selong",
+                "gerung", "kediri", "narmada", "gunung sari", "batu layar",
+                "batukliang", "kopang", "pujut", "praya", "jonggat",
+                "ampenan", "cakranegara", "sandubaya", "selaparang",
+                "sekarbela", "lingsar", "lembar", "praya tengah",
+            ]
+            for loc in known_locations:
+                if loc in lowered:
+                    location_terms.append(loc)
+                    # Generate precise area/city field patterns
+                    location_area_patterns.append(f"area: {loc}")
+                    location_area_patterns.append(f"city: {loc}")
+                    location_area_patterns.append(f"| {loc} |")
+
+        if not codes and not location_terms:
             return results
 
-        # Check if current results already contain the codes
-        code_match_count = 0
-        for result in results:
-            content = result.get("content", "").lower()
-            if any(code in content for code in codes):
-                code_match_count += 1
+        # Check if the TOP results (first 50) already contain relevant matches
+        # Only check the results that will actually be kept after top_k filtering
+        check_results = results[:50]
+        if location_area_patterns:
+            code_match_count = 0
+            for result in check_results:
+                content = result.get("content", "").lower()
+                if any(pat in content for pat in location_area_patterns):
+                    code_match_count += 1
+        else:
+            code_match_count = 0
+            for result in check_results:
+                content = result.get("content", "").lower()
+                if any(term in content for term in codes):
+                    code_match_count += 1
 
-        # If we have enough matches for a vendor code (listing query), return as-is
-        # Only boost if very few or no matches found
+        # If we have enough precise matches in the top results, return as-is
         if code_match_count >= 3:
             return results
 
         # Not found — do a brute-force text scan on the master index
-        # This handles cases where vector similarity doesn't surface exact code matches
+        # This handles cases where vector similarity doesn't surface exact matches
         if store.master_index is not None:
             try:
-                # Get all documents from master index and search for the code
+                # Get all documents from master index and search for the terms
                 all_docs = store.master_index.similarity_search_by_vector(
                     embedding=[0.0] * 384,  # dummy vector
                     k=1000,  # get as many as possible
@@ -276,14 +312,25 @@ class QueryRouter:
                 keyword_matches = []
                 for doc in all_docs:
                     content_lower = doc.page_content.lower()
-                    if any(code in content_lower for code in codes):
-                        keyword_matches.append({
-                            "content": doc.page_content,
-                            "metadata": doc.metadata if hasattr(doc, 'metadata') else {},
-                            "score": 0.99,  # High score for exact match
-                        })
-                        if len(keyword_matches) >= 50:
-                            break
+                    # For location-based queries, use precise area/city patterns
+                    # to avoid false positives from address fields
+                    if location_area_patterns:
+                        if any(pat in content_lower for pat in location_area_patterns):
+                            keyword_matches.append({
+                                "content": doc.page_content,
+                                "metadata": doc.metadata if hasattr(doc, 'metadata') else {},
+                                "score": 0.99,  # High score for exact match
+                            })
+                    elif codes:
+                        if any(code in content_lower for code in codes):
+                            keyword_matches.append({
+                                "content": doc.page_content,
+                                "metadata": doc.metadata if hasattr(doc, 'metadata') else {},
+                                "score": 0.99,
+                            })
+
+                    if len(keyword_matches) >= 50:
+                        break
 
                 if keyword_matches:
                     # Prepend keyword matches to results

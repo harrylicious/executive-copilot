@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, FileText, Folder, Calendar, HardDrive, Tag, Sparkles, Check, Loader2, Pencil } from "lucide-react";
+import { X, FileText, Folder, Calendar, HardDrive, Tag, Sparkles, Check, Loader2, Pencil, Trash2 } from "lucide-react";
 import type { FileNode } from "../../../types";
 import { TagEditor } from "./TagEditor";
 import { suggestTags, updateFileTags, suggestRename, renameFile } from "../../../api/kb";
@@ -9,6 +9,7 @@ interface MetadataSidebarProps {
   onClose: () => void;
   onTagsChange?: (tags: string[]) => void;
   onRename?: (newName: string) => void;
+  onDeleteFile?: () => void;
 }
 
 function formatSize(bytes: number): string {
@@ -29,7 +30,7 @@ function formatDate(dateStr: string): string {
   }
 }
 
-export function MetadataSidebar({ file, onClose, onTagsChange, onRename }: MetadataSidebarProps) {
+export function MetadataSidebar({ file, onClose, onTagsChange, onRename, onDeleteFile }: MetadataSidebarProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [suggestError, setSuggestError] = useState<string | null>(null);
@@ -272,22 +273,7 @@ export function MetadataSidebar({ file, onClose, onTagsChange, onRename }: Metad
             </div>
           )}
 
-          {file.sensitivityLevel && (
-            <div className="flex items-start gap-2.5">
-              <Tag size={13} className="text-muted-foreground shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] text-muted-foreground block">Sensitivity</span>
-                <span className={[
-                  "text-xs px-1.5 py-0.5 rounded-full",
-                  file.sensitivityLevel === "high" ? "bg-red-500/10 text-red-500" :
-                  file.sensitivityLevel === "medium" ? "bg-amber-500/10 text-amber-500" :
-                  "bg-emerald-500/10 text-emerald-500",
-                ].join(" ")}>
-                  {file.sensitivityLevel}
-                </span>
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Tags */}
@@ -357,6 +343,19 @@ export function MetadataSidebar({ file, onClose, onTagsChange, onRename }: Metad
             onTagsChange={handleTagsChange}
           />
         </div>
+
+        {/* Delete file */}
+        {onDeleteFile && (
+          <div className="pt-3 border-t border-border">
+            <button
+              onClick={onDeleteFile}
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs text-red-500 hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 size={12} />
+              Hapus File
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

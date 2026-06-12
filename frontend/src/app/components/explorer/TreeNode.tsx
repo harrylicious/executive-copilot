@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, Building2, Folder, FileText } from "lucide-react";
+import { ChevronRight, Building2, Folder, FileText, Trash2, Loader2 } from "lucide-react";
 import { cn } from "../../../utils/cn";
 import type { TreeNode as TreeNodeType } from "../../../types";
 
@@ -8,6 +8,8 @@ interface TreeNodeProps {
   depth: number;
   selectedId?: string;
   onSelect: (node: TreeNodeType) => void;
+  onDelete?: (node: TreeNodeType) => void;
+  deletingId?: string | null;
 }
 
 function getIcon(type: string) {
@@ -25,12 +27,14 @@ const DEPT_COLORS: Record<string, string> = {
   "Logistic": "#3b82f6",
 };
 
-export function TreeNode({ node, depth, selectedId, onSelect }: TreeNodeProps) {
+export function TreeNode({ node, depth, selectedId, onSelect, onDelete, deletingId }: TreeNodeProps) {
   const [expanded, setExpanded] = useState(depth < 1);
   const hasChildren = node.children && node.children.length > 0;
   const isSelected = selectedId === node.id;
   const Icon = getIcon(node.type);
   const deptColor = node.color || DEPT_COLORS[node.name];
+  const isDeleting = deletingId === node.id;
+  const canDelete = node.type === "file" || node.type === "folder";
 
   return (
     <div>
@@ -72,16 +76,21 @@ export function TreeNode({ node, depth, selectedId, onSelect }: TreeNodeProps) {
 
         <span className="truncate flex-1">{node.name}</span>
 
-        {node.sensitivity && (
-          <span className={cn(
-            "text-[10px] px-1.5 py-0.5 rounded-full shrink-0",
-            node.sensitivity === "high" ? "bg-red-500/10 text-red-500" :
-            node.sensitivity === "medium" ? "bg-amber-500/10 text-amber-500" :
-            "bg-emerald-500/10 text-emerald-500"
-          )}>
-            {node.sensitivity}
-          </span>
+        {/* Delete button — visible on hover for files and folders */}
+        {canDelete && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.(node);
+            }}
+            disabled={isDeleting}
+            className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-muted-foreground hover:text-red-500 disabled:opacity-40 transition-all shrink-0"
+            title={`Hapus ${node.type === "file" ? "file" : "folder"}`}
+          >
+            {isDeleting ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
+          </button>
         )}
+
       </button>
 
       {hasChildren && expanded && (
@@ -93,6 +102,8 @@ export function TreeNode({ node, depth, selectedId, onSelect }: TreeNodeProps) {
               depth={depth + 1}
               selectedId={selectedId}
               onSelect={onSelect}
+              onDelete={onDelete}
+              deletingId={deletingId}
             />
           ))}
         </div>

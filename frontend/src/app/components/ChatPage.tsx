@@ -97,7 +97,7 @@ const BLOCKED_MESSAGES: Record<ChatbotSettings["nuance"], { id: string; en: stri
   },
 };
 
-interface Props { user: UserProfile; chatbotSettings: ChatbotSettings; }
+interface Props { user: UserProfile; chatbotSettings: ChatbotSettings; onNavigate?: (page: string) => void; }
 
 const NUANCE_PROMPTS: Record<ChatbotSettings["nuance"], { id: string; en: string }> = {
   formal: { id: "Dengan hormat, berikut adalah data yang Saudara minta.", en: "With due respect, here is the data you requested." },
@@ -347,7 +347,7 @@ function hasStructuredData(content: string): boolean {
 
 /* ---------- main ChatPage ---------- */
 
-export function ChatPage({ user, chatbotSettings }: Props) {
+export function ChatPage({ user, chatbotSettings, onNavigate }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -913,7 +913,7 @@ export function ChatPage({ user, chatbotSettings }: Props) {
           </span>
         </div>
         {(user.role === "executive" || user.role === "admin") && (
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-xs">Cakupan:</span>
             <div className="relative">
               <select value={selectedDept} onChange={e => setSelectedDept(e.target.value)}
@@ -923,6 +923,15 @@ export function ChatPage({ user, chatbotSettings }: Props) {
               <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             </div>
           </div>
+        )}
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate("dashboard")}
+            className="ml-auto p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title="Tutup chat"
+          >
+            <X size={16} />
+          </button>
         )}
       </div>
 

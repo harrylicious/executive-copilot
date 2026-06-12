@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, MessageSquare } from "lucide-react";
+import { motion } from "motion/react";
 import { Toaster } from "sonner";
 import { LoginPage } from "./components/LoginPage";
 import { Sidebar } from "./components/Sidebar";
@@ -73,6 +74,15 @@ export default function App() {
     }
   };
 
+  if (page === "chat") {
+    return (
+      <div className="h-screen bg-background overflow-hidden">
+        <ChatPage user={user} chatbotSettings={chatbotSettings} onNavigate={setPage} />
+        <Toaster position="top-right" theme={theme} richColors />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar
@@ -83,9 +93,23 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
       />
-      <main className={`flex-1 overflow-y-auto ${page === "chat" ? "overflow-hidden" : ""}`}>
+      <main className="flex-1 overflow-y-auto">
         {renderPage()}
       </main>
+
+      {/* Floating Action Button — start chat from anywhere */}
+      <motion.button
+        onClick={() => setPage("chat")}
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-[#059669] hover:bg-[#047857] text-white shadow-lg shadow-[#059669]/30 flex items-center justify-center transition-colors"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        title="Buka Copilot Chat"
+      >
+        <MessageSquare size={20} />
+      </motion.button>
+
       <Toaster position="top-right" theme={theme} richColors />
     </div>
   );

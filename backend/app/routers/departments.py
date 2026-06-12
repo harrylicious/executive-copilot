@@ -123,8 +123,10 @@ def get_departments(db: Session = Depends(get_db)):
         )
         tree.append(master_node)
 
-    # ─── Department sections ──────────────────────────────────────────────────
+    # ─── Department sections (Master Data is handled separately above) ────────
     for dept_id, subfolders in DEPARTMENTS.items():
+        if dept_id == "master":
+            continue
         meta = DEPARTMENT_META.get(dept_id, {})
         folder_children: list[TreeNode] = []
         for subfolder in subfolders:

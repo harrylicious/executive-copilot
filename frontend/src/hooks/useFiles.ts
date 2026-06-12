@@ -10,6 +10,7 @@ interface UseFilesReturn {
   filesLoading: boolean;
   filesError: string | null;
   refresh: () => void;
+  removeNode: (nodeId: string) => void;
 }
 
 export function useFiles(): UseFilesReturn {
@@ -55,6 +56,18 @@ export function useFiles(): UseFilesReturn {
     fetchFiles();
   }, [fetchTree, fetchFiles]);
 
+  const removeNode = useCallback((nodeId: string) => {
+    function prune(nodes: TreeNode[]): TreeNode[] {
+      return nodes
+        .filter((n) => n.id !== nodeId)
+        .map((n) => ({
+          ...n,
+          children: n.children ? prune(n.children) : undefined,
+        }));
+    }
+    setTree((prev) => prune(prev));
+  }, []);
+
   useEffect(() => {
     fetchTree();
     fetchFiles();
@@ -68,6 +81,7 @@ export function useFiles(): UseFilesReturn {
     filesLoading,
     filesError,
     refresh,
+    removeNode,
   };
 }
 

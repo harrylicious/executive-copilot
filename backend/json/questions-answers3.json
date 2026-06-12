@@ -1,0 +1,488 @@
+[
+  {
+    "id": 1,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Berapa harga jual Fortune Margarine 15k?",
+    "ground_truth": "Harga jual Fortune Margarine 15k adalah Rp 182.680,77",
+    "source_sheet": "MBarang",
+    "source_field": "Harga Jual",
+    "expected_keywords": [
+      "182680",
+      "182.680",
+      "Fortune Margarine"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Harga jual Fortune Margarine 15k adalah Rp 182.680,77."
+  },
+  {
+    "id": 2,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Apa satuan terkecil (SatK) untuk produk Sania Pouch 1l?",
+    "ground_truth": "Satuan terkecil untuk Sania Pouch 1l adalah PCH (pouch)",
+    "source_sheet": "MBarang",
+    "source_field": "SatK",
+    "expected_keywords": [
+      "PCH",
+      "Sania Pouch 1l"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Satuan terkecil (SatK) untuk produk Sania Pouch 1l adalah PCH."
+  },
+  {
+    "id": 3,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Berapa isi per CS untuk produk Sania Botol 500c?",
+    "ground_truth": "1 CS Sania Botol 500c berisi 24 EA",
+    "source_sheet": "MBarang",
+    "source_field": "Berisi, SatT",
+    "expected_keywords": [
+      "24",
+      "Sania Botol 500c"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Isi per CS untuk produk Sania Botol 500c adalah 24."
+  },
+  {
+    "id": 4,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Berapa berat Blue Band Coklat Compound Butir 10k dalam kg?",
+    "ground_truth": "Berat Blue Band Coklat Compound Butir 10k adalah 9,85 kg",
+    "source_sheet": "MBarang",
+    "source_field": "Berat (kg)",
+    "expected_keywords": [
+      "9.85",
+      "9,85",
+      "Blue Band Coklat Compound"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Berat Blue Band Coklat Compound Butir 10k adalah 9.85 kg."
+  },
+  {
+    "id": 5,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Siapa vendor untuk produk Blue Band Pastry Fat 15k?",
+    "ground_truth": "Vendor untuk Blue Band Pastry Fat 15k adalah PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT)",
+    "source_sheet": "MBarang",
+    "source_field": "Vendor",
+    "expected_keywords": [
+      "PD-0110",
+      "UPFIELD"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Vendor untuk produk Blue Band Pastry Fat 15k adalah UPFIELD DISTRIBUTION INDONESIA PT dengan kode vendor PD-0110."
+  },
+  {
+    "id": 6,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Berapa harga jual Kecap Manis Bango 18c?",
+    "ground_truth": "Harga jual Kecap Manis Bango 18c adalah Rp 800,10",
+    "source_sheet": "MBarang",
+    "source_field": "Harga Jual",
+    "expected_keywords": [
+      "800",
+      "Kecap Manis Bango"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Harga jual Kecap Manis Bango 18c adalah Rp 800,10."
+  },
+  {
+    "id": 7,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Apa tipe outlet dari customer dengan kode JBD3254?",
+    "ground_truth": "Customer JBD3254 (ABDUL HAFIZ) memiliki tipe outlet Groceries Store",
+    "source_sheet": "MOutlet",
+    "source_field": "outlettype",
+    "expected_keywords": [
+      "Groceries Store",
+      "JBD3254"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Tipe outlet dari customer dengan kode JBD3254 adalah Groceries Store."
+  },
+  {
+    "id": 8,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Nama lengkap dan alamat vendor PD-0110 itu apa?",
+    "ground_truth": "Vendor PD-0110 adalah UPFIELD DISTRIBUTION INDONESIA PT, beralamat di GREEN OFFICE PARK 9 GROUND FLOOR WING A ZONE, TANGERANG",
+    "source_sheet": "MPD",
+    "source_field": "name, address1, city",
+    "expected_keywords": [
+      "UPFIELD DISTRIBUTION INDONESIA PT",
+      "TANGERANG"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Nama lengkap vendor PD-0110 adalah UPFIELD DISTRIBUTION INDONESIA PT, dengan alamat di GREEN OFFICE PARK 9 GROUND FLOOR, WING A ZONE JL, GRAND BOULEVARD BSD GREEN OFFICE PARK, TANGERANG."
+  },
+  {
+    "id": 9,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Di area mana customer ARMIATI berada?",
+    "ground_truth": "Customer ARMIATI (JBD0485) berada di area Aikmel, kota LOMBOK TIMUR",
+    "source_sheet": "MOutlet",
+    "source_field": "area, city",
+    "expected_keywords": [
+      "Aikmel",
+      "ARMIATI"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Bisakah Anda menjelaskan lebih lanjut tentang ARMIATI yang Anda maksud? Apakah itu sebuah perusahaan, produk, atau sesuatu yang lain?"
+  },
+  {
+    "id": 10,
+    "category": "Factual Lookup",
+    "difficulty": "easy",
+    "question": "Berapa harga jual Blue Band Serbaguna 100g?",
+    "ground_truth": "Harga jual Blue Band Serbaguna 100g adalah Rp 4.029,90",
+    "source_sheet": "MBarang",
+    "source_field": "Harga Jual",
+    "expected_keywords": [
+      "4029",
+      "4.029",
+      "Blue Band Serbaguna 100g"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Harga jual Blue Band Serbaguna 100g adalah Rp 4.029,90."
+  },
+  {
+    "id": 11,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Apa saja nama outlet yang ada di Lombok Timur?",
+    "ground_truth": "Outlet yang berada di kota LOMBOK TIMUR antara lain: ABDUL HAFIZ, AGUSTINA SURYANI, ANDY WIJAYA, APRIZA ROSMA SARI, ARMIATI, DENY FIRMANSYAH, ERITONA, ERNI JOHAN, FEBRIYAN HIDAYAT, H DATOK LALU LUKMAN NH, dan banyak lainnya. Total terdapat 78 outlet di Lombok Timur.",
+    "source_sheet": "MOutlet",
+    "source_field": "name, city",
+    "expected_keywords": [
+      "LOMBOK TIMUR",
+      "ABDUL HAFIZ",
+      "ANDY WIJAYA",
+      "78"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Terdapat 78 outlet di Lombok Timur, antara lain:\n\n1. NI NENGAH SUKERTI - Kiosk Pasar, JL. Dalam Pasar Renteng Dekat Yen\n2. SRI WAHYUNI - Kiosk Pasar, PS.PANCOR.BLOK 4\n3. H RIJAL SAKKA - Minimarket Local, JL. RAYA LB. LOMBOK. SEBELUM PERTIGAAN PLBHAN LAMA\n4. SRI AYU NINGSIH - Wholesale, MASBAGIK\n5. AGIL DZUHURI RAMADHAN - Supermarket Local, LINGKUNGAN TEBERO RT 007 RW 002 KEL LENENG\n\nDan masih banyak outlet lainnya."
+  },
+  {
+    "id": 12,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Apa saja produk yang dimiliki oleh vendor SARI AGROTAMA PERSADA D?",
+    "ground_truth": "Vendor SARI AGROTAMA PERSADA D (PD-0109) memiliki produk: Fortune Margarine 15k, Olivoila Olive Oil 500c, Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Jerigen 5l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l. Total 11 produk.",
+    "source_sheet": "MBarang, MPD",
+    "source_field": "Nama, Vendor",
+    "expected_keywords": [
+      "PD-0109",
+      "SARI AGROTAMA PERSADA",
+      "Sania",
+      "Fortune Margarine",
+      "Olivoila"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Vendor SARI AGROTAMA PERSADA D (kode PD-0109) memiliki 11 produk, antara lain:\n\n1. Fortune Margarine 15k\n2. Olivoila Olive Oil 500c\n3. Sania Botol 1l\n4. Sania Pouch 1l\n5. Sania Botol 2l\n6. Sania Pouch 2l\n7. Sania Jerigen 5l\n8. Sania Botol 500c\n9. Mahkota 900c\n10. Sania Pouch 800c\n11. Sania Pouch 1.8l"
+  },
+  {
+    "id": 13,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Produk apa saja yang satuan terkecilnya (SatK) adalah EA?",
+    "ground_truth": "Produk dengan satuan terkecil EA antara lain: Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l, Blue Band MST Original Tin 2k, Blue Band MST Original Box 4.5k, Blue Band C&C Sachet 200g, Blue Band Serbaguna 200g, dan banyak produk Blue Band lainnya.",
+    "source_sheet": "MBarang",
+    "source_field": "SatK",
+    "expected_keywords": [
+      "EA",
+      "Sania Botol 500c",
+      "Blue Band MST Original Tin"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Terdapat 28 produk dengan satuan terkecil (SatK) EA, antara lain:\n\n1. Sania Botol 500c\n2. Sania Jerigen 5l\n3. Sania Botol 2l\n4. Sania Botol 1l\n5. Mahkota 900c\n6. Blue Band MST Original Tin 2k\n7. Blue Band MST Original Box 4.5k\n8. Blue Band C&C Sachet 200g\n9. Blue Band Serbaguna 200g\n10. Blue Band Serbaguna 250g\n11. Blue Band Choco Sprinkle 90g\n12. Blue Band Serbaguna 100g\n13. Blue Band 5In1 Serbaguna 190g\n14. Blue Band Kuliner Ayam Bawang 40g\n15. Blue Band Kuliner Sapi BBQ 40g\n16. Blue Band Rice"
+  },
+  {
+    "id": 14,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Produk apa saja dari vendor UPFIELD DISTRIBUTION INDONESIA PT yang beratnya di bawah 1 kg?",
+    "ground_truth": "Produk dari PD-0110 (UPFIELD) dengan berat di bawah 1 kg antara lain: Blue Band C&C Sachet 200g (0,21 kg), Blue Band Serbaguna 200g (0,21 kg), Blue Band Rice Mix Barbeque 45g (0,05 kg), Blue Band Rice Mix Ayam 45g (0,05 kg), Blue Band Serbaguna 250g (0,27 kg), Blue Band Choco Sprinkle 90g (0,95 kg), Blue Band Serbaguna 100g (0,11 kg), Blue Band 5In1 Serbaguna 190g (0,19 kg), Blue Band Kuliner Ayam Bawang 40g (0,04 kg), Blue Band Kuliner Sapi BBQ 40g (0,04 kg), Blue Band Coconut Cream 65c (0,06 kg).",
+    "source_sheet": "MBarang, MPD",
+    "source_field": "Berat (kg), Vendor",
+    "expected_keywords": [
+      "UPFIELD",
+      "PD-0110",
+      "Blue Band Serbaguna 200g",
+      "Blue Band Rice Mix"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Produk dari vendor UPFIELD DISTRIBUTION INDONESIA PT (kode vendor PD-0110) yang beratnya di bawah 1 kg adalah sebagai berikut:\n\n1. **Blue Band Kuliner Ayam Bawang 40g**\n   - Berat: 0.04 kg\n   - Harga Jual: Rp 3.345,10\n\n2. **Blue Band Kuliner Sapi BBQ 40g**\n   - Berat: 0.04 kg\n   - Harga Jual: Rp 3.345,10\n\n3. **Kecap Manis Bango 18c**\n   - Berat: 2.88 kg (meskipun berat totalnya di atas 1 kg, satuan terkecil yang dijual adalah 1 CS yang berisi 144 unit)\n\n4. **Blue Band Rice Mix Ayam 45g**\n   - Be"
+  },
+  {
+    "id": 15,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Berapa jumlah outlet bertipe Groceries Store di kota Mataram?",
+    "ground_truth": "Terdapat 104 outlet bertipe Groceries Store di kota Mataram.",
+    "source_sheet": "MOutlet",
+    "source_field": "outlettype, city",
+    "expected_keywords": [
+      "104",
+      "Groceries Store",
+      "Mataram"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Terdapat 104 outlet bertipe Groceries Store di kota Mataram."
+  },
+  {
+    "id": 16,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Produk apa saja yang satuan terkecilnya adalah CS?",
+    "ground_truth": "Produk dengan satuan terkecil CS antara lain: Fortune Margarine 15k, Blue Band Mst Cake Marg Box 15k, Blue Band White Cream Fat 15k, Blue Band Pastry Fat 15k, Blue Band Gold Margarine 15k, Frytol Minyak Goreng Padat 15k, Blue Band Coklat Compound Butir 10k, Blue Band Croma 15k.",
+    "source_sheet": "MBarang",
+    "source_field": "SatK",
+    "expected_keywords": [
+      "CS",
+      "Fortune Margarine 15k",
+      "Blue Band Pastry Fat 15k",
+      "Blue Band Croma 15k"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Terdapat 8 produk dengan satuan terkecil (SatK) adalah CS, antara lain:\n\n1. Fortune Margarine 15k\n2. Blue Band Mst Cake Marg Box 15k\n3. Blue Band White Cream Fat 15k\n4. Blue Band Pastry Fat 15k\n5. Blue Band Gold Margarine 15k\n6. Frytol Minyak Goreng Padat 15k\n7. Blue Band Coklat Compound Butir 10k\n8. Blue Band Croma 15k"
+  },
+  {
+    "id": 17,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Apa saja nama outlet yang berada di area Tanjung?",
+    "ground_truth": "Outlet yang berada di area Tanjung antara lain: ACHMAD SUHAERI, AHMAD RIFAI, DODI PERMANA PUTRA, FADAQ, FITRIYANTI ISHAK S.Si, dan lainnya. Total terdapat 15 outlet di area Tanjung.",
+    "source_sheet": "MOutlet",
+    "source_field": "name, area",
+    "expected_keywords": [
+      "Tanjung",
+      "ACHMAD SUHAERI",
+      "FADAQ",
+      "15"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Terdapat 15 outlet di area Tanjung, antara lain:\n\n1. ACHMAD SUHAERI\n2. AHMAD RIFAI\n3. DODI PERMANA PUTRA\n4. FADAQ\n5. FITRIYANTI ISHAK, S. Si\n6. HILU AHYANI\n7. I GEDE WIDYA, S.Pd\n8. I GUSTI KETUT RUNA\n9. I GUSTI MADE PANCA AP\n10. KHAERIYAH\n11. LALU SUHARMANTO\n12. MUSTAIN\n13. NI MADE PUSPITA SARI\n14. NI NYOMAN LIANA SARI\n15. PRISTA STRIMAGUNA YP"
+  },
+  {
+    "id": 18,
+    "category": "Filtering",
+    "difficulty": "medium",
+    "question": "Produk Blue Band apa saja yang harganya di atas Rp 500.000?",
+    "ground_truth": "Produk Blue Band dengan harga jual di atas Rp 500.000 adalah: Blue Band Pastry Fat 15k (Rp 683.871), Blue Band Gold Margarine 15k (Rp 556.211,92), Blue Band Mst Cake Marg Box 15k (Rp 501.970).",
+    "source_sheet": "MBarang",
+    "source_field": "Nama, Harga Jual",
+    "expected_keywords": [
+      "Blue Band Pastry Fat 15k",
+      "Blue Band Gold Margarine 15k",
+      "683.871",
+      "556.211"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Produk Blue Band yang harganya di atas Rp 500.000 adalah sebagai berikut:\n1. Blue Band Pastry Fat 15k - Rp 683.871\n2. Blue Band Gold Margarine 15k - Rp 556.211,92\n3. Blue Band Mst Cake Marg Box 15k - Rp 501.970\n\nJumlah total produk Blue Band di atas Rp 500.000 adalah 3 produk."
+  },
+  {
+    "id": 19,
+    "category": "Cross-Sheet",
+    "difficulty": "medium",
+    "question": "Apa saja yang dimiliki oleh vendor SARI AGROTAMA PERSADA D — termasuk alamat dan daftar produknya?",
+    "ground_truth": "Vendor SARI AGROTAMA PERSADA D (PD-0109) beralamat di JL. PULO KAMBING RAYA KAV. IIE/7. Produk yang disupply: Fortune Margarine 15k, Olivoila Olive Oil 500c, Sania Botol 1l, Sania Pouch 1l, Sania Botol 2l, Sania Pouch 2l, Sania Jerigen 5l, Sania Botol 500c, Mahkota 900c, Sania Pouch 800c, Sania Pouch 1.8l.",
+    "source_sheet": "MBarang, MPD",
+    "source_field": "Vendor, Nama, address1",
+    "expected_keywords": [
+      "SARI AGROTAMA PERSADA",
+      "JL. PULO KAMBING RAYA",
+      "Sania",
+      "Olivoila"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Vendor SARI AGROTAMA PERSADA D berlokasi di JL. PULO KAMBING RAYA KAV. IIE/7. Mereka menawarkan 11 produk, yaitu:\n\n1. Fortune Margarine 15k\n2. Olivoila Olive Oil 500c\n3. Sania Botol 1l\n4. Sania Pouch 1l\n5. Sania Botol 2l\n6. Sania Pouch 2l\n7. Sania Jerigen 5l\n8. Sania Botol 500c\n9. Mahkota 900c\n10. Sania Pouch 800c\n11. Sania Pouch 1.8l"
+  },
+  {
+    "id": 20,
+    "category": "Cross-Sheet",
+    "difficulty": "hard",
+    "question": "Produk dari vendor UPFIELD DISTRIBUTION INDONESIA PT yang harganya di bawah Rp 10.000 apa saja?",
+    "ground_truth": "Produk dari PD-0110 (UPFIELD) dengan harga di bawah Rp 10.000 adalah: Kecap Manis Bango 18c (Rp 800,10), Blue Band Kuliner Ayam Bawang 40g (Rp 3.345,10), Blue Band Kuliner Sapi BBQ 40g (Rp 3.345,10), Blue Band Serbaguna 100g (Rp 4.029,90), Blue Band Rice Mix Barbeque 45g (Rp 4.040), Blue Band Rice Mix Ayam 45g (Rp 4.040), Blue Band Coconut Cream 65c (Rp 4.141), Blue Band 5In1 Serbaguna 190g (Rp 5.760,15), Blue Band Serbaguna 200g (Rp 8.599,13).",
+    "source_sheet": "MBarang, MPD",
+    "source_field": "Vendor, Harga Jual",
+    "expected_keywords": [
+      "UPFIELD",
+      "PD-0110",
+      "Kecap Manis Bango",
+      "Blue Band Kuliner",
+      "Blue Band Rice Mix"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Produk dari vendor UPFIELD DISTRIBUTION INDONESIA PT (kode vendor PD-0110) yang harganya di bawah Rp 10.000 adalah sebagai berikut:\n\n1. Kecap Manis Bango 18c - Rp 800,10\n2. Blue Band Kuliner Ayam Bawang 40g - Rp 3.345,10\n3. Blue Band Kuliner Sapi BBQ 40g - Rp 3.345,10\n4. Blue Band Serbaguna 100g - Rp 4.029,90\n5. Blue Band Rice Mix Barbeque 45g - Rp 4.040\n6. Blue Band Rice Mix Ayam 45g - Rp 4.040\n7. Blue Band Coconut Cream 65c - Rp 4.141\n8. Blue Band 5In1 Serbaguna 190g - Rp 5.760,15\n9. Blue Band"
+  },
+  {
+    "id": 21,
+    "category": "Cross-Sheet",
+    "difficulty": "hard",
+    "question": "Berapa total nilai produk (jumlah harga jual semua produk) dari vendor PD-0109?",
+    "ground_truth": "Total harga jual semua produk dari vendor PD-0109 (SARI AGROTAMA PERSADA D) adalah jumlah dari 11 produk: Fortune Margarine 15k (Rp 182.680,77) + Olivoila Olive Oil 500c (Rp 111.000) + Sania Botol 1l (Rp 24.009,33) + Sania Pouch 1l (Rp 22.566,33) + Sania Botol 2l (Rp 46.842) + Sania Pouch 2l (Rp 44.400) + Sania Jerigen 5l (Rp 115.972,75) + Sania Botol 500c (Rp 13.120,21) + Mahkota 900c (Rp 19.369,50) + Sania Pouch 800c (Rp 18.648) + Sania Pouch 1.8l = total sekitar Rp 598.608,89 (tidak termasuk Sania Pouch 1.8l).",
+    "source_sheet": "MBarang, MPD",
+    "source_field": "Harga Jual, Vendor",
+    "expected_keywords": [
+      "PD-0109",
+      "SARI AGROTAMA PERSADA",
+      "182.680",
+      "111.000"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Vendor PD-0109 adalah SARI AGROTAMA PERSADA D yang beralamat di JL. PULO KAMBING RAYA KAV. IIE/7 dan statusnya tidak diblokir. Vendor ini menjual 11 produk, namun hanya 9 produk yang harga jualnya tersedia. Berikut adalah harga jual masing-masing produk:\n\n1. Sania Botol 500c: Rp 13.120,21\n2. Sania Pouch 800c: Rp 18.648\n3. Mahkota 900c: Rp 19.369,50\n4. Sania Pouch 1l: Rp 22.566,33\n5. Sania Botol 1l: Rp 24.009,33\n6. Sania Pouch 1.8l: Rp 40.404\n7. Sania Pouch 2l: Rp 44.400\n8. Sania Botol 2l: Rp 46."
+  },
+  {
+    "id": 22,
+    "category": "Cross-Sheet",
+    "difficulty": "medium",
+    "question": "Customer dengan kode JBD14704 namanya siapa, berlokasi di mana, dan tipe outletnya apa?",
+    "ground_truth": "Customer JBD14704 adalah AGUSTINA SURYANI, berlokasi di area Keruak, kota LOMBOK TIMUR. Tipe outletnya adalah Wholesale.",
+    "source_sheet": "MOutlet",
+    "source_field": "name, area, city, outlettype",
+    "expected_keywords": [
+      "AGUSTINA SURYANI",
+      "Keruak",
+      "LOMBOK TIMUR",
+      "Wholesale"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Customer dengan kode JBD14704 adalah Agustina Suryani, berlokasi di Kampung Koko, Kel. Tanjung Luar, Kec. Keruak, Lombok Timur, dan tipe outletnya adalah Wholesale."
+  },
+  {
+    "id": 23,
+    "category": "Calculation",
+    "difficulty": "hard",
+    "question": "Jika 1 CS Sania Jerigen 5l berisi 4 JRG, berapa harga per jerigen-nya?",
+    "ground_truth": "Harga jual 1 CS Sania Jerigen 5l adalah Rp 115.972,75. Karena 1 CS berisi 4 JRG, maka harga per jerigen = Rp 115.972,75 / 4 = Rp 28.993,19.",
+    "source_sheet": "MBarang",
+    "source_field": "Harga Jual, Berisi",
+    "expected_keywords": [
+      "115.972",
+      "28.993",
+      "Sania Jerigen 5l"
+    ],
+    "_test_status": "FAIL",
+    "_test_actual": "Dalam 1 CS Sania Jerigen 5l, terdapat 4 jerigen. Namun, informasi mengenai harga per jerigen tidak tersedia secara langsung. Sebagai perbandingan, harga jual 1 CS Sania Botol 500c adalah Rp 13.120,21 untuk 24 unit, tetapi tidak ada data yang menyebutkan harga untuk Sania Jerigen 5l. Oleh karena itu, untuk menghitung harga per jerigen Sania, informasi harga total untuk 1 CS Sania Jerigen 5l diperlukan, yang saat ini tidak tersedia.",
+    "_test_note": "Matched 1/3 keywords. Missed: ['115.972', '28.993']"
+  },
+  {
+    "id": 24,
+    "category": "Calculation",
+    "difficulty": "hard",
+    "question": "Produk dari vendor PD-0110 mana yang memiliki volume terbesar berdasarkan dimensi panjang × lebar × tinggi?",
+    "ground_truth": "Produk PD-0110 dengan volume terbesar berdasarkan dimensi adalah Blue Band Mst Cake Marg Box 15k dengan dimensi 22 × 32 × 27 cm = 19.008 cm³.",
+    "source_sheet": "MBarang",
+    "source_field": "Panjang (cm), Lebar (cm), Tinggi (cm), Vendor",
+    "expected_keywords": [
+      "Blue Band Mst Cake Marg Box 15k",
+      "volume",
+      "19008"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Produk dari vendor PD-0110 (UPFIELD DISTRIBUTION INDONESIA PT) yang memiliki volume terbesar berdasarkan dimensi panjang, lebar, dan tinggi adalah **Blue Band Mst Cake Marg Box 15k**, dengan volume sebesar **19.008 cm³**. Volume ini dihitung menggunakan rumus \\( \\text{Volume} = \\text{Panjang} \\times \\text{Lebar} \\times \\text{Tinggi} \\), di mana semua dimensi diukur dalam satuan yang sama."
+  },
+  {
+    "id": 25,
+    "category": "Calculation",
+    "difficulty": "hard",
+    "question": "Berapa selisih harga antara produk termahal dan termurah dari vendor PD-0110?",
+    "ground_truth": "Produk termahal PD-0110 adalah Blue Band Pastry Fat 15k (Rp 683.871) dan termurah adalah Kecap Manis Bango 18c (Rp 800,10). Selisihnya adalah Rp 683.871 - Rp 800,10 = Rp 683.070,90.",
+    "source_sheet": "MBarang",
+    "source_field": "Harga Jual, Vendor",
+    "expected_keywords": [
+      "683.871",
+      "800",
+      "683.070",
+      "Blue Band Pastry Fat",
+      "Kecap Manis Bango"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Vendor PD-0110, yaitu UPFIELD DISTRIBUTION INDONESIA PT, menawarkan produk termahal yaitu Blue Band Pastry Fat 15k dengan harga Rp 683.871, dan produk termurah yaitu Kecap Manis Bango 18c dengan harga Rp 800,10. Selisih harga antara produk termahal dan termurah adalah Rp 683.871 - Rp 800,10 = Rp 683.070,90."
+  },
+  {
+    "id": 26,
+    "category": "Calculation",
+    "difficulty": "medium",
+    "question": "Berapa rata-rata berat (kg) produk Blue Band yang satuan terkecilnya EA?",
+    "ground_truth": "Produk Blue Band dengan SatK=EA antara lain Blue Band MST Original Tin 2k (2,26 kg), Blue Band MST Original Box 4.5k (4,63 kg), Blue Band C&C Sachet 200g (0,21 kg), dll. Rata-rata berat dihitung dari keseluruhan produk Blue Band ber-SatK EA.",
+    "source_sheet": "MBarang",
+    "source_field": "Berat (kg), SatK, Nama",
+    "expected_keywords": [
+      "Blue Band",
+      "EA",
+      "rata-rata",
+      "berat"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Rata-rata berat produk Blue Band yang satuan terkecilnya EA adalah 0.762 kg. Produk-produk yang termasuk dalam kategori ini meliputi:\n\n1. Blue Band Serbaguna 100g: 0.11 kg\n2. Blue Band Serbaguna 200g: 0.21 kg\n3. Blue Band C&C Sachet 200g: 0.21 kg\n4. Blue Band Rice Mix Ayam 45g: 0.05 kg\n5. Blue Band Rice Mix Barbeque 45g: 0.05 kg\n6. Blue Band Rice Mix Chicken 6s 45g: 0.05 kg\n7. Blue Band Rice Mix Barbeque 6s 45g: 0.05 kg\n8. Blue Band MST Original Box 4.5k: 4.63 kg\n9. Blue Band MST Original Tin 2k"
+  },
+  {
+    "id": 27,
+    "category": "Out-of-scope",
+    "difficulty": "easy",
+    "question": "Berapa stok saat ini untuk Blue Band Serbaguna 200g?",
+    "ground_truth": "Data stok tidak tersedia dalam dokumen yang ada. Dokumen hanya memuat data master barang, vendor, dan outlet.",
+    "source_sheet": null,
+    "source_field": null,
+    "expected_keywords": [
+      "tidak ditemukan",
+      "tidak tersedia"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Data tidak ditemukan dalam dokumen yang tersedia. Stok saat ini tidak tercantum dalam file yang ada."
+  },
+  {
+    "id": 28,
+    "category": "Out-of-scope",
+    "difficulty": "easy",
+    "question": "Apakah ada produk merek Indomie dalam data ini?",
+    "ground_truth": "Tidak ada produk merek Indomie dalam data ini. Data tidak ditemukan.",
+    "source_sheet": "MBarang",
+    "source_field": null,
+    "expected_keywords": [
+      "tidak ditemukan",
+      "tidak ada"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Data tidak ditemukan dalam dokumen yang tersedia."
+  },
+  {
+    "id": 29,
+    "category": "Out-of-scope",
+    "difficulty": "easy",
+    "question": "Siapa sales yang menangani outlet ANDY WIJAYA?",
+    "ground_truth": "Data salesman atau penanggung jawab sales tidak tersedia dalam dokumen yang ada.",
+    "source_sheet": null,
+    "source_field": null,
+    "expected_keywords": [
+      "tidak ditemukan",
+      "tidak tersedia"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Data mengenai sales yang menangani outlet ANDY WIJAYA tidak ditemukan dalam dokumen yang tersedia. Namun, lokasi outlet tersebut terletak di JL PRINGEBAYE NO 11, LOMBOK TIMUR, area Pringgabaya. Informasi lebih lanjut, termasuk jam operasional, juga tidak tersedia."
+  },
+  {
+    "id": 30,
+    "category": "Out-of-scope",
+    "difficulty": "easy",
+    "question": "Apakah ada data transaksi penjualan dalam dokumen ini?",
+    "ground_truth": "Tidak ada data transaksi penjualan. Dokumen ini hanya berisi master data barang (MBarang), master vendor/principal distributor (MPD), dan master outlet (MOutlet).",
+    "source_sheet": null,
+    "source_field": null,
+    "expected_keywords": [
+      "tidak ada",
+      "tidak tersedia",
+      "master data"
+    ],
+    "_test_status": "PASS",
+    "_test_actual": "Tidak ada data transaksi penjualan. Dokumen ini hanya berisi master data barang, outlet, dan vendor."
+  }
+]

@@ -9,15 +9,22 @@ interface FileUploadProps {
   onUploadComplete?: (response: UploadResponse) => void;
 }
 
+interface DeptOption {
+  id: string;
+  name: string;
+}
+
 /**
- * Flatten a department tree into a list of department names.
+ * Flatten a department tree into a list of department options.
  * Only nodes with type "department" are included.
+ * Extracts the internal department ID from the node.id field (format: "dept-{id}").
  */
-function flattenDepartments(nodes: TreeNode[]): string[] {
-  const result: string[] = [];
+function flattenDepartments(nodes: TreeNode[]): DeptOption[] {
+  const result: DeptOption[] = [];
   for (const node of nodes) {
     if (node.type === "department") {
-      result.push(node.name);
+      const deptId = node.id?.replace(/^dept-/, "") || node.name;
+      result.push({ id: deptId, name: node.name });
     }
     if (node.children) {
       result.push(...flattenDepartments(node.children));
@@ -28,7 +35,7 @@ function flattenDepartments(nodes: TreeNode[]): string[] {
 
 export function FileUpload({ department = "", onUploadComplete }: FileUploadProps) {
   const [dept, setDept] = useState(department);
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<DeptOption[]>([]);
   const [loadingDepts, setLoadingDepts] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -42,11 +49,11 @@ export function FileUpload({ department = "", onUploadComplete }: FileUploadProp
     fetchDepartments()
       .then((tree) => {
         if (!cancelled) {
-          const names = flattenDepartments(tree);
-          setDepartments(names);
+          const depts = flattenDepartments(tree);
+          setDepartments(depts);
           // Auto-select first department if none was provided
-          if (!dept && names.length > 0) {
-            setDept(names[0]);
+          if (!dept && depts.length > 0) {
+            setDept(depts[0].id);
           }
         }
       })
@@ -67,7 +74,7 @@ export function FileUpload({ department = "", onUploadComplete }: FileUploadProp
     setUploading(true);
     setResult(null);
     try {
-      const res = await uploadFile(file, dept.trim(), "uploads");
+      const res = await uploadFile(file, dept.trim());
       setResult({ success: true, message: `Uploaded: ${file.name}` });
       onUploadComplete?.(res);
     } catch (err) {
@@ -116,9 +123,9 @@ export function FileUpload({ department = "", onUploadComplete }: FileUploadProp
             className="flex-1 bg-input border border-border rounded-lg px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary/40 appearance-none"
           >
             <option value="">Select department...</option>
-            {departments.map((name) => (
-              <option key={name} value={name}>
-                {name}
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.id}>
+                {dept.name}
               </option>
             ))}
           </select>
