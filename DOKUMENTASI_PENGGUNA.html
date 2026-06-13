@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumentasi Pengguna - Executive Copilot</title>
+<style>
+@page {
+    size: A4;
+    margin: 2cm 2.5cm;
+}
+@media print {
+    body { font-size: 10pt; }
+    h2 { page-break-after: avoid; }
+    h3 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+    .no-print { display: none; }
+}
+* { box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: #fff;
+}
+h1 {
+    font-size: 24pt;
+    color: #059669;
+    border-bottom: 3px solid #059669;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+h2 {
+    font-size: 16pt;
+    color: #1e40af;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 6px;
+    margin-top: 36px;
+}
+h3 {
+    font-size: 13pt;
+    color: #374151;
+    margin-top: 24px;
+}
+h4 {
+    font-size: 11pt;
+    color: #4b5563;
+    margin-top: 18px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 10pt;
+}
+th {
+    background-color: #f0fdf4;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+}
+td {
+    border: 1px solid #d1d5db;
+    padding: 6px 12px;
+    vertical-align: top;
+}
+tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+code {
+    background-color: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #dc2626;
+}
+pre {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 9pt;
+    line-height: 1.5;
+    overflow-x: auto;
+}
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+blockquote {
+    border-left: 4px solid #059669;
+    margin: 18px 0;
+    padding: 12px 18px;
+    background-color: #f0fdf4;
+    color: #374151;
+    font-style: italic;
+    border-radius: 0 6px 6px 0;
+}
+hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 28px 0;
+}
+ul, ol {
+    padding-left: 24px;
+}
+li {
+    margin-bottom: 4px;
+}
+strong {
+    color: #111827;
+}
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<h1 id="dokumentasi-pengguna-executive-copilot">📘 Dokumentasi Pengguna — Executive Copilot</h1>
+<blockquote>
+<p>Panduan lengkap untuk pengguna non-teknis aplikasi Executive Copilot milik PT. Jembatan Baru.</p>
+</blockquote>
+<hr />
+<h2 id="daftar-isi">Daftar Isi</h2>
+<ul>
+<li><a href="#apa-itu-executive-copilot">Apa Itu Executive Copilot?</a></li>
+<li><a href="#siapa-yang-menggunakan">Siapa yang Menggunakan?</a></li>
+<li><a href="#fitur-utama">Fitur Utama</a></li>
+<li><a href="#cara-mengakses-aplikasi">Cara Mengakses Aplikasi</a></li>
+<li><a href="#halaman-halaman-aplikasi">Halaman-Halaman Aplikasi</a></li>
+<li><a href="#cara-menggunakan-copilot-chat-tanya-ai">Cara Menggunakan Copilot Chat (Tanya AI)</a></li>
+<li><a href="#pengelolaan-knowledge-base-basis-pengetahuan">Pengelolaan Knowledge Base (Basis Pengetahuan)</a></li>
+<li><a href="#struktur-knowledge-base-di-backend">Struktur Knowledge Base di Backend</a></li>
+<li><a href="#hak-akses-berdasarkan-peran">Hak Akses Berdasarkan Peran</a></li>
+<li><a href="#pengaturan-aplikasi">Pengaturan Aplikasi</a></li>
+<li><a href="#faq-pertanyaan-umum">FAQ (Pertanyaan Umum)</a></li>
+</ul>
+<hr />
+<h2 id="apa-itu-executive-copilot">Apa Itu Executive Copilot?</h2>
+<p>Executive Copilot adalah <strong>asisten digital cerdas berbasis AI</strong> yang dibuat khusus untuk PT. Jembatan Baru. Bayangkan memiliki seorang asisten yang sudah membaca dan memahami semua dokumen perusahaan — mulai dari data barang, data outlet, laporan keuangan, hingga dokumen logistik — dan bisa menjawab pertanyaan Anda kapan saja dalam Bahasa Indonesia.</p>
+<h3 id="apa-yang-bisa-dilakukan">Apa yang bisa dilakukan?</h3>
+<table>
+<thead>
+<tr>
+<th>Kebutuhan Anda</th>
+<th>Yang Dilakukan Executive Copilot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Berapa jumlah outlet di Mataram?"</td>
+<td>Menjawab langsung dari data master outlet</td>
+</tr>
+<tr>
+<td>"Produk Blue Band mana yang paling mahal?"</td>
+<td>Mencari dan membandingkan harga dari database</td>
+</tr>
+<tr>
+<td>"Tampilkan dokumen departemen Finance"</td>
+<td>Menampilkan daftar file terorganisir per departemen</td>
+</tr>
+<tr>
+<td>"Hubungan antara dokumen A dan B?"</td>
+<td>Menampilkan graph visual koneksi antar dokumen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="siapa-yang-menggunakan">Siapa yang Menggunakan?</h2>
+<p>Aplikasi ini dirancang untuk tiga jenis pengguna:</p>
+<table>
+<thead>
+<tr>
+<th>Peran</th>
+<th>Untuk Siapa</th>
+<th>Akses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Admin</strong></td>
+<td>Tim IT / Administrator</td>
+<td>Akses penuh ke semua fitur dan departemen</td>
+</tr>
+<tr>
+<td><strong>Executive</strong></td>
+<td>Direksi / Manajer Senior</td>
+<td>Akses semua data dan departemen, tanpa manajemen user</td>
+</tr>
+<tr>
+<td><strong>Staff</strong></td>
+<td>Karyawan Departemen</td>
+<td>Hanya akses data departemennya sendiri</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="fitur-utama">Fitur Utama</h2>
+<h3 id="1-copilot-chat-tanya-ai">1. 💬 Copilot Chat (Tanya AI)</h3>
+<p>Tanyakan apa saja dalam Bahasa Indonesia tentang data perusahaan. AI akan mencari jawaban dari dokumen yang sudah di-upload dan memberikan jawaban dengan sumber yang jelas.</p>
+<h3 id="2-knowledge-base-basis-pengetahuan">2. 📁 Knowledge Base (Basis Pengetahuan)</h3>
+<p>Tempat semua dokumen perusahaan disimpan, dikelola, dan diindeks. Dokumen diorganisir per departemen.</p>
+<h3 id="3-dashboard">3. 📊 Dashboard</h3>
+<p>Ringkasan aktivitas: jumlah dokumen, tren pertanyaan, statistik per departemen.</p>
+<h3 id="4-search-pencarian">4. 🔍 Search (Pencarian)</h3>
+<p>Cari dokumen atau informasi spesifik menggunakan pencarian cerdas berbasis vektor.</p>
+<h3 id="5-knowledge-graph">5. 🕸️ Knowledge Graph</h3>
+<p>Visualisasi interaktif yang menunjukkan hubungan antar dokumen (misal: dokumen A mereferensi dokumen B).</p>
+<h3 id="6-ingestion-upload-dokumen">6. 📥 Ingestion (Upload Dokumen)</h3>
+<p>Sistem untuk mengunggah dokumen baru ke dalam knowledge base dengan proses validasi otomatis.</p>
+<h3 id="7-manajemen-user-departemen">7. 👥 Manajemen User &amp; Departemen</h3>
+<p>(Khusus Admin) Kelola pengguna dan struktur departemen.</p>
+<hr />
+<h2 id="cara-mengakses-aplikasi">Cara Mengakses Aplikasi</h2>
+<ol>
+<li>Buka browser (Chrome/Edge/Firefox disarankan)</li>
+<li>Akses alamat: <code>http://[alamat-server]:5173</code></li>
+<li>Masukkan email dan password</li>
+<li>Anda akan masuk ke halaman Dashboard</li>
+</ol>
+<h3 id="akun-demo">Akun Demo</h3>
+<table>
+<thead>
+<tr>
+<th>Email</th>
+<th>Password</th>
+<th>Peran</th>
+<th>Departemen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>admin@jembatanbaru.co.id</td>
+<td>admin123</td>
+<td>Admin</td>
+<td>Accounting Tax</td>
+</tr>
+<tr>
+<td>director@jembatanbaru.co.id</td>
+<td>exec123</td>
+<td>Executive</td>
+<td>Board</td>
+</tr>
+<tr>
+<td>demand@jembatanbaru.co.id</td>
+<td>demand123</td>
+<td>Staff</td>
+<td>Demand Supply</td>
+</tr>
+<tr>
+<td>finance@jembatanbaru.co.id</td>
+<td>finance123</td>
+<td>Staff</td>
+<td>Finance</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="halaman-halaman-aplikasi">Halaman-Halaman Aplikasi</h2>
+<h3 id="dashboard">Dashboard</h3>
+<ul>
+<li>Melihat ringkasan KPI (jumlah dokumen, jumlah query, akurasi)</li>
+<li>Grafik tren pertanyaan 7 hari terakhir</li>
+<li>Distribusi query per departemen</li>
+<li>Aktivitas terbaru</li>
+</ul>
+<h3 id="chat-copilot">Chat (Copilot)</h3>
+<ul>
+<li>Antarmuka percakapan dengan AI</li>
+<li>Jawaban real-time (streaming)</li>
+<li>Setiap jawaban disertai sumber dokumen</li>
+<li>Mendukung percakapan multi-giliran (bisa tanya lanjutan)</li>
+</ul>
+<h3 id="knowledge-base">Knowledge Base</h3>
+<ul>
+<li>Jelajahi dokumen per departemen</li>
+<li>Upload dokumen baru</li>
+<li>Lihat detail file (tipe, ukuran, tag, status)</li>
+<li>Kelola tag dokumen</li>
+</ul>
+<h3 id="explorer">Explorer</h3>
+<ul>
+<li>Jelajahi struktur folder knowledge base</li>
+<li>Navigasi berdasarkan hierarki departemen</li>
+</ul>
+<h3 id="graph-visualisasi">Graph (Visualisasi)</h3>
+<ul>
+<li>Lihat peta hubungan antar dokumen</li>
+<li>Node = dokumen, garis = hubungan/referensi</li>
+<li>Bisa tambah/hapus hubungan manual</li>
+</ul>
+<h3 id="search">Search</h3>
+<ul>
+<li>Pencarian cerdas berbasis makna (bukan hanya kata kunci)</li>
+<li>Tiga mode: lokal (vektor), global (komunitas), kombinasi</li>
+</ul>
+<h3 id="ingestion-dashboard">Ingestion Dashboard</h3>
+<ul>
+<li>(Khusus Admin) Pantau proses upload dan indexing dokumen</li>
+<li>Lihat status job: berhasil, gagal, dalam proses</li>
+</ul>
+<h3 id="pengaturan">Pengaturan</h3>
+<ul>
+<li>Ubah profil</li>
+<li>Konfigurasi chatbot (bahasa, nuansa formal/santai)</li>
+<li>Atur notifikasi</li>
+</ul>
+<hr />
+<h2 id="cara-menggunakan-copilot-chat-tanya-ai">Cara Menggunakan Copilot Chat (Tanya AI)</h2>
+<h3 id="langkah-langkah">Langkah-langkah:</h3>
+<ol>
+<li>Klik ikon 💬 (pesan) di pojok kanan bawah, atau pilih menu "Chat" di sidebar</li>
+<li>Ketik pertanyaan Anda dalam Bahasa Indonesia</li>
+<li>Tunggu jawaban muncul secara streaming (kata per kata)</li>
+<li>Perhatikan bagian <strong>"Sumber"</strong> di bawah jawaban — ini menunjukkan dokumen mana yang digunakan</li>
+</ol>
+<h3 id="contoh-pertanyaan-yang-bisa-ditanyakan">Contoh Pertanyaan yang Bisa Ditanyakan:</h3>
+<table>
+<thead>
+<tr>
+<th>Kategori</th>
+<th>Contoh Pertanyaan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Barang</td>
+<td>"Berapa harga Sania Botol 1 liter?"</td>
+</tr>
+<tr>
+<td>Data Barang</td>
+<td>"Produk apa saja yang harganya di atas Rp 500.000?"</td>
+</tr>
+<tr>
+<td>Data Barang</td>
+<td>"Ada berapa total produk dari vendor Upfield?"</td>
+</tr>
+<tr>
+<td>Data Outlet</td>
+<td>"Berapa jumlah outlet di kota Lombok Barat?"</td>
+</tr>
+<tr>
+<td>Data Outlet</td>
+<td>"Sebutkan outlet bertipe Wholesale di Mataram"</td>
+</tr>
+<tr>
+<td>Data Distributor</td>
+<td>"Siapa saja vendor/distributor yang terdaftar?"</td>
+</tr>
+<tr>
+<td>Umum</td>
+<td>"Apa saja isi dokumen master data ini?"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tips-agar-jawaban-lebih-akurat">Tips Agar Jawaban Lebih Akurat:</h3>
+<ul>
+<li>Gunakan istilah yang spesifik (nama produk, nama kota, tipe outlet)</li>
+<li>Untuk pertanyaan angka/total, AI sudah memiliki ringkasan statistik lengkap</li>
+<li>Jika jawaban kurang tepat, coba rephrase pertanyaan dengan lebih detail</li>
+<li>Anda bisa bertanya lanjutan ("Bandingkan dengan Q2", "Jelaskan lebih detail")</li>
+</ul>
+<h3 id="mode-pencarian-dalam-chat">Mode Pencarian dalam Chat:</h3>
+<ul>
+<li><strong>Local</strong>: Mencari kesamaan makna di dokumen (cocok untuk pertanyaan spesifik)</li>
+<li><strong>Global</strong>: Mencari berdasarkan topik/komunitas dokumen (cocok untuk pertanyaan luas)</li>
+<li><strong>Combined</strong>: Gabungan keduanya (default, paling lengkap)</li>
+</ul>
+<hr />
+<h2 id="pengelolaan-knowledge-base-basis-pengetahuan">Pengelolaan Knowledge Base (Basis Pengetahuan)</h2>
+<h3 id="apa-itu-knowledge-base">Apa Itu Knowledge Base?</h3>
+<p>Knowledge Base adalah <strong>kumpulan semua dokumen perusahaan</strong> yang sudah diproses dan disimpan agar bisa dicari dan ditanyakan melalui AI. Ini seperti "otak" dari Executive Copilot.</p>
+<h3 id="format-dokumen-yang-didukung">Format Dokumen yang Didukung:</h3>
+<ul>
+<li>📄 PDF</li>
+<li>📝 Word (.docx)</li>
+<li>📊 Excel (.xlsx, .xls)</li>
+<li>📋 CSV</li>
+<li>📑 Text (.txt)</li>
+<li>📝 Markdown (.md)</li>
+<li>🖼️ Gambar (.png, .jpg, .tiff) — diproses dengan OCR</li>
+</ul>
+<h3 id="cara-upload-dokumen">Cara Upload Dokumen:</h3>
+<ol>
+<li>Buka halaman <strong>Knowledge Base</strong> atau <strong>Ingestion</strong></li>
+<li>Pilih departemen tujuan</li>
+<li>Pilih subfolder yang sesuai</li>
+<li>Upload file</li>
+<li>Sistem akan otomatis memproses: validasi → ekstraksi teks → pemotongan → embedding</li>
+</ol>
+<h3 id="proses-di-balik-layar-apa-yang-terjadi-setelah-upload">Proses di Balik Layar (Apa yang Terjadi Setelah Upload):</h3>
+<pre><code>Upload File
+    ↓
+1. Validasi (cek format, ukuran, duplikat)
+    ↓
+2. Preprocessing (OCR jika gambar, normalisasi teks, redaksi PII)
+    ↓
+3. Chunking (potong dokumen jadi bagian-bagian kecil yang bermakna)
+    ↓
+4. Embedding (ubah teks jadi representasi numerik untuk pencarian)
+    ↓
+5. Tersimpan dan Siap Dicari!
+</code></pre>
+<hr />
+<h2 id="struktur-knowledge-base-di-backend">Struktur Knowledge Base di Backend</h2>
+<p>Ini adalah bagian penting yang menjelaskan bagaimana dokumen diorganisir di dalam sistem.</p>
+<h3 id="struktur-folder">Struktur Folder</h3>
+<pre><code>knowledge_base/
+├── master/                          ← DATA MASTER (induk)
+│   ├── barang/                      ← Data produk/barang
+│   │   └── Master_Barang_xxx.xlsx
+│   ├── outlet/                      ← Data outlet/toko
+│   └── distributor/                 ← Data vendor/distributor
+│
+└── departments/                     ← DOKUMEN DEPARTEMEN
+    ├── demand_supply/               ← Dept. Demand-Supply Planning
+    │   ├── demand_plans/
+    │   ├── supply_plans/
+    │   ├── deal_orders/
+    │   ├── forecasts/
+    │   └── reference/
+    │
+    ├── accounting_tax/              ← Dept. Controller Accounting Tax
+    │   ├── invoices/
+    │   ├── transactions/
+    │   ├── tax_reports/
+    │   ├── journal_entries/
+    │   └── policies/
+    │
+    ├── logistic/                    ← Dept. Logistic
+    │   ├── inbound/
+    │   ├── outbound/
+    │   ├── warehouse/
+    │   ├── shipping_docs/
+    │   └── sops/
+    │
+    └── finance/                     ← Dept. Finance
+        ├── cashflow/
+        ├── payments/
+        ├── receivables/
+        ├── budgets/
+        └── reports/
+</code></pre>
+<h3 id="penjelasan-dua-jenis-data">Penjelasan Dua Jenis Data</h3>
+<h4 id="1-master-data-master">1. 📘 Master Data (<code>master/</code>)</h4>
+<p>Ini adalah <strong>data referensi utama</strong> perusahaan yang digunakan oleh semua departemen:</p>
+<table>
+<thead>
+<tr>
+<th>Subfolder</th>
+<th>Isi</th>
+<th>Contoh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>barang</code></td>
+<td>Data produk/SKU</td>
+<td>Nama produk, harga, satuan, dimensi, vendor</td>
+</tr>
+<tr>
+<td><code>outlet</code></td>
+<td>Data toko/pelanggan</td>
+<td>Nama outlet, tipe, alamat, kota, area</td>
+</tr>
+<tr>
+<td><code>distributor</code></td>
+<td>Data supplier/vendor</td>
+<td>Nama vendor, alamat, status</td>
+</tr>
+</tbody>
+</table>
+<p>Master data ini bersifat <strong>lintas departemen</strong> — artinya semua pengguna bisa mengakses data ini saat bertanya ke AI. Saat ini berisi:
+- <strong>45 produk</strong> (Blue Band, Sania, Fortune, dll.)
+- <strong>760 outlet</strong> tersebar di Mataram, Lombok Barat, Lombok Tengah, dll.
+- <strong>2 vendor</strong> (Sari Agrotama Persada D dan Upfield Distribution Indonesia)</p>
+<h4 id="2-dokumen-departemen-departments">2. 📂 Dokumen Departemen (<code>departments/</code>)</h4>
+<p>Ini adalah <strong>dokumen spesifik per departemen</strong> yang hanya bisa diakses sesuai peran:</p>
+<table>
+<thead>
+<tr>
+<th>Departemen</th>
+<th>Deskripsi</th>
+<th>Subfolder Utama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Demand Supply</strong></td>
+<td>Rencana beli dan jual</td>
+<td>demand_plans, supply_plans, deal_orders, forecasts</td>
+</tr>
+<tr>
+<td><strong>Accounting Tax</strong></td>
+<td>Pencatatan deal dan transaksi</td>
+<td>invoices, transactions, tax_reports, journal_entries</td>
+</tr>
+<tr>
+<td><strong>Logistic</strong></td>
+<td>Terima, kirim, simpan barang</td>
+<td>inbound, outbound, warehouse, shipping_docs, sops</td>
+</tr>
+<tr>
+<td><strong>Finance</strong></td>
+<td>Pengelolaan keuangan</td>
+<td>cashflow, payments, receivables, budgets, reports</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sistem-dual-index-dua-indeks-pencarian">Sistem Dual-Index (Dua Indeks Pencarian)</h3>
+<p>Sistem Executive Copilot menggunakan <strong>dua indeks terpisah</strong> untuk pencarian yang lebih cerdas:</p>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│              PERTANYAAN PENGGUNA                      │
+│         &quot;Berapa harga Sania Botol 1l?&quot;              │
+└────────────────────────┬────────────────────────────┘
+                         │
+                    Query Router
+                  (Deteksi Keyword)
+                         │
+         ┌───────────────┼───────────────┐
+         ▼                               ▼
+┌─────────────────┐            ┌─────────────────┐
+│  MASTER INDEX   │            │   DEPT INDEX    │
+│                 │            │                 │
+│ Data barang,    │            │ Dokumen per     │
+│ outlet,         │            │ departemen      │
+│ distributor     │            │                 │
+└─────────────────┘            └─────────────────┘
+</code></pre>
+<p><strong>Bagaimana cara kerjanya?</strong></p>
+<ol>
+<li><strong>Query Router</strong> menganalisis pertanyaan Anda dan mendeteksi kata kunci dalam Bahasa Indonesia</li>
+<li>Jika pertanyaan tentang barang/produk/harga → sistem mencari di <strong>Master Index</strong></li>
+<li>Jika pertanyaan tentang outlet/toko → sistem mencari di <strong>Master Index</strong></li>
+<li>Jika pertanyaan tentang dokumen departemen → sistem mencari di <strong>Dept Index</strong></li>
+<li>Hasil dari kedua indeks bisa digabung untuk jawaban yang lebih lengkap</li>
+</ol>
+<h3 id="tingkat-kerahasiaan-dokumen-sensitivity-level">Tingkat Kerahasiaan Dokumen (Sensitivity Level)</h3>
+<p>Setiap subfolder memiliki tingkat kerahasiaan otomatis:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Subfolder</th>
+<th>Artinya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 <strong>Confidential</strong></td>
+<td>deal_orders, tax_reports, reports, budgets, payments</td>
+<td>Hanya yang berwenang</td>
+</tr>
+<tr>
+<td>🟡 <strong>Internal</strong></td>
+<td>invoices, transactions, warehouse, forecasts, dll.</td>
+<td>Untuk internal perusahaan</td>
+</tr>
+<tr>
+<td>🟢 <strong>Public Internal</strong></td>
+<td>sops, reference, policies, shipping_docs</td>
+<td>Bisa dilihat lebih luas</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-tagging-pemberian-tag-otomatis">Auto-Tagging (Pemberian Tag Otomatis)</h3>
+<p>Saat dokumen di-upload, sistem secara otomatis memberikan tag berdasarkan nama file:</p>
+<table>
+<thead>
+<tr>
+<th>Kata Kunci di Nama File</th>
+<th>Tag yang Diberikan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"invoice"</td>
+<td>invoice, accounting</td>
+</tr>
+<tr>
+<td>"deal_beli"</td>
+<td>deal, pembelian, demand_supply</td>
+</tr>
+<tr>
+<td>"cashflow"</td>
+<td>cashflow, keuangan, finance</td>
+</tr>
+<tr>
+<td>"stok"</td>
+<td>stok, warehouse, logistic</td>
+</tr>
+<tr>
+<td>"forecast"</td>
+<td>forecast, perencanaan</td>
+</tr>
+<tr>
+<td>"tax"</td>
+<td>pajak, tax, accounting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="hak-akses-berdasarkan-peran">Hak Akses Berdasarkan Peran</h2>
+<table>
+<thead>
+<tr>
+<th>Fitur</th>
+<th>Admin</th>
+<th>Executive</th>
+<th>Staff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dashboard (semua data)</td>
+<td>✅</td>
+<td>✅</td>
+<td>Dept sendiri saja</td>
+</tr>
+<tr>
+<td>Copilot Chat</td>
+<td>Semua dept</td>
+<td>Semua dept</td>
+<td>Dept sendiri + master</td>
+</tr>
+<tr>
+<td>Knowledge Base</td>
+<td>Semua dept</td>
+<td>Semua dept</td>
+<td>Dept sendiri saja</td>
+</tr>
+<tr>
+<td>Upload Dokumen</td>
+<td>✅</td>
+<td>✅</td>
+<td>Dept sendiri saja</td>
+</tr>
+<tr>
+<td>Manajemen User</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Manajemen Departemen</td>
+<td>✅ (CRUD)</td>
+<td>Lihat saja</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Ingestion Dashboard</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Pengaturan Profil</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Catatan penting</strong>: Staff hanya bisa bertanya dan melihat dokumen dari departemennya sendiri. Namun, data master (barang, outlet, distributor) bisa diakses oleh semua peran.</p>
+</blockquote>
+<hr />
+<h2 id="pengaturan-aplikasi">Pengaturan Aplikasi</h2>
+<h3 id="konfigurasi-chatbot">Konfigurasi Chatbot</h3>
+<p>Di halaman Settings, Anda bisa mengatur:</p>
+<table>
+<thead>
+<tr>
+<th>Pengaturan</th>
+<th>Pilihan</th>
+<th>Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bahasa</strong></td>
+<td>Indonesia, English</td>
+<td>Bahasa jawaban AI</td>
+</tr>
+<tr>
+<td><strong>Nuansa</strong></td>
+<td>Formal, Santai, Profesional, Ramah, Tegas</td>
+<td>Gaya bahasa jawaban</td>
+</tr>
+<tr>
+<td><strong>Batasi Lintas Dept</strong></td>
+<td>Ya / Tidak</td>
+<td>Apakah staff hanya bisa tanya seputar dept-nya</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tema-tampilan">Tema Tampilan</h3>
+<ul>
+<li><strong>Dark Mode</strong> (gelap) — default</li>
+<li><strong>Light Mode</strong> (terang) — bisa diubah lewat tombol ☀️/🌙</li>
+</ul>
+<hr />
+<h2 id="faq-pertanyaan-umum">FAQ (Pertanyaan Umum)</h2>
+<h3 id="q-berapa-besar-file-yang-bisa-di-upload">Q: Berapa besar file yang bisa di-upload?</h3>
+<p><strong>A:</strong> Maksimal 100 MB per file.</p>
+<h3 id="q-format-apa-saja-yang-didukung">Q: Format apa saja yang didukung?</h3>
+<p><strong>A:</strong> PDF, DOCX, XLSX, XLS, CSV, TXT, MD, PNG, JPG, TIFF.</p>
+<h3 id="q-berapa-lama-proses-setelah-upload">Q: Berapa lama proses setelah upload?</h3>
+<p><strong>A:</strong> Untuk dokumen teks biasa (PDF, Word), biasanya beberapa detik. Untuk file gambar yang perlu OCR, bisa memakan waktu lebih lama.</p>
+<h3 id="q-kenapa-ai-tidak-bisa-menjawab-pertanyaan-saya">Q: Kenapa AI tidak bisa menjawab pertanyaan saya?</h3>
+<p><strong>A:</strong> Kemungkinan:
+1. Data yang ditanyakan belum di-upload ke knowledge base
+2. Pertanyaan terlalu ambigu — coba lebih spesifik
+3. Data yang diminta memang tidak ada di dokumen (misal: data penjualan/transaksi belum di-upload)</p>
+<h3 id="q-apakah-ai-bisa-salah">Q: Apakah AI bisa salah?</h3>
+<p><strong>A:</strong> Ya, AI bisa salah. Selalu perhatikan bagian "Sumber" di jawaban untuk memverifikasi. Jika tidak yakin, cross-check dengan dokumen asli.</p>
+<h3 id="q-apakah-data-saya-aman">Q: Apakah data saya aman?</h3>
+<p><strong>A:</strong> Ya. Sistem menggunakan:
+- Role-based access control (akses berdasarkan peran)
+- Tingkat kerahasiaan per subfolder
+- Redaksi PII (data pribadi) otomatis saat ingestion
+- Data tidak dikirim ke luar server kecuali ke OpenAI untuk generate jawaban</p>
+<h3 id="q-siapa-yang-harus-saya-hubungi-jika-ada-masalah">Q: Siapa yang harus saya hubungi jika ada masalah?</h3>
+<p><strong>A:</strong> Hubungi tim IT/Administrator yang mengelola sistem ini.</p>
+<hr />
+<h2 id="glosarium-istilah-teknis">Glosarium (Istilah Teknis)</h2>
+<table>
+<thead>
+<tr>
+<th>Istilah</th>
+<th>Artinya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Knowledge Base</strong></td>
+<td>Kumpulan dokumen perusahaan yang sudah diindeks</td>
+</tr>
+<tr>
+<td><strong>Embedding</strong></td>
+<td>Representasi numerik dari teks agar bisa dicari berdasarkan makna</td>
+</tr>
+<tr>
+<td><strong>Chunking</strong></td>
+<td>Proses memotong dokumen besar menjadi bagian-bagian kecil</td>
+</tr>
+<tr>
+<td><strong>Vector Search</strong></td>
+<td>Pencarian berdasarkan kesamaan makna (bukan hanya kata yang sama)</td>
+</tr>
+<tr>
+<td><strong>RAG</strong></td>
+<td>Retrieval-Augmented Generation — AI menjawab berdasarkan dokumen, bukan mengarang</td>
+</tr>
+<tr>
+<td><strong>Index/Indeks</strong></td>
+<td>Struktur data yang memungkinkan pencarian cepat</td>
+</tr>
+<tr>
+<td><strong>OCR</strong></td>
+<td>Optical Character Recognition — mengubah gambar menjadi teks</td>
+</tr>
+<tr>
+<td><strong>PII</strong></td>
+<td>Personally Identifiable Information — data pribadi yang disamarkan</td>
+</tr>
+<tr>
+<td><strong>Sync</strong></td>
+<td>Proses sinkronisasi antara file di folder dan database</td>
+</tr>
+<tr>
+<td><strong>SSE</strong></td>
+<td>Server-Sent Events — teknologi untuk jawaban streaming (kata per kata)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Dokumentasi ini terakhir diperbarui: Juni 2026</em>
+<em>Versi aplikasi: 0.1.0</em></p>
+<br><br>
+<p style="text-align:center;color:#999;font-size:9pt;border-top:1px solid #eee;padding-top:12px;">
+Dokumentasi Executive Copilot &mdash; PT. Jembatan Baru &mdash; Juni 2026
+</p>
+<button class="no-print" onclick="window.print()" style="position:fixed;bottom:24px;right:24px;background:#059669;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(5,150,105,0.3);">Cetak / Save PDF</button>
+</body>
+</html>
