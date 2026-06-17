@@ -53,7 +53,9 @@ export function DashboardPage({ user, onNavigate }: Props) {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-foreground mb-1">Selamat datang, {user.name.split(" ")[0]} 👋</h1>
+        <h1 className="text-foreground text-xl font-semibold tracking-tight mb-1">
+          Selamat datang, {user.name.split(" ")[0]}
+        </h1>
         <p className="text-muted-foreground text-sm">
           {isExecOrAdmin
             ? "Ringkasan aktivitas seluruh departemen hari ini."
@@ -63,21 +65,25 @@ export function DashboardPage({ user, onNavigate }: Props) {
 
       {/* Stale data warning banner */}
       {isStale && (
-        <div className="flex items-center gap-2 p-3 mb-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg" role="alert">
-          <AlertCircle size={16} className="text-yellow-500 shrink-0" />
-          <span className="text-yellow-500 text-sm">Data mungkin sudah tidak terbaru karena gagal memperbarui</span>
+        <div className="flex items-center gap-2.5 p-3 mb-4 bg-yellow-500/8 border border-yellow-500/20 rounded-xl" role="alert">
+          <div className="w-6 h-6 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
+            <AlertCircle size={14} className="text-yellow-500" />
+          </div>
+          <span className="text-yellow-500 text-xs font-medium">Data mungkin sudah tidak terbaru karena gagal memperbarui</span>
         </div>
       )}
 
       {/* Error state: no data available */}
       {showErrorState && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <AlertCircle size={40} className="text-destructive mb-4" />
-          <h2 className="text-foreground text-lg mb-1">Data tidak tersedia</h2>
-          <p className="text-muted-foreground text-sm mb-4">{error}</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-destructive/8 border border-destructive/15 flex items-center justify-center mb-4">
+            <AlertCircle size={28} className="text-destructive" />
+          </div>
+          <h2 className="text-foreground text-lg font-semibold tracking-tight mb-1">Data tidak tersedia</h2>
+          <p className="text-muted-foreground text-sm mb-6">{error}</p>
           <button
             onClick={refetch}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:opacity-90 transition-opacity"
+            className="px-5 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition-all shadow-sm"
           >
             Coba Lagi
           </button>

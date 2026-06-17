@@ -26,3 +26,4 @@ class File(Base):
     extracted_text = Column(Text, nullable=True)
     is_deleted = Column(Boolean, default=False)
     embedding_status = Column(String, nullable=True, default=None)
+    current_version = Column(Integer, nullable=True)

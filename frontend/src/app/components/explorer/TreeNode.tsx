@@ -37,14 +37,14 @@ export function TreeNode({ node, depth, selectedId, onSelect, onDelete, deleting
   const canDelete = node.type === "file" || node.type === "folder";
 
   return (
-    <div>
+    <div className="relative group">
       <button
         onClick={() => {
           onSelect(node);
           if (hasChildren) setExpanded(!expanded);
         }}
         className={cn(
-          "w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-all text-xs group",
+          "w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-all text-xs",
           isSelected
             ? "bg-secondary text-foreground border border-border"
             : "text-muted-foreground hover:text-secondary-foreground hover:bg-card"
@@ -75,23 +75,30 @@ export function TreeNode({ node, depth, selectedId, onSelect, onDelete, deleting
         )}
 
         <span className="truncate flex-1">{node.name}</span>
+      </button>
 
-        {/* Delete button — visible on hover for files and folders */}
-        {canDelete && (
-          <button
-            onClick={(e) => {
+      {/* Delete button — accessible span with role="button" to avoid nested <button> */}
+      {canDelete && (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.(node);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
               e.stopPropagation();
               onDelete?.(node);
-            }}
-            disabled={isDeleting}
-            className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-muted-foreground hover:text-red-500 disabled:opacity-40 transition-all shrink-0"
-            title={`Hapus ${node.type === "file" ? "file" : "folder"}`}
-          >
-            {isDeleting ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
-          </button>
-        )}
-
-      </button>
+            }
+          }}
+          role="button"
+          tabIndex={isDeleting ? -1 : 0}
+          aria-disabled={isDeleting}
+          aria-label={`Hapus ${node.type === "file" ? "file" : "folder"}`}
+          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-0.5 rounded text-muted-foreground hover:text-red-500 aria-disabled:opacity-40 transition-all shrink-0 cursor-pointer select-none"
+        >
+          {isDeleting ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
+        </span>
+      )}
 
       {hasChildren && expanded && (
         <div>

@@ -156,6 +156,18 @@ export async function createFolder(department: string, name: string): Promise<vo
   await apiPost("/departments/folders", { department, name });
 }
 
+export async function deleteFolder(department: string, name: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/departments/folders`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ department, name }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new ApiError(res.status, text || `DELETE /departments/folders failed (${res.status})`);
+  }
+}
+
 // ─── Sync ────────────────────────────────────────────────────────────────────
 
 export async function triggerSync(): Promise<SyncResult> {

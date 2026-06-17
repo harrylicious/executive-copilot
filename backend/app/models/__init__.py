@@ -14,6 +14,8 @@ from app.models.file_relationship import FileRelationship
 from app.models.user import User
 from app.models.user_settings import UserSettings
 from app.models.chat_feedback import ChatFeedback
+from app.models.file_version import FileVersion
+from app.models.audit_log import AuditLog
 
 __all__ = [
     "File",
@@ -31,4 +33,6 @@ __all__ = [
     "User",
     "UserSettings",
     "ChatFeedback",
+    "FileVersion",
+    "AuditLog",
 ]

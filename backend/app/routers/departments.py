@@ -53,9 +53,67 @@ def create_folder(body: CreateFolderRequest):
     return {"department": body.department, "name": body.name, "path": str(folder_path)}
 
 
+class DeleteFolderRequest(BaseModel):
+    department: str
+    name: str
+
+
+@router.delete("/folders", status_code=204)
+def delete_folder(body: DeleteFolderRequest, db: Session = Depends(get_db)):
+    if body.department not in DEPARTMENTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid department '{body.department}'. Valid: {', '.join(DEPARTMENTS.keys())}",
+        )
+
+    folder_name = body.name
+
+    # Soft-delete all files in this folder
+    folder_files = (
+        db.query(File)
+        .filter(
+            File.department == body.department,
+            File.subfolder == folder_name,
+            File.is_deleted == False,
+        )
+        .all()
+    )
+    for f in folder_files:
+        f.is_deleted = True
+        f.sync_status = "deleted"
+
+    # Also catch files matched by path pattern (e.g. master/general/file.xlsx)
+    path_pattern = f"{body.department}/{folder_name}/%"
+    path_files = (
+        db.query(File)
+        .filter(
+            File.path.like(path_pattern),
+            File.is_deleted == False,
+        )
+        .all()
+    )
+    for f in path_files:
+        f.is_deleted = True
+        f.sync_status = "deleted"
+
+    db.commit()
+
+    # Remove folder from the config if it exists there
+    if folder_name in DEPARTMENTS[body.department]:
+        DEPARTMENTS[body.department].remove(folder_name)
+
+    # Optionally remove the folder from disk
+    folder_path = Path(settings.knowledge_base_path) / body.department / folder_name
+    if folder_path.exists():
+        import shutil
+        shutil.rmtree(folder_path, ignore_errors=True)
+
+    return None
+
+
 @router.get("", response_model=list[TreeNode])
 def get_departments(db: Session = Depends(get_db)):
-    files = db.query(File).all()
+    files = db.query(File).filter(File.is_deleted == False).all()
 
     file_lookup: dict[tuple[str, str], list[File]] = {}
     for file in files:

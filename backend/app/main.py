@@ -25,6 +25,8 @@ from app.models import (  # noqa: F401 - register models
     User,
     UserSettings,
     ChatFeedback,
+    FileVersion,
+    AuditLog,
 )
 from app.utils.department_config import initialize_knowledge_base
 
@@ -51,6 +53,7 @@ async def lifespan(app: FastAPI):
             "sensitivity_level": "ALTER TABLE files ADD COLUMN sensitivity_level VARCHAR DEFAULT 'Internal'",
             "is_deleted": "ALTER TABLE files ADD COLUMN is_deleted BOOLEAN DEFAULT 0",
             "indexed_at": "ALTER TABLE files ADD COLUMN indexed_at DATETIME",
+            "current_version": "ALTER TABLE files ADD COLUMN current_version INTEGER",
         }
         for col_name, alter_sql in migrations.items():
             if col_name not in file_columns:
@@ -195,6 +198,206 @@ async def lifespan(app: FastAPI):
         logger.warning("Initial embedding failed (non-fatal): %s", exc)
 
     # -------------------------------------------------------------------------
+    # Real-time services: FileWatcher, EmbeddingQueue, WebSocket, AuditLogger
+    # -------------------------------------------------------------------------
+    from app.database import SessionLocal
+    from app.services.file_watcher import FileWatcherService, FileNotification, FileEventType
+    from app.services.embedding_queue import EmbeddingQueueService
+    from app.services.version_store import VersionStoreService
+    from app.services.audit_logger import AuditLogger, AuditEventType
+    from app.services.websocket_manager import WebSocketManager, WSEvent, WSEventType
+    from app.routers.monitoring import get_ws_manager
+    from app.models.file import File as FileModel
+    from pathlib import Path as _RTPath
+    import os as _rt_os
+
+    # Get shared WebSocketManager singleton from monitoring router
+    ws_manager = get_ws_manager()
+
+    # Initialize AuditLogger (uses its own sessions internally)
+    audit_logger = AuditLogger()
+
+    # Wire audit logger into WebSocketManager for initial state snapshots
+    ws_manager.set_audit_logger(audit_logger)
+
+    # Initialize EmbeddingQueueService
+    embedding_queue = EmbeddingQueueService(concurrency=3)
+
+    # Initialize FileWatcherService
+    kb_path_resolved = str(_RTPath(settings.knowledge_base_path).resolve())
+    file_watcher = FileWatcherService(kb_path=kb_path_resolved)
+
+    # Notification handler: wires FileWatcher events to all services
+    async def _on_file_notification(notification: FileNotification) -> None:
+        """Handle file watcher notifications by dispatching to all services."""
+        db = SessionLocal()
+        try:
+            # Look up the file record by path
+            file_record = db.query(FileModel).filter(
+                FileModel.path == notification.file_path,
+                FileModel.is_deleted == False,  # noqa: E712
+            ).first()
+
+            file_id = file_record.id if file_record else None
+
+            if notification.event_type == FileEventType.CREATED:
+                # For created events, skip if no DB record exists yet
+                if file_record is None:
+                    return
+
+                # Create version via VersionStore
+                archive_dir = f"{settings.knowledge_base_path}/.versions"
+                version_store = VersionStoreService(db=db, archive_dir=archive_dir)
+                abs_file_path = _RTPath(kb_path_resolved) / notification.file_path
+                try:
+                    content = abs_file_path.read_bytes()
+                    version_info = version_store.create_version(
+                        file_id=file_id,
+                        file_path=notification.file_path,
+                        content=content,
+                    )
+                    # Broadcast version_created if a new version was actually created
+                    if version_info is not None:
+                        await ws_manager.broadcast(WSEvent(
+                            event_type=WSEventType.VERSION_CREATED,
+                            payload={
+                                "file_id": file_id,
+                                "file_path": notification.file_path,
+                                "version_number": version_info.version_number,
+                                "content_hash": version_info.content_hash,
+                                "file_size": version_info.file_size,
+                            },
+                        ))
+                except Exception as exc:
+                    logger.error(f"Version creation failed for {notification.file_path}: {exc}")
+
+                # Enqueue embedding
+                await embedding_queue.enqueue(
+                    file_id=file_id,
+                    file_path=notification.file_path,
+                    content_hash=notification.content_hash or "",
+                )
+
+                # Broadcast status_changed
+                await ws_manager.broadcast(WSEvent(
+                    event_type=WSEventType.STATUS_CHANGED,
+                    payload={
+                        "file_id": file_id,
+                        "file_path": notification.file_path,
+                        "status": "pending",
+                    },
+                ))
+
+                # Log audit event
+                audit_logger.log(
+                    event_type=AuditEventType.FILE_CREATED,
+                    file_id=file_id,
+                    details={"file_path": notification.file_path, "content_hash": notification.content_hash},
+                )
+
+            elif notification.event_type == FileEventType.MODIFIED:
+                if file_record is None:
+                    return
+
+                # Create version via VersionStore
+                archive_dir = f"{settings.knowledge_base_path}/.versions"
+                version_store = VersionStoreService(db=db, archive_dir=archive_dir)
+                abs_file_path = _RTPath(kb_path_resolved) / notification.file_path
+                try:
+                    content = abs_file_path.read_bytes()
+                    version_info = version_store.create_version(
+                        file_id=file_id,
+                        file_path=notification.file_path,
+                        content=content,
+                    )
+                    if version_info is not None:
+                        await ws_manager.broadcast(WSEvent(
+                            event_type=WSEventType.VERSION_CREATED,
+                            payload={
+                                "file_id": file_id,
+                                "file_path": notification.file_path,
+                                "version_number": version_info.version_number,
+                                "content_hash": version_info.content_hash,
+                                "file_size": version_info.file_size,
+                            },
+                        ))
+                except Exception as exc:
+                    logger.error(f"Version creation failed for {notification.file_path}: {exc}")
+
+                # Enqueue stale embedding (retains existing embeddings)
+                await embedding_queue.enqueue_stale(
+                    file_id=file_id,
+                    file_path=notification.file_path,
+                    content_hash=notification.content_hash or "",
+                )
+
+                # Broadcast status_changed
+                await ws_manager.broadcast(WSEvent(
+                    event_type=WSEventType.STATUS_CHANGED,
+                    payload={
+                        "file_id": file_id,
+                        "file_path": notification.file_path,
+                        "status": "stale",
+                    },
+                ))
+
+                # Log audit event
+                audit_logger.log(
+                    event_type=AuditEventType.FILE_MODIFIED,
+                    file_id=file_id,
+                    details={"file_path": notification.file_path, "content_hash": notification.content_hash},
+                )
+
+            elif notification.event_type == FileEventType.DELETED:
+                if file_record is None:
+                    # Try to find even deleted files for audit logging
+                    deleted_record = db.query(FileModel).filter(
+                        FileModel.path == notification.file_path
+                    ).first()
+                    file_id = deleted_record.id if deleted_record else None
+
+                if file_id is not None:
+                    # Delete chunks for the file
+                    await embedding_queue.delete_file_chunks(file_id)
+
+                # Broadcast status_changed
+                await ws_manager.broadcast(WSEvent(
+                    event_type=WSEventType.STATUS_CHANGED,
+                    payload={
+                        "file_id": file_id,
+                        "file_path": notification.file_path,
+                        "status": "deleted",
+                    },
+                ))
+
+                # Log audit event
+                audit_logger.log(
+                    event_type=AuditEventType.FILE_DELETED,
+                    file_id=file_id,
+                    details={"file_path": notification.file_path},
+                )
+
+        except Exception as exc:
+            logger.error(f"Error in file notification handler for {notification.file_path}: {exc}", exc_info=True)
+        finally:
+            db.close()
+
+    # Subscribe the notification handler to the file watcher
+    file_watcher.subscribe(_on_file_notification)
+
+    # Start services
+    await embedding_queue.start()
+    await file_watcher.start()
+
+    # Store service instances on app.state for access by other components
+    app.state.file_watcher = file_watcher
+    app.state.embedding_queue = embedding_queue
+    app.state.ws_manager = ws_manager
+    app.state.audit_logger = audit_logger
+
+    logger.info("Real-time services started: FileWatcher, EmbeddingQueue, WebSocketManager, AuditLogger")
+
+    # -------------------------------------------------------------------------
     # TurboVec index initialization
     # Load from cache if both .tv files exist; build from scratch if missing.
     # Handle corrupted cache (log warning, discard, rebuild).
@@ -287,6 +490,14 @@ async def lifespan(app: FastAPI):
     logger.info("TurboVec store injected into retrieval dependencies")
 
     yield
+
+    # -------------------------------------------------------------------------
+    # Graceful shutdown of real-time services
+    # -------------------------------------------------------------------------
+    logger.info("Shutting down real-time services...")
+    await file_watcher.stop()
+    await embedding_queue.stop()
+    logger.info("Real-time services stopped.")
 
 
 app = FastAPI(
@@ -409,3 +620,12 @@ try:
     app.include_router(auth_router, prefix="/api")
 except ImportError:
     pass  # auth router not yet implemented
+
+try:
+    from app.routers.monitoring import router as monitoring_router
+    from app.routers.monitoring import ws_router as monitoring_ws_router
+
+    app.include_router(monitoring_router, prefix="/api")
+    app.include_router(monitoring_ws_router)
+except ImportError:
+    pass

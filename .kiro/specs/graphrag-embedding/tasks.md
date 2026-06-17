@@ -120,7 +120,7 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - **Property 12: Relationships connect co-occurring entities with valid fields**
     - **Validates: Requirements 5.1, 5.2**
 
-- [~] 6. Checkpoint - Ensure all tests pass
+- [ ] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 7. GraphRAG engine and community detection
@@ -202,11 +202,11 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - **Property 5: Re-embedding replaces all previous embeddings for a file**
     - **Validates: Requirements 2.6**
 
-- [-] 9. Checkpoint - Ensure all tests pass
+- [ ] 9. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Retrieval service implementation
-  - [-] 10.1 Implement local search in RetrievalService
+  - [ ] 10.1 Implement local search in RetrievalService
     - Create `app/services/retrieval_service.py` with `SearchResult` dataclass and `RetrievalService` class
     - Implement `local_search`: generate query embedding, perform similarity search, enrich with 1-hop graph neighborhood
     - Implement `_compute_combined_score` as weighted sum (similarity_weight × vector_similarity + graph_weight × graph_relevance)
@@ -217,7 +217,7 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Reject queries that are empty or exceed 1000 characters
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-  - [-] 10.2 Implement global search in RetrievalService
+  - [ ] 10.2 Implement global search in RetrievalService
     - Implement `global_search`: generate query embedding, compare against community summary embeddings
     - Return ranked community summaries with member entities and up to 3 document references per community
     - Support configurable number of communities to return (default 3, max 20)
@@ -225,7 +225,7 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Return empty results with metadata when no communities exist or none meet minimum relevance threshold
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
 
-  - [~] 10.3 Implement combined search and context assembly
+  - [ ] 10.3 Implement combined search and context assembly
     - Implement `combined_search`: merge local and global results interleaved by descending relevance score
     - Local results take precedence when scores are equal
     - Implement `_truncate_to_token_limit` to enforce max context token limit (1000-16000, default 4000)
@@ -246,26 +246,26 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - **Property 20: Global search relevance scores are valid cosine similarities**
     - **Validates: Requirements 8.4**
 
-  - [~] 10.7 Write property test for token limit truncation
+  - [ ] 10.7 Write property test for token limit truncation
     - **Property 21: Combined search respects token limit by truncating lowest-relevance items**
     - **Validates: Requirements 9.3**
 
-  - [~] 10.8 Write property test for response structure
+  - [ ] 10.8 Write property test for response structure
     - **Property 22: Retrieval response contains all required structural fields**
     - **Validates: Requirements 9.1, 9.4**
 
-  - [~] 10.9 Write property test for combined search merge ordering
+  - [ ] 10.9 Write property test for combined search merge ordering
     - **Property 23: Combined search merges results by relevance with correct tie-breaking**
     - **Validates: Requirements 9.2**
 
 - [ ] 11. API endpoints and Pydantic schemas
-  - [-] 11.1 Create Pydantic schemas for embedding and search
+  - [ ] 11.1 Create Pydantic schemas for embedding and search
     - Create `app/schemas/embedding.py` with `EmbeddingJobRequest`, `EmbeddingJobResponse`, `EmbeddingStatusResponse`
     - Create `app/schemas/search.py` with `LocalSearchRequest`, `GlobalSearchRequest`, `CombinedSearchRequest`, `ChunkResult`, `CommunityResult`, `SearchResponse`
     - Add field validation constraints (min_length, max_length, ge, le) matching requirements
     - _Requirements: 7.6, 9.1_
 
-  - [~] 11.2 Create embedding API router
+  - [ ] 11.2 Create embedding API router
     - Create `app/routers/embeddings.py` with FastAPI router
     - Implement `POST /api/embeddings/run` — trigger incremental embedding job
     - Implement `POST /api/embeddings/run/full` — trigger full re-embedding
@@ -274,7 +274,7 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Return job summary with files_processed, chunks_generated, errors list, and status
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 10.3_
 
-  - [~] 11.3 Create search API router
+  - [ ] 11.3 Create search API router
     - Create `app/routers/search.py` with FastAPI router
     - Implement `POST /api/search/local` — local search with top_k, min_score, similarity_weight params
     - Implement `POST /api/search/global` — global search with num_communities, min_relevance params
@@ -282,14 +282,14 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Return structured SearchResponse for all endpoints
     - _Requirements: 7.1, 7.6, 8.1, 8.5, 9.1, 9.4, 9.5_
 
-  - [~] 11.4 Register new routers in application main
+  - [ ] 11.4 Register new routers in application main
     - Add embedding and search routers to `app/main.py`
     - Ensure GraphRAG schema tables are created on startup (additive, preserving existing tables)
     - Validate embedding model availability on startup and log error if missing
     - _Requirements: 11.6, 12.4, 12.6_
 
 - [ ] 12. Sync integration and embedding status management
-  - [~] 12.1 Integrate embedding status with file sync
+  - [ ] 12.1 Integrate embedding status with file sync
     - Modify sync engine to set `embedding_status = "pending"` when new or modified files are detected
     - Implement cleanup on file deletion: remove chunks, embeddings (ChromaDB), entities, relationships for deleted files
     - Handle cleanup failure by setting `embedding_status = "removal_failed"`
@@ -297,11 +297,11 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Replace document-level embedding on re-embed
     - _Requirements: 10.1, 10.2, 10.4, 10.5, 10.6_
 
-  - [~] 12.2 Write property test for embedding status transitions
+  - [ ] 12.2 Write property test for embedding status transitions
     - **Property 24: Embedding status state transitions are correct**
     - **Validates: Requirements 10.1, 10.5**
 
-  - [~] 12.3 Write property test for deleted file cleanup
+  - [ ] 12.3 Write property test for deleted file cleanup
     - **Property 25: Deleted file cleanup removes all associated GraphRAG data**
     - **Validates: Requirements 10.2**
 
@@ -312,14 +312,14 @@ This plan implements the GraphRAG Embedding feature by extending the existing Kn
     - Add spaCy model download instruction: `python -m spacy download en_core_web_sm`
     - _Requirements: 2.3, 4.1, 6.1_
 
-  - [~] 13.2 Wire all components together and verify imports
+  - [ ] 13.2 Wire all components together and verify imports
     - Ensure all services are properly imported and instantiated in routers
     - Verify dependency injection of database sessions and config into services
     - Confirm all new models are imported in `app/models/__init__.py`
     - Confirm all new schemas are importable from `app/schemas/`
     - _Requirements: All_
 
-- [~] 14. Final checkpoint - Ensure all tests pass
+- [ ] 14. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

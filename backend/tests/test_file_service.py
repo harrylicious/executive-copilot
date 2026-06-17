@@ -153,11 +153,14 @@ class TestDeleteFile:
     """Tests for delete_file."""
 
     def test_deletes_file_from_database(self, db_session, sample_file):
-        """Should remove the file record from the database."""
+        """Should soft-delete the file record (is_deleted=True)."""
         file_id = sample_file.id
         file_service.delete_file(db_session, file_id)
 
-        assert db_session.query(File).filter(File.id == file_id).first() is None
+        file = db_session.query(File).filter(File.id == file_id).first()
+        assert file is not None
+        assert file.is_deleted is True
+        assert file.sync_status == "deleted"
 
     def test_raises_404_when_file_not_found(self, db_session):
         """Should raise HTTPException 404 for non-existent file."""

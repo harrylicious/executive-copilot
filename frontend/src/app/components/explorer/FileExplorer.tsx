@@ -6,7 +6,7 @@ import { useFiles } from "../../../hooks/useFiles";
 import { detectFormat } from "../../../utils/fileFormat";
 import { TreeNode } from "./TreeNode";
 import { MetadataSidebar } from "./MetadataSidebar";
-import { deleteFile } from "../../../api/kb";
+import { deleteFile, deleteFolder } from "../../../api/kb";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -188,7 +188,18 @@ export function FileExplorer() {
     try {
       if (target.type === "file" && target.fileId != null) {
         await deleteFile(target.fileId);
-      } else if (target.type === "folder" || target.type === "department") {
+      } else if (target.type === "folder") {
+        // Extract department and folder name from id format: "folder-{dept}-{subfolder}"
+        const parts = target.id.replace("folder-", "").split("-");
+        const department = parts[0];
+        const folderName = parts.slice(1).join("-");
+        // Delete all files in the folder and the folder itself
+        const fileIds = collectFileIds(target);
+        if (fileIds.length > 0) {
+          await Promise.all(fileIds.map((fid) => deleteFile(fid)));
+        }
+        await deleteFolder(department, folderName);
+      } else if (target.type === "department") {
         const fileIds = collectFileIds(target);
         if (fileIds.length > 0) {
           await Promise.all(fileIds.map((fid) => deleteFile(fid)));

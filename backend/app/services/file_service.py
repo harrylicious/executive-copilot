@@ -23,7 +23,7 @@ def list_files(
     file_type: str | None = None,
     sync_status: str | None = None,
 ) -> list[File]:
-    query = db.query(File)
+    query = db.query(File).filter(File.is_deleted == False)
     if department:
         query = query.filter(File.department == department)
     if subfolder:
