@@ -18,7 +18,11 @@ class Settings(BaseSettings):
     app_port: int = 8000
     database_url: str = "sqlite:///./kb_manager.db"
     knowledge_base_path: str = "./knowledge_base"
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: list[str] = [
+        "http://localhost:5173",
+        "http://jembatanbaru.net",
+        "https://jembatanbaru.net",
+    ]
 
     class Config:
         env_prefix = "KB_"

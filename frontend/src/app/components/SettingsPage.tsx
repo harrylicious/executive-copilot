@@ -51,12 +51,12 @@ const NUANCE_LABELS: Record<ChatbotSettings["nuance"], string> = {
   tegas: "Tegas",
 };
 
-const NUANCE_DESC: Record<ChatbotSettings["nuance"], string> = {
-  formal: "Bahasa baku, struktur kalimat lengkap, sopan",
-  santai: "Bahasa sehari-hari, akrab, tidak kaku",
-  profesional: "Fokus pada data, efisien, to-the-point",
-  ramah: "Hangat, mengundang dialog, suportif",
-  tegas: "Langsung, jelas, tanpa basa-basi",
+const NUANCE_DESC: Record<ChatbotSettings["nuance"], { id: string; en: string }> = {
+  formal: { id: "Bahasa baku, struktur kalimat lengkap, sopan", en: "Standard language, complete sentences, polite" },
+  santai: { id: "Bahasa sehari-hari, akrab, tidak kaku", en: "Everyday language, friendly, relaxed" },
+  profesional: { id: "Fokus pada data, efisien, to-the-point", en: "Data-focused, efficient, to-the-point" },
+  ramah: { id: "Hangat, mengundang dialog, suportif", en: "Warm, invites dialogue, supportive" },
+  tegas: { id: "Langsung, jelas, tanpa basa-basi", en: "Direct, clear, no pleasantries" },
 };
 
 export function SettingsPage({ user, chatbotSettings, onChatbotSettingsChange }: Props) {
@@ -351,7 +351,7 @@ export function SettingsPage({ user, chatbotSettings, onChatbotSettingsChange }:
                       </div>
                       <div>
                         <div className="text-secondary-foreground text-sm">{NUANCE_LABELS[n]}</div>
-                        <div className="text-muted-foreground text-xs">{NUANCE_DESC[n]}</div>
+                        <div className="text-muted-foreground text-xs">{NUANCE_DESC[n][local.language]}</div>
                       </div>
                     </button>
                   ))}

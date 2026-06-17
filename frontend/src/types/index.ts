@@ -205,6 +205,7 @@ export interface ChatRequest {
   topK?: number;
   maxTokens?: number;
   language?: "id" | "en";
+  nuance?: "formal" | "santai" | "profesional" | "ramah" | "tegas";
 }
 
 export interface ChatResponse {

@@ -723,7 +723,7 @@ export function ChatPage({ user, chatbotSettings, onChatbotSettingsChange, onNav
 
     try {
       await streamChat(
-        { query: text, language: chatbotSettings.language },
+        { query: text, session_id: sessionIdRef.current, language: chatbotSettings.language, nuance: chatbotSettings.nuance },
         (evt: ChatStreamEvent) => {
           switch (evt.event) {
             case "token":

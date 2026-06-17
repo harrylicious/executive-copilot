@@ -307,6 +307,7 @@ async def chat(body: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse
             top_k=body.top_k,
             max_tokens=body.max_tokens,
             language=body.language.value,
+            nuance=body.nuance.value,
         )
     except RuntimeError:
         raise HTTPException(
@@ -420,6 +421,7 @@ async def chat_stream(
             top_k=body.top_k,
             max_tokens=body.max_tokens,
             language=body.language.value,
+            nuance=body.nuance.value,
         )
     except RuntimeError:
         raise HTTPException(
@@ -436,6 +438,11 @@ async def chat_stream(
     async def event_generator() -> AsyncGenerator[dict, None]:
         """Generate SSE events from the RAG chain streaming response."""
         try:
+            # Load conversation history for context-aware streaming
+            conversation_history: list[dict[str, str]] = []
+            if body.session_id:
+                conversation_history = container.session_store.get_history(body.session_id)
+
             # First, retrieve documents for source attributions and metadata
             documents = await retriever.ainvoke(body.query)
 
@@ -464,7 +471,7 @@ async def chat_stream(
             token_count = 0
             collected_answer = ""
             try:
-                async for token in rag_chain.astream(body.query):
+                async for token in rag_chain.astream(body.query, conversation_history=conversation_history):
                     # Check for client disconnection
                     if await request.is_disconnected():
                         logger.info("Client disconnected during streaming, cancelling generation")
@@ -505,6 +512,11 @@ async def chat_stream(
                 "event": "done",
                 "data": json.dumps({}),
             }
+
+            # Save conversation turn to session store for context continuity
+            if body.session_id and collected_answer:
+                container.session_store.add_turn(body.session_id, "user", body.query)
+                container.session_store.add_turn(body.session_id, "assistant", collected_answer)
 
             # Generate follow-up suggestions based on the answer
             try:

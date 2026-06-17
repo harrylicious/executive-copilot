@@ -31,6 +31,7 @@ export interface ChatRequest {
   top_k?: number;
   max_tokens?: number;
   language?: "id" | "en";
+  nuance?: "formal" | "santai" | "profesional" | "ramah" | "tegas";
 }
 
 export async function sendChat(body: ChatRequest): Promise<ChatResponse> {

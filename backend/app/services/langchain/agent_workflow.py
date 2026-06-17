@@ -374,7 +374,10 @@ class AgentWorkflow:
     def _simple_retrieval(self, state: AgentState) -> dict:
         """Route to RAG chain for simple retrieval and return the answer."""
         try:
-            rag_response = self.rag_chain.invoke(state["query"])
+            rag_response = self.rag_chain.invoke(
+                state["query"],
+                conversation_history=state["conversation_history"],
+            )
 
             return {
                 "final_answer": rag_response.answer,
@@ -464,7 +467,10 @@ class AgentWorkflow:
         current_question = sub_questions[current_idx]
 
         try:
-            rag_response = self.rag_chain.invoke(current_question)
+            rag_response = self.rag_chain.invoke(
+                current_question,
+                conversation_history=state["conversation_history"],
+            )
 
             intermediate_steps.append(rag_response.answer)
 

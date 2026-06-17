@@ -20,9 +20,18 @@ pandas>=1.5.0
 # TurboVec vector store
 turbovec[langchain]>=0.1.0
 
+# OpenAI (direct import via embedding_model.py)
+openai>=1.0.0
+
+# HuggingFace Transformers (direct import via document_chunker.py)
+transformers>=4.30.0
+
 # LangChain integration dependencies
 langchain==1.3.1
 langchain-openai==1.2.1
 langgraph==1.2.0
 langsmith==0.8.5
 sse-starlette>=2.1.0,<3.0.0
+
+# File system monitoring (file_watcher.py)
+watchdog>=4.0.0

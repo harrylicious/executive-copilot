@@ -109,6 +109,7 @@ class ServiceContainer:
         top_k: int | None = None,
         max_tokens: int | None = None,
         language: str = "id",
+        nuance: str = "formal",
     ) -> "AgentWorkflow":
         """Build a fully-wired AgentWorkflow for a request.
 
@@ -121,6 +122,7 @@ class ServiceContainer:
             top_k: Optional top_k override for retrieval.
             max_tokens: Optional max context tokens override.
             language: Response language code (id or en).
+            nuance: Response tone (formal, santai, profesional, ramah, tegas).
 
         Returns:
             An AgentWorkflow instance ready to invoke.
@@ -168,6 +170,8 @@ class ServiceContainer:
             llm=self.llm,
             retriever=retriever,
             max_context_tokens=context_tokens,
+            language=language,
+            nuance=nuance,
         )
 
         # Build agent workflow with shared session store
@@ -183,6 +187,7 @@ class ServiceContainer:
         top_k: int | None = None,
         max_tokens: int | None = None,
         language: str = "id",
+        nuance: str = "formal",
     ) -> tuple["RAGChain", "CustomRetriever"]:
         """Build a RAGChain and retriever for streaming (bypasses agent workflow).
 
@@ -192,6 +197,7 @@ class ServiceContainer:
             top_k: Optional top_k override for retrieval.
             max_tokens: Optional max context tokens override.
             language: Response language code (id or en).
+            nuance: Response tone (formal, santai, profesional, ramah, tegas).
 
         Returns:
             A tuple of (RAGChain, CustomRetriever) instances.
@@ -235,6 +241,8 @@ class ServiceContainer:
             llm=self.llm,
             retriever=retriever,
             max_context_tokens=context_tokens,
+            language=language,
+            nuance=nuance,
         )
 
         return rag_chain, retriever

@@ -27,7 +27,8 @@ _SYSTEM_PROMPT_TEMPLATE = """\
 Kamu adalah Executive Copilot, asisten bisnis cerdas untuk para eksekutif.
 Jawab pertanyaan berdasarkan konteks dokumen yang diberikan DAN ringkasan statistik master data di bawah ini.
 Aturan:
-- Jawab dalam Bahasa Indonesia yang formal dan ringkas
+- {language_instruction}
+- Nada/gaya jawaban: {nuance_instruction}
 - Jika pertanyaan tentang data barang/produk, gunakan data dari master barang
 - Jika pertanyaan tentang outlet/toko, gunakan data dari master outlet
 - Jika pertanyaan tentang distributor/agen/vendor, gunakan data dari master distributor (MPD)
@@ -38,6 +39,7 @@ Aturan:
 - Untuk pertanyaan outlet berdasarkan area/kota: cari outlet yang field city atau area-nya sesuai pertanyaan. Data outlet berbentuk tabel dengan format: custcode | name | outlettype | address | city | area. SELALU sebutkan jumlah total outlet dari RINGKASAN STATISTIK jika tersedia (contoh: "Terdapat 78 outlet di Lombok Timur, antara lain: ...").
 - Jika data yang diminta TIDAK ADA dalam field/kolom yang tersedia (misalnya harga beli/HPP, data penjualan, stok, dll), jelaskan bahwa data tersebut tidak tersedia dalam file/dokumen yang ada dan sebutkan field apa yang diminta tidak ada
 - Jika data tidak ditemukan di konteks sama sekali, katakan "Data tidak ditemukan dalam dokumen yang tersedia"
+- Jika ada RIWAYAT PERCAKAPAN, gunakan konteks percakapan sebelumnya untuk memahami kata ganti dan referensi (misalnya "produk tersebut", "yang tadi", "harganya", "itu"). Selalu sebutkan secara eksplisit produk/outlet/vendor yang dimaksud berdasarkan konteks percakapan. Contoh: jika user sebelumnya bertanya tentang Sania, lalu bertanya "apakah produk tersebut masih ada?", jawab dengan menyebutkan bahwa data stok produk Sania tidak tersedia dalam dokumen ini.
 - Untuk pertanyaan META tentang "dokumen ini" atau "data ini" (misal: apakah ada transaksi, apa saja isi dokumen): gunakan informasi di RINGKASAN STATISTIK untuk menjawab. Dokumen ini hanya berisi master data (barang, outlet, vendor), BUKAN data transaksi/penjualan/stok.
 - BAHKAN JIKA KONTEKS KOSONG, jika pertanyaan bisa dijawab dari RINGKASAN STATISTIK, jawablah. Jangan minta klarifikasi jika pertanyaan sudah jelas.
 - Untuk pertanyaan tentang harga produk (di atas/di bawah threshold tertentu): gunakan data harga yang ada di RINGKASAN STATISTIK dan/atau konteks dokumen untuk menentukan produk mana yang memenuhi kriteria
@@ -87,6 +89,34 @@ _ERROR_RESPONSE = (
     "An error occurred while processing your request. Please try again later."
 )
 
+_RAG_LANGUAGE_INSTRUCTIONS = {
+    "id": "Jawab dalam Bahasa Indonesia yang formal dan ringkas",
+    "en": "Answer in formal and concise English",
+}
+
+_RAG_NUANCE_INSTRUCTIONS = {
+    "formal": {
+        "id": "Gunakan bahasa baku, struktur kalimat lengkap, dan nada sopan serta profesional.",
+        "en": "Use standard language, complete sentence structures, and a polite, professional tone.",
+    },
+    "santai": {
+        "id": "Gunakan bahasa sehari-hari yang akrab dan tidak kaku. Boleh pakai kata-kata santai seperti 'nih', 'yuk', 'oke'. Tetap informatif tapi terasa seperti ngobrol dengan teman.",
+        "en": "Use casual, friendly everyday language. Keep it relaxed and conversational, like chatting with a colleague. Still be informative but drop the stiffness.",
+    },
+    "profesional": {
+        "id": "Fokus pada data dan fakta. Jawab secara efisien, to-the-point, tanpa basa-basi. Gunakan format terstruktur (bullet points, angka) untuk kejelasan.",
+        "en": "Focus on data and facts. Answer efficiently, to-the-point, no fluff. Use structured formats (bullet points, numbers) for clarity.",
+    },
+    "ramah": {
+        "id": "Gunakan nada yang hangat dan suportif. Ajak user berdialog, tawarkan bantuan tambahan, gunakan kata-kata yang mengundang seperti 'tentu', 'dengan senang hati', 'semoga membantu'.",
+        "en": "Use a warm and supportive tone. Invite dialogue, offer additional help, use welcoming phrases like 'of course', 'happy to help', 'hope this helps'.",
+    },
+    "tegas": {
+        "id": "Jawab langsung dan jelas tanpa basa-basi. Tidak perlu pembuka atau penutup. Sampaikan fakta dan angka secara singkat dan padat.",
+        "en": "Answer directly and clearly without pleasantries. No opener or closer needed. State facts and numbers briefly and concisely.",
+    },
+}
+
 
 @dataclass
 class RAGResponse:
@@ -126,17 +156,22 @@ class RAGChain:
         llm: "BaseChatModel",
         retriever: "CustomRetriever",
         max_context_tokens: int = 8000,
+        language: str = "id",
+        nuance: str = "formal",
     ) -> None:
         self.llm = llm
         self.retriever = retriever
         self.max_context_tokens = max_context_tokens
+        self.language = language
+        self.nuance = nuance
         self._encoding = tiktoken.get_encoding("cl100k_base")
 
-    def invoke(self, query: str) -> RAGResponse:
+    def invoke(self, query: str, conversation_history: list[dict[str, str]] | None = None) -> RAGResponse:
         """Synchronously retrieve documents, generate answer, and return response.
 
         Args:
             query: The user's question (1-1000 characters).
+            conversation_history: Optional list of prior conversation turns for context.
 
         Returns:
             RAGResponse with answer, source attributions, retrieval metadata,
@@ -162,7 +197,7 @@ class RAGChain:
 
         # Build prompt and call LLM
         try:
-            messages = self._build_messages(query, context_text)
+            messages = self._build_messages(query, context_text, conversation_history)
             response = self.llm.invoke(messages)
             answer = response.content if hasattr(response, "content") else str(response)
 
@@ -185,11 +220,12 @@ class RAGChain:
             token_usage=token_usage,
         )
 
-    async def ainvoke(self, query: str) -> RAGResponse:
+    async def ainvoke(self, query: str, conversation_history: list[dict[str, str]] | None = None) -> RAGResponse:
         """Asynchronously retrieve documents, generate answer, and return response.
 
         Args:
             query: The user's question (1-1000 characters).
+            conversation_history: Optional list of prior conversation turns for context.
 
         Returns:
             RAGResponse with answer, source attributions, retrieval metadata,
@@ -214,7 +250,7 @@ class RAGChain:
 
         # Build prompt and call LLM
         try:
-            messages = self._build_messages(query, context_text)
+            messages = self._build_messages(query, context_text, conversation_history)
             response = await self.llm.ainvoke(messages)
             answer = response.content if hasattr(response, "content") else str(response)
 
@@ -237,7 +273,7 @@ class RAGChain:
             token_usage=token_usage,
         )
 
-    async def astream(self, query: str) -> AsyncGenerator[str, None]:
+    async def astream(self, query: str, conversation_history: list[dict[str, str]] | None = None) -> AsyncGenerator[str, None]:
         """Asynchronously stream tokens as they are generated.
 
         Retrieves documents, builds the prompt, and yields tokens from
@@ -246,6 +282,7 @@ class RAGChain:
 
         Args:
             query: The user's question.
+            conversation_history: Optional list of prior conversation turns for context.
 
         Yields:
             Individual tokens (strings) as they are generated by the LLM.
@@ -268,7 +305,7 @@ class RAGChain:
 
         # Build prompt and stream LLM response
         try:
-            messages = self._build_messages(query, context_text)
+            messages = self._build_messages(query, context_text, conversation_history)
             async for chunk in self.llm.astream(messages):
                 content = chunk.content if hasattr(chunk, "content") else str(chunk)
                 if content:
@@ -277,21 +314,55 @@ class RAGChain:
             logger.error(f"LLM streaming failed: {exc}")
             yield _ERROR_RESPONSE
 
-    def _build_messages(self, query: str, context_text: str) -> list[HumanMessage]:
+    def _build_messages(
+        self,
+        query: str,
+        context_text: str,
+        conversation_history: list[dict[str, str]] | None = None,
+    ) -> list[HumanMessage]:
         """Build the chat messages for the LLM call.
 
-        Substitutes {context} and {question} into the Indonesian prompt template
-        and returns it as a single HumanMessage. No separate system or user
-        message is needed since the template contains everything.
+        Substitutes {context} and {question} into the Indonesian prompt template.
+        When conversation history is provided, it is included in the prompt so
+        the LLM can understand follow-up questions in context.
 
         Args:
             query: The user's question.
             context_text: The formatted context string (or empty string if no docs).
+            conversation_history: Optional list of prior conversation turns,
+                each a dict with 'role' and 'content' keys.
 
         Returns:
             List containing a single HumanMessage with the fully substituted prompt.
         """
-        prompt = _SYSTEM_PROMPT_TEMPLATE.format(context=context_text, question=query)
+        prompt = _SYSTEM_PROMPT_TEMPLATE.format(
+            context=context_text,
+            question=query,
+            language_instruction=_RAG_LANGUAGE_INSTRUCTIONS.get(
+                self.language, _RAG_LANGUAGE_INSTRUCTIONS["id"]
+            ),
+            nuance_instruction=_RAG_NUANCE_INSTRUCTIONS.get(
+                self.nuance, _RAG_NUANCE_INSTRUCTIONS["formal"]
+            ).get(self.language, _RAG_NUANCE_INSTRUCTIONS["formal"]["id"]),
+        )
+
+        # Inject conversation history so the LLM understands follow-up references
+        if conversation_history:
+            history_lines = []
+            for turn in conversation_history[-10:]:  # Last 10 turns to stay within limits
+                role_label = "User" if turn.get("role") == "user" else "Assistant"
+                history_lines.append(f"{role_label}: {turn['content']}")
+            history_block = (
+                "\n\n=== RIWAYAT PERCAKAPAN (Conversation History) ===\n"
+                + "\n".join(history_lines)
+                + "\n=== END RIWAYAT PERCAKAPAN ===\n"
+            )
+            # Insert history before the current question in the prompt
+            prompt = prompt.replace(
+                f"Pertanyaan: {query}",
+                f"{history_block}\nPertanyaan: {query}",
+            )
+
         return [HumanMessage(content=prompt)]
 
     def _format_context(self, documents: list[Document]) -> str:

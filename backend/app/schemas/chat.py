@@ -21,6 +21,16 @@ class Language(str, Enum):
     en = "en"
 
 
+class Nuance(str, Enum):
+    """Supported response tone/nuance."""
+
+    formal = "formal"
+    santai = "santai"
+    profesional = "profesional"
+    ramah = "ramah"
+    tegas = "tegas"
+
+
 class ChatRequest(BaseModel):
     """Request schema for the chat generation endpoint."""
 
@@ -30,6 +40,7 @@ class ChatRequest(BaseModel):
     top_k: Optional[int] = Field(None, ge=1, le=50)
     max_tokens: Optional[int] = Field(None, ge=1000, le=16000)
     language: Language = Language.id
+    nuance: Nuance = Nuance.formal
 
 
 class SourceAttribution(BaseModel):
