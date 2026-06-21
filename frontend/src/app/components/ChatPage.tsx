@@ -37,6 +37,14 @@ import {
 // Configure marked
 marked.setOptions({ breaks: true, gfm: true });
 
+/** Fallback UUID generator for non-secure contexts (HTTP over LAN). */
+function generateFallbackUUID(): string {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => {
+    const n = Number(c);
+    return (n ^ (Math.random() * 16 >> (n / 4))).toString(16);
+  });
+}
+
 /* ---------- types ---------- */
 
 interface Source {
@@ -424,7 +432,7 @@ export function ChatPage({ user, chatbotSettings, onChatbotSettingsChange, onNav
     uploadedBy: string; uploadedAt: string; pages?: number; chunks?: number; status?: string;
   } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const sessionIdRef = useRef<string>(crypto.randomUUID());
+  const sessionIdRef = useRef<string>(self.crypto?.randomUUID?.() ?? generateFallbackUUID());
   const titleRef = useRef<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -892,7 +900,7 @@ export function ChatPage({ user, chatbotSettings, onChatbotSettingsChange, onNav
   }, []);
 
   const handleNewSession = () => {
-    sessionIdRef.current = crypto.randomUUID();
+    sessionIdRef.current = self.crypto?.randomUUID?.() ?? generateFallbackUUID();
     titleRef.current = null;
     sessionCreatedRef.current = false;
     pendingQueueRef.current.clear();
